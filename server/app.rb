@@ -1,6 +1,7 @@
 require 'gosu'
 require 'awesome_print'
 require 'json'
+require 'easy_diff'
 # require 'pry'
 
 require_relative 'lib/vec'
@@ -13,23 +14,6 @@ require_relative 'lib/map'
 require_relative 'lib/entity_manager'
 require_relative 'lib/input_cacher'
 require_relative 'lib/network_manager'
-class Hash
-  # https://gist.github.com/henrik/146844
-  def deep_diff(b)
-    a = self
-    (a.keys | b.keys).inject({}) do |diff, k|
-      if a[k] != b[k]
-        if a[k].respond_to?(:deep_diff) && b[k].respond_to?(:deep_diff)
-          diff[k] = a[k].deep_diff(b[k])
-        else
-          diff[k] = [a[k], b[k]]
-        end
-      end
-      diff
-    end
-  end
-
-end
 
 module Enumerable
   def sum
@@ -106,14 +90,10 @@ class RtsGame < Gosu::Window
   end
 
   def build_diff_message(prev_state, new_state)
+    rem, diff = prev_state.easy_diff(new_state)
     msg = {}
-    diff = prev_state.deep_diff new_state
-    if diff[:units] && diff[:units].last
-      msg[:unit_updates] = diff[:units].last
-    end
-    if diff[:tiles] && diff[:tiles].last
-      msg[:tile_updates] = diff[:tiles].last
-    end
+    msg[:unit_updates] = diff[:units] if diff[:units]
+    msg[:tile_updates] = diff[:tiles] if diff[:tiles]
     msg
   end
 
