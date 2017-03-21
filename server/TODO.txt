@@ -1,0 +1,23 @@
+build out map
+load map from file
+
+translate incoming commands
+translate outgoing positions
+
+draw sprites
+
+move turn management out of app
+player join should create base? should player id be the server info not an id? (reconnect?)
+
+
+
+components:
+  PlayerOwned # which player owns it?
+  ResourceHolder
+  Base (tag)
+  Health
+  Orderable ? # holds on to current order?
+  Movement
+  Sprite / AnimatedSprite
+  TileVisiblity / Player
+  VisibleUnits / Player
