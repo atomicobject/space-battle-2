@@ -8,6 +8,7 @@ AO RTS
 Write an AI to command your troops to gather the most resources in the time allotted.
 
 **API**
+
 The server will connect to your client:
 
 You will start receiving messages in the format:
@@ -33,3 +34,13 @@ To command your units:
         {command: "GATHER", unit: "123", dir: "S"},
       ]
     }
+
+
+**unit-updates**
+**tile-updates**
+	
+
+
+**Commands**
+
+_MOVE_: 

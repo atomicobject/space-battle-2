@@ -1,4 +1,15 @@
+class MovementCommand
+  attr_accessor :target_vec
+  def initialize(target_vec:)
+    @target_vec = target_vec
+  end
+end
+
 class Unit
+  attr_accessor :status
+  def initialize(status: :idle)
+    @status = status
+  end
 end
 class Base
 end

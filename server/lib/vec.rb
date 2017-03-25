@@ -18,6 +18,10 @@ class Vec
     vec(x-other.x,y-other.y)
   end
 
+  def *(scale)
+    vec(x*scale,y*scale)
+  end
+
   def magnitude
     Math.sqrt(@x*@x + @y*@y)
   end
@@ -42,18 +46,5 @@ class Vec
   def hash
     @x.hash + @y.hash
   end
-
-
-  UP = vec(0,-1)
-  RIGHT = vec(1,0)
-  DOWN = vec(0,1)
-  LEFT = vec(-1,0)
-
-  NEIGHBOR_VECS = [
-    Vec::RIGHT,
-    Vec::UP,
-    Vec::DOWN,
-    Vec::LEFT,
-  ]
 
 end

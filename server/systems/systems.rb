@@ -45,10 +45,63 @@ class TimerSystem
   end
 end
 
-class CommandSystem
+class MovementSystem
   def update(entity_manager, dt, input, res)
-    msg = input[:messages]
-    puts msg if msg
+    # TODO add unit speed
+    speed = 64.0/1000
+
+    entity_manager.each_entity Unit, MovementCommand, Position do |ent|
+      u, movement, pos = ent.components
+      ent_id = ent.id
+
+      dir = movement.target_vec - pos.to_vec
+      move = dir.unit * dt * speed
+      pos.x += move.x
+      pos.y += move.y
+
+      # TODO detect crossover of target point
+      if (movement.target_vec - pos.to_vec).magnitude < 3
+        pos.x = movement.target_vec.x
+        pos.y = movement.target_vec.y
+        u.status = :idle
+        # XXX can I do this safely while iterating?
+        entity_manager.remove_component(klass: MovementCommand, id: ent_id)
+      end
+    end
+  end
+end
+
+class CommandSystem
+  DIR_VECS = {
+    'N' => vec(0,-1),
+    'S' => vec(0,1),
+    'W' => vec(1,0),
+    'E' => vec(1,0),
+  }
+  def update(entity_manager, dt, input, res)
+    msgs = input[:messages]
+    if msgs
+      msgs.each do |msg|
+        cmds = msg.data['commands']
+        cmds.each do |cmd|
+          c = cmd['command']
+          uid = cmd['unit']
+          if c == 'MOVE'
+            # TODO check player permissions on this unit
+            # TODO figure out if the dir is allowed
+            ent = entity_manager.find_by_id(uid, Unit, Position)
+            u, pos = ent.components
+            u.status = :moving
+            tile_size = 64
+            target = pos.to_vec + DIR_VECS[cmd['dir']]*tile_size
+
+            entity_manager.add_component(id: uid, 
+                                         component: MovementCommand.new(target_vec: target) )
+          end
+        end
+      end
+    end
+
   end
 end
 

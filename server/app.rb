@@ -26,6 +26,7 @@ ASSETS = {
   dirt2: 'assets/PNG/Default Size/Tile/scifiTile_42.png',
   tree1: 'assets/PNG/Default Size/Environment/scifiEnvironment_14.png',
   base1: 'assets/PNG/Default Size/Structure/scifiStructure_01.png',
+  worker1: 'assets/PNG/Default Size/Unit/scifiUnit_01.png',
 }
 
 class RtsGame < Gosu::Window
@@ -80,10 +81,21 @@ class RtsGame < Gosu::Window
   def build_state_for_player(entity_manager, player_id)
     units = []
     # TODO query based on values  :(
-    entity_manager.each_entity(Unit, PlayerOwned) do |ent|
-      u, player = ent.components
-      if player.id == player_id
-        units << { id: ent.id, player_id: player.id }
+
+    base_ent = entity_manager.find(Base, PlayerOwned, Position).select{|ent| ent.components[1].id == player_id}.first
+    base_id = base_ent.id
+    base_pos = base_ent.components[2]
+    units << { id: base_ent.id, player_id: player_id, x: 0, y: 0 }
+
+    entity_manager.each_entity(Unit, PlayerOwned, Position) do |ent|
+      u, player, pos = ent.components
+      if ent.id != base_id
+        if player.id == player_id
+          units << { id: ent.id, player_id: player.id, 
+            x: pos.x-base_pos.x, y: pos.y-base_pos.y,
+            status: u.status,
+          }
+        end
       end
     end
     {units: units}
@@ -121,6 +133,7 @@ class RtsGame < Gosu::Window
     images[:dirt2] = Gosu::Image.new(ASSETS[:dirt2], tileable: true)
     images[:tree1] = Gosu::Image.new(ASSETS[:tree1])
     images[:base1] = Gosu::Image.new(ASSETS[:base1])
+    images[:worker1] = Gosu::Image.new(ASSETS[:worker1])
 
     # TODO add sounds and music here?
 
@@ -144,6 +157,7 @@ class RtsGame < Gosu::Window
 
     @world = World.new [
       CommandSystem.new,
+      MovementSystem.new,
       TimerSystem.new,
       TimedSystem.new,
       TimedLevelSystem.new,

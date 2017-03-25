@@ -31,17 +31,17 @@ class Connection
   end
 
   def write(json)
-    puts "queueing writing #{json}"
+    # puts "queueing writing #{json}"
     @mutex.synchronize do
       @outgoing << json
     end
   end
 
   def flush!
-    puts "flushing conn"
+    # puts "flushing conn"
     @mutex.synchronize do
       @outgoing.each do |msg|
-        puts "writing #{msg}"
+        # puts "writing #{msg}"
         @socket.puts msg
       end
       @outgoing.clear
@@ -64,6 +64,10 @@ class Message
   def initialize(connection_id, json)
     @connection_id = connection_id
     @json = json
+  end
+
+  def data
+    @data = JSON.parse(@json)
   end
 
   def to_s
@@ -105,7 +109,7 @@ class NetworkManager
 
     @connections.flat_map do |id, conn|
       msgs = conn.messages.map do |msg|
-        Message.from_json(id, msg)
+        Message.from_json(id, msg.strip)
       end
       conn.clear!
       msgs
