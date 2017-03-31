@@ -10,14 +10,12 @@ move turn management out of app
 player join should create base? should player id be the server info not an id? (reconnect?)
 
 
+do not block server for client comm
+  timeouts?
 
 components:
-  PlayerOwned # which player owns it?
-  ResourceHolder
-  Base (tag)
-  Health
-  Orderable ? # holds on to current order?
-  Movement
-  Sprite / AnimatedSprite
   TileVisiblity / Player
   VisibleUnits / Player
+
+how to kill a unit??
+  status: dead... then no more updates

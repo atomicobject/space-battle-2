@@ -50,8 +50,16 @@ class MovementSystem
     # TODO add unit speed
     speed = 64.0/1000
 
-    entity_manager.each_entity Unit, MovementCommand, Position do |ent|
-      u, movement, pos = ent.components
+    # TODO update tile info on unit creation
+    tile_infos =  {} 
+    entity_manager.each_entity(PlayerOwned, TileInfo) do |ent|
+      player, tile_info = ent.components
+      tile_infos[player.id] = tile_info
+    end
+      
+    # TODO what about non-player owned movement? sep query?
+    entity_manager.each_entity PlayerOwned, Unit, MovementCommand, Position do |ent|
+      pwn, u, movement, pos = ent.components
       ent_id = ent.id
 
       dir = movement.target_vec - pos.to_vec
@@ -59,10 +67,25 @@ class MovementSystem
       pos.x += move.x
       pos.y += move.y
 
+      # TODO track tile location / that's what we'll send to the client
       # TODO detect crossover of target point
       if (movement.target_vec - pos.to_vec).magnitude < 3
-        pos.x = movement.target_vec.x
-        pos.y = movement.target_vec.y
+        pos.x = movement.target_vec.x.round
+        pos.y = movement.target_vec.y.round
+
+        # TODO more info than just 'true'
+        # TODO update for visible range as well
+        tile_size = 64
+        tile_x = (pos.x.to_f/tile_size).floor
+        tile_y = (pos.y.to_f/tile_size).floor
+        # TODO add unit range
+        range = 3
+        ((tile_x-range)..(tile_x+range)).each do |x|
+          ((tile_y-range)..(tile_y+range)).each do |y|
+            tile_infos[pwn.id].tiles[x][y] = true
+          end
+        end
+
         u.status = :idle
         # XXX can I do this safely while iterating?
         entity_manager.remove_component(klass: MovementCommand, id: ent_id)
@@ -75,7 +98,7 @@ class CommandSystem
   DIR_VECS = {
     'N' => vec(0,-1),
     'S' => vec(0,1),
-    'W' => vec(1,0),
+    'W' => vec(-1,0),
     'E' => vec(1,0),
   }
   def update(entity_manager, dt, input, res)

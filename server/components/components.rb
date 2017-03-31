@@ -1,3 +1,13 @@
+class TileInfo
+  attr_accessor :tiles
+  def initialize
+    @tiles = Hash.new do |h, k| 
+      h[k] = {}
+    end
+  end
+
+end
+
 class MovementCommand
   attr_accessor :target_vec
   def initialize(target_vec:)

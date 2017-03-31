@@ -79,12 +79,38 @@ class RtsGame < Gosu::Window
   end
 
   def build_state_for_player(entity_manager, player_id)
+    tile_size = 64
     units = []
-    # TODO query based on values  :(
+    tiles = []
 
     base_ent = entity_manager.find(Base, PlayerOwned, Position).select{|ent| ent.components[1].id == player_id}.first
     base_id = base_ent.id
-    base_pos = base_ent.components[2]
+    base_pos = base_ent.get(Position)
+
+    tiles_ent = entity_manager.find(PlayerOwned, TileInfo).select{|ent| ent.get(PlayerOwned).id == player_id}.first
+    tile_info = tiles_ent.get(TileInfo)
+
+    base_tile_x = (base_pos.x.to_f/tile_size).floor
+    base_tile_y = (base_pos.y.to_f/tile_size).floor
+    tile_info.tiles.each do |i, row|
+      row.each do |j, v|
+        res = i.even? ? nil : [{ type: 'mega', quanity: 2000, }]
+        blocked = i > 8 && j > 4
+        tiles << {
+          x: i-base_tile_x,
+          y: j-base_tile_y,
+          blocked: blocked,
+          resources: res,
+          units: [{
+            player_id: 0, 
+            x: (i-base_tile_x)*tile_size,
+            y: (j-base_tile_y)*tile_size,
+            type: 'worker'
+          }],
+        }
+      end
+    end
+
     units << { id: base_ent.id, player_id: player_id, x: 0, y: 0 }
 
     entity_manager.each_entity(Unit, PlayerOwned, Position) do |ent|
@@ -92,17 +118,20 @@ class RtsGame < Gosu::Window
       if ent.id != base_id
         if player.id == player_id
           units << { id: ent.id, player_id: player.id, 
-            x: pos.x-base_pos.x, y: pos.y-base_pos.y,
+            x: ((pos.x-base_pos.x).to_f/tile_size).floor, 
+            y: ((pos.y-base_pos.y).to_f/tile_size).floor, 
             status: u.status,
           }
         end
       end
     end
-    {units: units}
+    {units: units, tiles: tiles}
   end
 
   def build_diff_message(prev_state, new_state)
+    # start = Time.now
     rem, diff = prev_state.easy_diff(new_state)
+    # puts Time.now-start
     msg = {}
     msg[:unit_updates] = diff[:units] if diff[:units]
     msg[:tile_updates] = diff[:tiles] if diff[:tiles]
