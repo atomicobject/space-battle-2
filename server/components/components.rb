@@ -1,3 +1,19 @@
+def define_component(opts={})
+  attrs = opts[:attrs]
+  Class.new do
+    if attrs
+      attr_accessor *attrs
+    end
+
+    def initialize(initial_values={})
+      initial_values.each do |k,v|
+        instance_variable_set("@#{k}",v)
+      end
+    end
+  end
+end
+
+# TileInfo = define_component(attrs: :tiles)
 class TileInfo
   attr_accessor :tiles
   def initialize
@@ -5,7 +21,6 @@ class TileInfo
       h[k] = {}
     end
   end
-
 end
 
 class MovementCommand
@@ -23,12 +38,13 @@ class Unit
 end
 class Base
 end
-class Sprited
-  attr_accessor :image
-  def initialize(image:)
-    @image = image
-  end
-end
+Sprited = define_component(attrs: [:image])
+# class Sprited
+#   attr_accessor :image
+#   def initialize(image:)
+#     @image = image
+#   end
+# end
 
 class PlayerOwned
   attr_accessor :id

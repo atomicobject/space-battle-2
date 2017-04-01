@@ -2,8 +2,11 @@ require 'gosu'
 require 'awesome_print'
 require 'json'
 require 'easy_diff'
+require 'thread'
 # require 'pry'
 
+
+require_relative 'lib/core_ext'
 require_relative 'lib/vec'
 require_relative 'components/components'
 require_relative 'lib/prefab'
@@ -14,12 +17,6 @@ require_relative 'lib/map'
 require_relative 'lib/entity_manager'
 require_relative 'lib/input_cacher'
 require_relative 'lib/network_manager'
-
-module Enumerable
-  def sum
-    size > 0 ? inject(0, &:+) : 0
-  end
-end
 
 ASSETS = {
   dirt1: 'assets/PNG/Default Size/Tile/scifiTile_41.png',
@@ -36,13 +33,26 @@ class RtsGame < Gosu::Window
     @input_cacher = InputCacher.new
     @last_millis = Gosu::milliseconds.to_f
     build_world
+
+    @data_out_queue = Queue.new
+    @sync_data_out_thread = Thread.new do
+      loop do
+        ents = @data_out_queue.pop
+
+        @network_manager.clients.each do |player_id|
+          msg = generate_message_for(ents, player_id, @turn_count)
+          @network_manager.write(player_id, msg)
+        end
+        @network_manager.flush!
+      end
+    end
   end
 
   def needs_cursor?
     true
   end
 
-  TURN_DURATION = 100
+  TURN_DURATION = 1000
   def update
     self.caption = "FPS: #{Gosu.fps} ENTS: #{@entity_manager.num_entities}"
 
@@ -56,11 +66,10 @@ class RtsGame < Gosu::Window
         @turn_count += 1
         @turn_time -= TURN_DURATION
         input[:messages] = @network_manager.pop_messages!
-        @network_manager.clients.each do |player_id|
-          msg = generate_message_for(@entity_manager, player_id, @turn_count)
-          @network_manager.write(player_id, msg)
-        end
-        @network_manager.flush!
+
+        t = Time.now
+        @data_out_queue << @entity_manager.deep_clone
+        puts Time.now-t
       end
     end
 
