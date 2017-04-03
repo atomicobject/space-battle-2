@@ -28,6 +28,9 @@ ASSETS = {
 
 class RtsGame < Gosu::Window
   MAX_UPDATE_SIZE_IN_MILLIS = 500
+  TURN_DURATION = 300
+  TILE_SIZE = 64
+
   def initialize
     super(1024,1024,false)
     @input_cacher = InputCacher.new
@@ -52,28 +55,29 @@ class RtsGame < Gosu::Window
     true
   end
 
-  TURN_DURATION = 1000
   def update
-    self.caption = "FPS: #{Gosu.fps} ENTS: #{@entity_manager.num_entities}"
+    begin
+      self.caption = "FPS: #{Gosu.fps} ENTS: #{@entity_manager.num_entities}"
 
-    delta = relative_delta
-    input = take_input_snapshot
+      delta = relative_delta
+      input = take_input_snapshot
 
-    if @start
-      @turn_count ||= 0
-      @turn_time += delta
-      if @turn_time > TURN_DURATION
-        @turn_count += 1
-        @turn_time -= TURN_DURATION
-        input[:messages] = @network_manager.pop_messages!
-
-        t = Time.now
-        @data_out_queue << @entity_manager.deep_clone
-        puts Time.now-t
+      if @start
+        @turn_count ||= 0
+        @turn_time += delta
+        if @turn_time > TURN_DURATION
+          @turn_count += 1
+          @turn_time -= TURN_DURATION
+          input[:messages] = @network_manager.pop_messages!
+          @data_out_queue << @entity_manager.deep_clone
+        end
       end
-    end
 
-    @world.update @entity_manager, delta, input, @resources
+      @world.update @entity_manager, delta, input, @resources
+    rescue Exception => ex
+      require 'pry'
+      binding.pry
+    end
   end
 
   def generate_message_for(entity_manager, player_id, turn_count)
@@ -88,7 +92,6 @@ class RtsGame < Gosu::Window
   end
 
   def build_state_for_player(entity_manager, player_id)
-    tile_size = 64
     units = []
     tiles = []
 
@@ -99,12 +102,16 @@ class RtsGame < Gosu::Window
     tiles_ent = entity_manager.find(PlayerOwned, TileInfo).select{|ent| ent.get(PlayerOwned).id == player_id}.first
     tile_info = tiles_ent.get(TileInfo)
 
-    base_tile_x = (base_pos.x.to_f/tile_size).floor
-    base_tile_y = (base_pos.y.to_f/tile_size).floor
+    base_tile_x = (base_pos.x.to_f/TILE_SIZE).floor
+    base_tile_y = (base_pos.y.to_f/TILE_SIZE).floor
     tile_info.tiles.each do |i, row|
       row.each do |j, v|
-        res = i.even? ? nil : [{ type: 'mega', quanity: 2000, }]
-        blocked = i > 8 && j > 4
+        # res = i.even? ? nil : [{ type: 'mega', quanity: 2000, }]
+        # blocked = i > 8 && j > 4
+        # TODO make sure the map is cloned and passed in?
+        map = @resources[:map]
+        res = map.resource_at(i,j)
+				blocked = map.blocked?(i,j)
         tiles << {
           x: i-base_tile_x,
           y: j-base_tile_y,
@@ -112,8 +119,8 @@ class RtsGame < Gosu::Window
           resources: res,
           units: [{
             player_id: 0, 
-            x: (i-base_tile_x)*tile_size,
-            y: (j-base_tile_y)*tile_size,
+            x: (i-base_tile_x)*TILE_SIZE,
+            y: (j-base_tile_y)*TILE_SIZE,
             type: 'worker'
           }],
         }
@@ -127,8 +134,8 @@ class RtsGame < Gosu::Window
       if ent.id != base_id
         if player.id == player_id
           units << { id: ent.id, player_id: player.id, 
-            x: ((pos.x-base_pos.x).to_f/tile_size).floor, 
-            y: ((pos.y-base_pos.y).to_f/tile_size).floor, 
+            x: ((pos.x-base_pos.x).to_f/TILE_SIZE).floor, 
+            y: ((pos.y-base_pos.y).to_f/TILE_SIZE).floor, 
             status: u.status,
           }
         end
@@ -179,7 +186,8 @@ class RtsGame < Gosu::Window
   end
 
   def load_map!(res)
-    res[:map] = Map.generate(32,32)
+    # res[:map] = Map.generate(32,32)
+    res[:map] = Map.load_from_file('map.tmx')
   end
 
   def build_world

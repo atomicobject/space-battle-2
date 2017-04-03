@@ -21,7 +21,7 @@ class RenderSystem
     target.scale 0.5 do
       map = res[:map]
       images = res[:images]
-      tile_size = 64
+      tile_size = RtsGame::TILE_SIZE
       map.width.times do |x|
         map.height.times do |y|
           t = map.at(x,y)

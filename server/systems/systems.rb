@@ -48,7 +48,8 @@ end
 class MovementSystem
   def update(entity_manager, dt, input, res)
     # TODO add unit speed
-    speed = 64.0/1000
+    tile_size = RtsGame::TILE_SIZE
+    speed = tile_size.to_f/(RtsGame::TURN_DURATION * 5)
 
     # TODO update tile info on unit creation
     tile_infos =  {} 
@@ -75,7 +76,6 @@ class MovementSystem
 
         # TODO more info than just 'true'
         # TODO update for visible range as well
-        tile_size = 64
         tile_x = (pos.x.to_f/tile_size).floor
         tile_y = (pos.y.to_f/tile_size).floor
         # TODO add unit range
