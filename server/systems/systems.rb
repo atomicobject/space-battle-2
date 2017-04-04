@@ -110,16 +110,21 @@ class CommandSystem
           c = cmd['command']
           uid = cmd['unit']
           if c == 'MOVE'
-            # TODO check player permissions on this unit
-            # TODO figure out if the dir is allowed
-            ent = entity_manager.find_by_id(uid, Unit, Position)
-            u, pos = ent.components
-            u.status = :moving
-            tile_size = 64
-            target = pos.to_vec + DIR_VECS[cmd['dir']]*tile_size
+            ent = entity_manager.find_by_id(uid, Unit, Position, PlayerOwned)
+            u, pos, owner = ent.components
 
-            entity_manager.add_component(id: uid, 
-                                         component: MovementCommand.new(target_vec: target) )
+            if owner.id == msg.connection_id
+              tile_size = RtsGame::TILE_SIZE
+              target = pos.to_vec + DIR_VECS[cmd['dir']]*tile_size
+
+              tile_x = (target.x / tile_size).floor
+              tile_y = (target.y / tile_size).floor
+              unless res[:map].blocked?(tile_x, tile_y)
+                u.status = :moving
+                entity_manager.add_component(id: uid, 
+                                            component: MovementCommand.new(target_vec: target) )
+              end
+            end
           end
         end
       end

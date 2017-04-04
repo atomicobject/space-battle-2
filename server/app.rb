@@ -3,7 +3,6 @@ require 'awesome_print'
 require 'json'
 require 'easy_diff'
 require 'thread'
-# require 'pry'
 
 
 require_relative 'lib/core_ext'
@@ -28,7 +27,7 @@ ASSETS = {
 
 class RtsGame < Gosu::Window
   MAX_UPDATE_SIZE_IN_MILLIS = 500
-  TURN_DURATION = 300
+  TURN_DURATION = 100
   TILE_SIZE = 64
 
   def initialize
@@ -63,20 +62,26 @@ class RtsGame < Gosu::Window
       input = take_input_snapshot
 
       if @start
+				input[:messages] = @network_manager.pop_messages!
         @turn_count ||= 0
         @turn_time += delta
         if @turn_time > TURN_DURATION
           @turn_count += 1
           @turn_time -= TURN_DURATION
-          input[:messages] = @network_manager.pop_messages!
-          @data_out_queue << @entity_manager.deep_clone
+          # require 'objspace'
+          # puts "MEM: #{ObjectSpace.memsize_of(@entity_manager)}"
+          ents = @entity_manager.deep_clone
+          ents.send(:instance_variable_set, '@prev', @entity_manager)
+          @data_out_queue << ents
         end
       end
 
       @world.update @entity_manager, delta, input, @resources
     rescue Exception => ex
-      require 'pry'
-      binding.pry
+      puts ex.inspect
+      puts ex.backtace.inspect
+      # require 'pry'
+      # binding.pry
     end
   end
 
