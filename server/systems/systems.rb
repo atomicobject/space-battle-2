@@ -119,10 +119,12 @@ class CommandSystem
 
               tile_x = (target.x / tile_size).floor
               tile_y = (target.y / tile_size).floor
-              unless res[:map].blocked?(tile_x, tile_y)
+              unless res[:map].blocked?(tile_x, tile_y) || u.status == :moving
                 u.status = :moving
                 entity_manager.add_component(id: uid, 
                                             component: MovementCommand.new(target_vec: target) )
+              else
+                puts "blocked #{uid} at #{tile_x},#{tile_y}"
               end
             end
           end

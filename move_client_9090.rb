@@ -55,6 +55,8 @@ def move_command(outstanding_unit_cmds, id)
     unit: id,
     dir: dir
   }
+  puts "move #{id} #{dir}"
+  cmd
 end
 
 loop do
@@ -94,8 +96,8 @@ loop do
         elsif uu['status'] == 'idle'
           cmds << move_command(outstanding_unit_cmds, id)
         end
-
-      elsif outstanding_unit_cmds[id] == :move
+      end
+      if outstanding_unit_cmds[id] == :move
         cmds << move_command(outstanding_unit_cmds, id)
       end
     end

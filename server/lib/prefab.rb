@@ -16,9 +16,9 @@ module Prefab
     start_point = vec(3, 4)*64
     base(entity_manager: entity_manager, x: start_point.x, y: start_point.y, player_id: 0)
     worker(entity_manager: entity_manager, x: start_point.x + 64, y: start_point.y + 64, player_id: 0)
-    worker(entity_manager: entity_manager, x: start_point.x - 64, y: start_point.y + 64, player_id: 0)
-    worker(entity_manager: entity_manager, x: start_point.x + 64, y: start_point.y - 64, player_id: 0)
-    worker(entity_manager: entity_manager, x: start_point.x - 64, y: start_point.y - 64, player_id: 0)
+    # worker(entity_manager: entity_manager, x: start_point.x - 64, y: start_point.y + 64, player_id: 0)
+    # worker(entity_manager: entity_manager, x: start_point.x + 64, y: start_point.y - 64, player_id: 0)
+    # worker(entity_manager: entity_manager, x: start_point.x - 64, y: start_point.y - 64, player_id: 0)
 
   end
 
