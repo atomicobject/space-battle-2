@@ -55,17 +55,16 @@ def move_command(outstanding_unit_cmds, id)
     unit: id,
     dir: dir
   }
-  puts "move #{id} #{dir}"
   cmd
 end
 
 loop do
-  client = server.accept    # Wait for a client to connect
+  server_connection = server.accept    # Wait for a server_connection to connect
   units = {}
   outstanding_unit_cmds = {}
   map = Map.new
 
-	while msg = client.gets
+	while msg = server_connection.gets
     json = JSON.parse(msg)
 
     @player_id ||= json['player']
@@ -102,9 +101,9 @@ loop do
       end
     end
 
-    client.puts(cmd_msg.to_json) unless cmds.empty?
+    server_connection.puts(cmd_msg.to_json) unless cmds.empty?
 
   end
 
-  client.close
+  server_connection.close
 end
