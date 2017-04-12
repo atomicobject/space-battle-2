@@ -4,7 +4,6 @@ require 'json'
 require 'easy_diff'
 require 'thread'
 
-
 require_relative 'lib/core_ext'
 require_relative 'lib/vec'
 require_relative 'components/components'
@@ -79,14 +78,11 @@ class RtsGame < Gosu::Window
       @world.update @entity_manager, delta, input, @resources
     rescue Exception => ex
       puts ex.inspect
-      puts ex.backtace.inspect
-      # require 'pry'
-      # binding.pry
+      puts ex.backtrace.inspect
     end
   end
 
   def generate_message_for(entity_manager, player_id, turn_count)
-    # TODO this in a new thread?
     @state_cache ||= {}
     prev_state = @state_cache[player_id] || {}
     new_state = build_state_for_player(entity_manager, player_id)
@@ -104,19 +100,17 @@ class RtsGame < Gosu::Window
     base_id = base_ent.id
     base_pos = base_ent.get(Position)
 
-    tiles_ent = entity_manager.find(PlayerOwned, TileInfo).select{|ent| ent.get(PlayerOwned).id == player_id}.first
-    tile_info = tiles_ent.get(TileInfo)
+    tile_info = entity_manager.find(PlayerOwned, TileInfo).
+      first{|ent| ent.get(PlayerOwned).id == player_id}.get(TileInfo)
 
     base_tile_x = (base_pos.x.to_f/TILE_SIZE).floor
     base_tile_y = (base_pos.y.to_f/TILE_SIZE).floor
+    map = entity_manager.first(MapInfo).get(MapInfo)
+
     tile_info.tiles.each do |i, row|
       row.each do |j, v|
-        # res = i.even? ? nil : [{ type: 'mega', quanity: 2000, }]
-        # blocked = i > 8 && j > 4
-        # TODO make sure the map is cloned and passed in?
-        map = @resources[:map]
-        res = map.resource_at(i,j)
-				blocked = map.blocked?(i,j)
+        res = MapInfoHelper.resource_at(map,i,j)
+				blocked = MapInfoHelper.blocked?(map,i,j)
         tiles << {
           x: i-base_tile_x,
           y: j-base_tile_y,
@@ -192,6 +186,7 @@ class RtsGame < Gosu::Window
 
   def load_map!(res)
     # res[:map] = Map.generate(32,32)
+    # res[:map] = Map.load_from_file('map.json')
     res[:map] = Map.load_from_file('map.tmx')
   end
 

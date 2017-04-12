@@ -7,8 +7,34 @@ class Resource
   end
 end
 
+class MapInfoHelper
+  class << self
+    def blocked?(info, x, y)
+      tile = at(info, x, y)
+      tile.nil? || tile.blocked?
+    end
+
+    def init_at(info,x,y,static_tile_info)
+      info.tiles[x][y] = static_tile_info
+    end
+
+    def move_object(info, from_x, from_y, to_x, to_y, obj)
+    end
+
+    def at(info,x,y)
+      return nil if x < 0 || x > info.width-1 || y < 0 || y > info.height-1
+      info.tiles[x][y]
+    end
+
+    def resource_at(info,x,y)
+      tile = at(info, x, y)
+      tile && tile.resource
+    end
+  end
+end
+
 class Map
-  attr_reader :width, :height
+  attr_reader :width, :height, :tiles
   def initialize(w,h)
     @width = w
     @height = h
@@ -33,13 +59,14 @@ class Map
     layers = tmx.layers.group_by(&:name)
     terrain = layers["terrain"].first
     environment = layers["environment"].first
+    blocked = layers["blocked"].first
     w = tmx["width"]
     h = tmx["height"]
     # %w(terrain environment objects).map
     # map_data.tile_grid[0].size
 
     Map.new(w,h).tap do |m|
-			environment.data.each.with_index do |tile_id, i|
+			blocked.data.each.with_index do |tile_id, i|
 				x = i % environment.width
 				y = i / environment.width
 
@@ -58,16 +85,16 @@ class Map
       # m.at(6,6).objects << Tree.new
     end
   end
-
-  def blocked?(x,y)
-    tile = at(x,y)
-    tile.nil? || tile.blocked?
-  end
-
-  def resource_at(x,y)
-    tile = at(x,y)
-    tile && tile.resource
-  end
+#
+#   def blocked?(x,y)
+#     tile = at(x,y)
+#     tile.nil? || tile.blocked?
+#   end
+#
+#   def resource_at(x,y)
+#     tile = at(x,y)
+#     tile && tile.resource
+#   end
 end
 
 class Tile

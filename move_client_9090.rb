@@ -66,6 +66,7 @@ loop do
 
 	while msg = server_connection.gets
     json = JSON.parse(msg)
+    # puts json
 
     @player_id ||= json['player']
 

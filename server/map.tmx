@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.0" orientation="orthogonal" renderorder="right-down" width="32" height="32" tilewidth="64" tileheight="64" nextobjectid="1">
  <tileset firstgid="1" name="scifi_tilesheet" tilewidth="64" tileheight="64" tilecount="126" columns="18">
-  <image source="../../../../Desktop/Kenney Game Assets 2 version 20/2D assets/RTS Sci-fi (120 assets)/Tilesheet/scifi_tilesheet.png" width="1152" height="448"/>
+  <image source="assets/Tilesheet/scifi_tilesheet.png" width="1152" height="448"/>
  </tileset>
  <layer name="terrain" width="32" height="32">
   <data encoding="base64" compression="zlib">
@@ -13,5 +13,10 @@
    eJztltkNhCAQhkmsgQosZDqgBWtY+39QkyUSdw5+RFwSvmQSkWsOBsa5wQHtEnbx37ZXxraAhP+aXlpfMNaNzEY/irVfzpxJ+Eaw7Ip7fjLX43ydoxvqjxrnELUNQdLvzfwpPSNvofnqakvaXhN5monZe0mE04GLQ2lsvPv1U0v7W3Enb5C5veRIL3pKvo93bnrvWzaRs+/qnFiXvL0150eQmoLA8RylOfTEm0WXby32XI0mxQDNi2APqUqNmu3gH+uLwcmIQ99sho4OPA==
   </data>
  </layer>
- <objectgroup name="objects"/>
+ <layer name="blocked" width="32" height="32" opacity="0.35">
+  <data encoding="base64" compression="zlib">
+   eJzt0kEKACAIRFHv4P3v2tYiW86E/AdBuy9lxC7D64d+Pe5ZpvdfDVW/66jev5tB+f+3GdT7d87g2H/69LPcAQAAplnMrwJ0
+  </data>
+ </layer>
+ <objectgroup name="objects" visible="0"/>
 </map>

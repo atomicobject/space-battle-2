@@ -87,7 +87,7 @@ class MovementSystem
         end
 
         u.status = :idle
-        # XXX can I do this safely while iterating?
+        # XXX ¯\_(ツ)_/¯ can I do this safely while iterating?
         entity_manager.remove_component(klass: MovementCommand, id: ent_id)
       end
     end
@@ -106,6 +106,7 @@ class CommandSystem
     if msgs
       msgs.each do |msg|
         cmds = msg.data['commands']
+        map_info = entity_manager.first(MapInfo).get(MapInfo)
         cmds.each do |cmd|
           c = cmd['command']
           uid = cmd['unit']
@@ -119,12 +120,11 @@ class CommandSystem
 
               tile_x = (target.x / tile_size).floor
               tile_y = (target.y / tile_size).floor
-              unless res[:map].blocked?(tile_x, tile_y) || u.status == :moving
+              unless MapInfoHelper.blocked?(map_info, tile_x, tile_y) || u.status == :moving
+                # TODO how to implement some sort of "has cmd" check?
                 u.status = :moving
                 entity_manager.add_component(id: uid, 
                                             component: MovementCommand.new(target_vec: target) )
-              else
-                puts "blocked #{uid} at #{tile_x},#{tile_y}"
               end
             end
           end

@@ -13,10 +13,20 @@ def define_component(opts={})
   end
 end
 
-# TileInfo = define_component(attrs: :tiles)
 class TileInfo
   attr_accessor :tiles
   def initialize
+    @tiles = Hash.new do |h, k| 
+      h[k] = {}
+    end
+  end
+end
+
+class MapInfo
+  attr_accessor :tiles, :width, :height
+  def initialize(width, height)
+    @width = width
+    @height = height
     @tiles = Hash.new do |h, k| 
       h[k] = {}
     end
@@ -39,32 +49,9 @@ end
 class Base
 end
 Sprited = define_component(attrs: [:image])
-# class Sprited
-#   attr_accessor :image
-#   def initialize(image:)
-#     @image = image
-#   end
-# end
-
-class PlayerOwned
-  attr_accessor :id
-  def initialize(id:)
-    @id = id
-  end
-end
-class Health
-  attr_accessor :points
-  def initialize(points:)
-    @points = points
-  end
-end
-
-class EntityTarget
-  attr_accessor :id
-  def initialize(id)
-    @id = id
-  end
-end
+PlayerOwned = define_component(attrs: [:id])
+Health = define_component(attrs: [:points])
+EntityTarget = define_component(attrs: [:id])
 
 class Position
   attr_accessor :x, :y, :z
@@ -78,6 +65,7 @@ class Position
     vec(@x, @y)
   end
 end
+class TilePosition < Position; end
 
 class Velocity < Vec
 end
