@@ -29,7 +29,7 @@ class MovementSystem
         base_ent = entity_manager.find(Base, PlayerOwned, Position, Label).select{|ent| ent.get(PlayerOwned).id == pwn.id}.first
         base_pos = base_ent.get(Position)
 
-        if base_pos.x - pos.x <= 1 && base_pos.y - pos.y <= 1
+        if (base_pos.x - pos.x).abs <= 1 && (base_pos.y - pos.y).abs <= 1
           base = base_ent.get(Base)
           unit_res_ent = entity_manager.find_by_id(ent_id, ResourceCarrier, Label)
           if unit_res_ent
