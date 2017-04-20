@@ -51,7 +51,6 @@ class RenderSystem
         font.draw(label.text, pos.x, pos.y, pos.z)
       end
 
-
       # entity_manager.each_entity Position, JoyColor, Boxed do |rec|
       #   pos, color, boxed = rec.components
       #   ent_id = rec.id

@@ -46,12 +46,23 @@ class Unit
     @status = status
   end
 end
+class ResourceCarrier
+  attr_accessor :resource
+  def initialize
+    @resource = 0
+  end
+end
 class Base
+  attr_accessor :resource
+  def initialize
+    @resource = 0
+  end
 end
 Sprited = define_component(attrs: [:image])
 PlayerOwned = define_component(attrs: [:id])
 Health = define_component(attrs: [:points])
 EntityTarget = define_component(attrs: [:id])
+Resource = define_component(attrs: [:value, :total])
 
 class Position
   attr_accessor :x, :y, :z

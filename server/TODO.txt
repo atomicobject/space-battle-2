@@ -1,8 +1,8 @@
-build out map
-load map from file
+add harvest command
+render environment tiles
+render player scores
 
 translate incoming commands
-translate outgoing positions
 
 draw sprites
 
@@ -13,9 +13,6 @@ player join should create base? should player id be the server info not an id? (
 do not block server for client comm
   timeouts?
 
-components:
-  TileVisiblity / Player
-  VisibleUnits / Player
-
 how to kill a unit??
   status: dead... then no more updates
+

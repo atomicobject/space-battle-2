@@ -1,9 +1,21 @@
 require 'tmx'
-class Resource
-  attr_accessor :value, :total
-  def initialize(value:, total:)
-    @value = value
-    @total = total
+
+class TileInfoHelper
+  class << self
+    def update_tile_visibility(tile_info, x, y, range)
+      tile_size = RtsGame::TILE_SIZE
+
+      # TODO more info than just 'true'
+      tile_x = (x.to_f/tile_size).floor
+      tile_y = (y.to_f/tile_size).floor
+
+      ((tile_x-range)..(tile_x+range)).each do |x|
+        ((tile_y-range)..(tile_y+range)).each do |y|
+          tile_info.tiles[x][y] = true
+        end
+      end
+
+    end
   end
 end
 
@@ -18,12 +30,18 @@ class MapInfoHelper
       info.tiles[x][y] = static_tile_info
     end
 
-    def move_object(info, from_x, from_y, to_x, to_y, obj)
-    end
-
     def at(info,x,y)
       return nil if x < 0 || x > info.width-1 || y < 0 || y > info.height-1
       info.tiles[x][y]
+    end
+
+    def add_resource_at(info,x,y,res)
+      tile = at(info,x,y)
+      if tile
+        tile.resource = res
+      else
+        puts "WARNING: trying to place a resource off the map"
+      end
     end
 
     def resource_at(info,x,y)
@@ -34,8 +52,9 @@ class MapInfoHelper
 end
 
 class Map
-  attr_reader :width, :height, :tiles
-  def initialize(w,h)
+  attr_reader :width, :height, :tiles, :objects
+  def initialize(w,h, objects)
+    @objects = objects
     @width = w
     @height = h
     @tiles = Hash.new do |h,k|
@@ -56,7 +75,10 @@ class Map
 
     tileset_image = tmx.tilesets.first.image
     tile_size = tmx.tilesets.first.tilewidth
+
     layers = tmx.layers.group_by(&:name)
+    objects = tmx.objects
+
     terrain = layers["terrain"].first
     environment = layers["environment"].first
     blocked = layers["blocked"].first
@@ -65,7 +87,7 @@ class Map
     # %w(terrain environment objects).map
     # map_data.tile_grid[0].size
 
-    Map.new(w,h).tap do |m|
+    Map.new(w,h,objects).tap do |m|
 			blocked.data.each.with_index do |tile_id, i|
 				x = i % environment.width
 				y = i / environment.width
@@ -85,16 +107,6 @@ class Map
       # m.at(6,6).objects << Tree.new
     end
   end
-#
-#   def blocked?(x,y)
-#     tile = at(x,y)
-#     tile.nil? || tile.blocked?
-#   end
-#
-#   def resource_at(x,y)
-#     tile = at(x,y)
-#     tile && tile.resource
-#   end
 end
 
 class Tile

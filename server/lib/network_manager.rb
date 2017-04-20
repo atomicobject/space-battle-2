@@ -109,7 +109,7 @@ class NetworkManager
 
     @connections.flat_map do |id, conn|
       msgs = conn.messages.map do |msg|
-        Message.from_json(id, msg.strip)
+        Message.from_json(id, "#{msg}".strip)
       end
       conn.clear!
       msgs

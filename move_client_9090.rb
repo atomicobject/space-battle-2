@@ -17,7 +17,12 @@ class Map
     @map[tile['x']+@max_width][tile['y']+@max_height] = tile
   end
 
-  def pretty
+  def at(x,y)
+    col = @map[x+@max_width]
+    col[y+@max_height] if col
+  end
+
+  def pretty(units)
     33.times { puts }
     puts("="*66)
     @map.transpose.each.with_index do |rows, i|
@@ -36,16 +41,47 @@ class Map
       STDOUT.puts "|"
     end
     puts("="*66)
+    all_units = units.values
+    base = all_units.find{|u| u['type'] == 'base'}
+    puts "PLAYER RES: #{base['resource']}" if base
+    puts "UNIT RES: #{((all_units-[base]).compact).map{|u|u['resource']}.compact.reduce(0, &:+)}"
   end
 end
 
-# require 'server/lib/vec'
-# DIR_VECS = {
-#   'N' => vec(0,-1),
-#   'S' => vec(0,1),
-#   'W' => vec(-1,0),
-#   'E' => vec(1,0),
-# }
+require_relative './server/lib/vec'
+DIR_VECS = {
+  'N' => vec(0,-1),
+  'S' => vec(0,1),
+  'W' => vec(-1,0),
+  'E' => vec(1,0),
+}
+def resource_adjacent_to(map, base, unit_info)
+  x = unit_info['x']
+  y = unit_info['y']
+
+  tile = map.at(x,y)
+  if tile
+    DIR_VECS.each do |dir, dir_vec|
+      xx = x + dir_vec.x
+      yy = y + dir_vec.y
+
+      unless base.nil? || (base['x'] == xx && base['y'] == yy)
+        tile = map.at(xx,yy)
+        # XXX will this allow stealing from other player's bases?
+        return dir if tile && tile['resources']
+      end
+    end
+  end
+  nil
+end
+
+def gather_command(dir, id)
+  cmd = {
+    command: "GATHER",
+    unit: id,
+    dir: dir
+  }
+end
 
 def move_command(outstanding_unit_cmds, id)
   outstanding_unit_cmds[id] = :move
@@ -55,7 +91,6 @@ def move_command(outstanding_unit_cmds, id)
     unit: id,
     dir: dir
   }
-  cmd
 end
 
 loop do
@@ -79,7 +114,7 @@ loop do
         map.update_tile tu
       end
 
-      map.pretty
+      map.pretty(units)
     end
 
     unit_updates = {}
@@ -94,7 +129,14 @@ loop do
         if uu['status'] == 'moving'
           outstanding_unit_cmds.delete(id) if outstanding_unit_cmds[id] == :move
         elsif uu['status'] == 'idle'
-          cmds << move_command(outstanding_unit_cmds, id)
+
+          base = units.values.find{|u| u['type'] == 'base'}
+          res_dir = resource_adjacent_to(map, base, uu)
+          if res_dir && (!uu['resource'] || uu['resource'] == 0)
+            cmds << gather_command(res_dir, id)
+          else
+            cmds << move_command(outstanding_unit_cmds, id)
+          end
         end
       end
       if outstanding_unit_cmds[id] == :move

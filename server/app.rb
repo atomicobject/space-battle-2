@@ -22,6 +22,8 @@ ASSETS = {
   tree1: 'assets/PNG/Default Size/Environment/scifiEnvironment_14.png',
   base1: 'assets/PNG/Default Size/Structure/scifiStructure_01.png',
   worker1: 'assets/PNG/Default Size/Unit/scifiUnit_01.png',
+  small_res1: 'assets/PNG/Default Size/Environment/scifiEnvironment_09.png',
+  large_res1: 'assets/PNG/Default Size/Environment/scifiEnvironment_10.png',
 }
 
 class RtsGame < Gosu::Window
@@ -99,6 +101,7 @@ class RtsGame < Gosu::Window
     base_ent = entity_manager.find(Base, PlayerOwned, Position).select{|ent| ent.components[1].id == player_id}.first
     base_id = base_ent.id
     base_pos = base_ent.get(Position)
+    base = base_ent.get(Base)
 
     tile_info = entity_manager.find(PlayerOwned, TileInfo).
       first{|ent| ent.get(PlayerOwned).id == player_id}.get(TileInfo)
@@ -126,16 +129,18 @@ class RtsGame < Gosu::Window
       end
     end
 
-    units << { id: base_ent.id, player_id: player_id, x: 0, y: 0 }
+    units << { type: :base, id: base_ent.id, player_id: player_id, 
+      x: 0, y: 0, resource: base.resource }
 
-    entity_manager.each_entity(Unit, PlayerOwned, Position) do |ent|
-      u, player, pos = ent.components
+    entity_manager.each_entity(Unit, PlayerOwned, Position, ResourceCarrier) do |ent|
+      u, player, pos, res_car = ent.components
       if ent.id != base_id
         if player.id == player_id
           units << { id: ent.id, player_id: player.id, 
             x: ((pos.x-base_pos.x).to_f/TILE_SIZE).floor, 
             y: ((pos.y-base_pos.y).to_f/TILE_SIZE).floor, 
             status: u.status,
+            resource: res_car.resource
           }
         end
       end
@@ -175,12 +180,11 @@ class RtsGame < Gosu::Window
     images = {}
     images[:dirt1] = Gosu::Image.new(ASSETS[:dirt1], tileable: true)
     images[:dirt2] = Gosu::Image.new(ASSETS[:dirt2], tileable: true)
-    images[:tree1] = Gosu::Image.new(ASSETS[:tree1])
-    images[:base1] = Gosu::Image.new(ASSETS[:base1])
-    images[:worker1] = Gosu::Image.new(ASSETS[:worker1])
+    ASSETS.each do |name,file|
+      images[name] ||= Gosu::Image.new(file)
+    end
 
     # TODO add sounds and music here?
-
     res[:images] = images
   end
 

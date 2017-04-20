@@ -74,18 +74,9 @@ class MovementSystem
         pos.x = movement.target_vec.x.round
         pos.y = movement.target_vec.y.round
 
-        # TODO more info than just 'true'
-        # TODO update for visible range as well
-        tile_x = (pos.x.to_f/tile_size).floor
-        tile_y = (pos.y.to_f/tile_size).floor
-        # TODO add unit range
+        # TODO update for visible range
         range = 3
-        ((tile_x-range)..(tile_x+range)).each do |x|
-          ((tile_y-range)..(tile_y+range)).each do |y|
-            tile_infos[pwn.id].tiles[x][y] = true
-          end
-        end
-
+        TileInfoHelper.update_tile_visibility(tile_infos[pwn.id], pos.x, pos.y, range)
         u.status = :idle
         # XXX ¯\_(ツ)_/¯ can I do this safely while iterating?
         entity_manager.remove_component(klass: MovementCommand, id: ent_id)
@@ -110,6 +101,7 @@ class CommandSystem
         cmds.each do |cmd|
           c = cmd['command']
           uid = cmd['unit']
+
           if c == 'MOVE'
             ent = entity_manager.find_by_id(uid, Unit, Position, PlayerOwned)
             u, pos, owner = ent.components
@@ -127,6 +119,35 @@ class CommandSystem
                                             component: MovementCommand.new(target_vec: target) )
               end
             end
+          elsif c == 'GATHER'
+            ent = entity_manager.find_by_id(uid, Unit, Position, PlayerOwned)
+            u, pos, owner = ent.components
+
+            if owner.id == msg.connection_id
+              tile_size = RtsGame::TILE_SIZE
+              target = pos.to_vec + DIR_VECS[cmd['dir']]*tile_size
+
+              tile_x = (target.x / tile_size).floor
+              tile_y = (target.y / tile_size).floor
+
+              res_info = MapInfoHelper.resource_at(map_info, tile_x, tile_y)
+              if res_info
+
+                rc = entity_manager.find_by_id(uid, ResourceCarrier).get(ResourceCarrier)
+
+                resource_ent = entity_manager.find_by_id(res_info[:id], Resource, Label)
+                resource = resource_ent.get(Resource)
+
+                resource.total -= resource.value
+                resource_label = resource_ent.get(Label)
+                resource_label.text = "#{resource.value}/#{resource.total}"
+
+                rc.resource = resource.value
+                entity_manager.add_component(id: uid, component: Label.new(size:14,text:rc.resource))
+              end
+
+            end
+
           end
         end
       end
