@@ -79,11 +79,12 @@
   end
 
   def self.resources(entity_manager:, static_map:, map_info:)
+    tile_size = RtsGame::TILE_SIZE
     static_map.objects.select{|o|o['type'] == "small_resource"}.each do |res|
-      resource(entity_manager: entity_manager, x: res.x, y: res.y, map_info: map_info, type: "small")
+      resource(entity_manager: entity_manager, x: res.x, y: res.y-tile_size, map_info: map_info, type: "small")
     end
     static_map.objects.select{|o|o['type'] == "large_resource"}.each do |res|
-      resource(entity_manager: entity_manager, x: res.x, y: res.y, map_info: map_info, type: "large")
+      resource(entity_manager: entity_manager, x: res.x, y: res.y-tile_size, map_info: map_info, type: "large")
     end
   end
 

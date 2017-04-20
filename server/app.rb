@@ -19,7 +19,12 @@ require_relative 'lib/network_manager'
 ASSETS = {
   dirt1: 'assets/PNG/Default Size/Tile/scifiTile_41.png',
   dirt2: 'assets/PNG/Default Size/Tile/scifiTile_42.png',
-  tree1: 'assets/PNG/Default Size/Environment/scifiEnvironment_14.png',
+  tree1: 'assets/PNG/Default Size/Tile/scifiTile_15.png',
+  tree2: 'assets/PNG/Default Size/Tile/scifiTile_16.png',
+  tree3: 'assets/PNG/Default Size/Tile/scifiTile_27.png',
+  tree4: 'assets/PNG/Default Size/Tile/scifiTile_28.png',
+  tree5: 'assets/PNG/Default Size/Tile/scifiTile_29.png',
+  tree6: 'assets/PNG/Default Size/Tile/scifiTile_30.png',
   base1: 'assets/PNG/Default Size/Structure/scifiStructure_01.png',
   worker1: 'assets/PNG/Default Size/Unit/scifiUnit_01.png',
   small_res1: 'assets/PNG/Default Size/Environment/scifiEnvironment_09.png',
@@ -188,11 +193,12 @@ class RtsGame < Gosu::Window
 
   def preload_assets!(res)
     images = {}
-    images[:dirt1] = Gosu::Image.new(ASSETS[:dirt1], tileable: true)
-    images[:dirt2] = Gosu::Image.new(ASSETS[:dirt2], tileable: true)
+    # images[:dirt1] = Gosu::Image.new(ASSETS[:dirt1], tileable: true)
+    # images[:dirt2] = Gosu::Image.new(ASSETS[:dirt2], tileable: true)
     ASSETS.each do |name,file|
-      images[name] ||= Gosu::Image.new(file)
+      images[name] ||= Gosu::Image.new(file, tileable: true)
     end
+    puts "loaded images: #{images.keys}"
 
     # TODO add sounds and music here?
     res[:images] = images

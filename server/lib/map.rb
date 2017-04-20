@@ -57,6 +57,17 @@ end
 
 class Map
   attr_reader :width, :height, :tiles, :objects
+
+  RESOURCE_IDS = [78,112,94,113]
+  TYPE_FOR_TILE_INDEX = {
+    0 => :dirt,
+    21 => :tree1,
+    22 => :tree2,
+    38 => :tree4,
+    39 => :tree5,
+    40 => :tree6,
+  }
+
   def initialize(w,h, objects)
     @objects = objects
     @width = w
@@ -97,10 +108,17 @@ class Map
 				y = i / environment.width
 
 				# tile = new_tile_for_index(tile_id, x,y)
-
-        resource_ids = [78,112,94,113]
-				m.at(x,y).resource = Resource.new(value: 50, total: 2000) if resource_ids.include?(tile_id)
 				m.at(x,y).blocked = tile_id != 0
+			end
+
+			environment.data.each.with_index do |tile_id, i|
+				x = i % environment.width
+				y = i / environment.width
+
+				# tile = new_tile_for_index(tile_id, x,y)
+        type = TYPE_FOR_TILE_INDEX[tile_id]
+        puts "unknown tile id: #{tile_id}" unless type
+				m.at(x,y).type = type if type
 			end
     end
   end
@@ -128,9 +146,9 @@ class Tile
   end
 
   def image
-    @image ||= [:dirt1, :dirt2].sample
+    @image ||= (@type.nil? || @type == :dirt) ? [:dirt1, :dirt2].sample : @type
   end
-  
+
   def walkable?
     WALKABLE_TYPES.include? @type && @objects.empty? # assume all objects block for now
   end

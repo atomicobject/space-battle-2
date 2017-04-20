@@ -28,7 +28,9 @@ class RenderSystem
           base_x = x*tile_size
           base_y = y*tile_size
           # puts "#{base_x},#{base_y}"
-          images[t.image].draw base_x, base_y, ZOrder::Terrain
+          img = images[t.image]
+          puts "could not find image for: #{t.image}" unless img
+          img.draw base_x, base_y, ZOrder::Terrain
 
           t.objects.each do |obj|
             images[obj.image].draw base_x, base_y, ZOrder::Env
