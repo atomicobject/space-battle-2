@@ -23,6 +23,7 @@ class Map
   end
 
   def pretty(units)
+    # TODO draw units?
     33.times { puts }
     puts("="*66)
     @map.transpose.each.with_index do |rows, i|
@@ -109,9 +110,11 @@ loop do
     cmd_msg = {commands: cmds, player_id: @player_id}
 
     tile_updates = json['tile_updates']
-    if tile_updates
-      tile_updates.each do |tu|
-        map.update_tile tu
+    if tile_updates || json['unit_updates']
+      if tile_updates
+        tile_updates.each do |tu|
+          map.update_tile tu
+        end
       end
 
       map.pretty(units)

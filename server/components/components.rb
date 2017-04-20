@@ -52,12 +52,7 @@ class ResourceCarrier
     @resource = 0
   end
 end
-class Base
-  attr_accessor :resource
-  def initialize
-    @resource = 0
-  end
-end
+Base = define_component(attrs: [:resource])
 Sprited = define_component(attrs: [:image])
 PlayerOwned = define_component(attrs: [:id])
 Health = define_component(attrs: [:points])

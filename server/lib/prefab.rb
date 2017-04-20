@@ -5,7 +5,8 @@
     tile_info = TileInfo.new
     entity_manager.add_entity PlayerOwned.new(id: player_id), tile_info
 
-    entity_manager.add_entity Unit.new(status: :base), Base.new, Position.new(x:x, y:y, z:10), PlayerOwned.new(id: player_id), Sprited.new(image: :base1)
+    b = Base.new(resource: RtsGame::PLAYER_START_RESOURCE)
+    entity_manager.add_entity Unit.new(status: :base), b, Position.new(x:x, y:y, z:10), PlayerOwned.new(id: player_id), Sprited.new(image: :base1), Label.new(size: 24, text: b.resource)
 
     range = 3
     TileInfoHelper.update_tile_visibility(tile_info, x, y, range)
@@ -22,11 +23,11 @@
 
   def self.resource(entity_manager:,x:,y:,map_info:,type:)
     if type == 'small'
-      res = Resource.new(total: 20, value:10)
+      res = Resource.new(total: 200, value:10)
     else
-      res = Resource.new(total: 200, value:20)
+      res = Resource.new(total: 1000, value:20)
     end
-    id = entity_manager.add_entity res, Label.new(size:24,text:"#{res.value}/#{res.total}"), Position.new(x:x, y:y), Sprited.new(image: "#{type}_res1".to_sym)
+    id = entity_manager.add_entity res, Label.new(size:16,text:"#{res.value}/#{res.total}"), Position.new(x:x, y:y), Sprited.new(image: "#{type}_res1".to_sym)
 
     # TODO where should world => tile coord conversion happen
     tile_size = RtsGame::TILE_SIZE

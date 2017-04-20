@@ -30,6 +30,14 @@ class RtsGame < Gosu::Window
   MAX_UPDATE_SIZE_IN_MILLIS = 500
   TURN_DURATION = 100
   TILE_SIZE = 64
+  PLAYER_START_RESOURCE = 100
+
+  DIR_VECS = {
+    'N' => vec(0,-1),
+    'S' => vec(0,1),
+    'W' => vec(-1,0),
+    'E' => vec(1,0),
+  }
 
   def initialize
     super(1024,1024,false)
