@@ -10,6 +10,10 @@ class Vec
     @y = y
   end
 
+  def abs()
+    vec(x.abs, y.abs)
+  end
+
   def +(other)
     vec(x+other.x,y+other.y)
   end
@@ -20,6 +24,27 @@ class Vec
 
   def *(scale)
     vec(x*scale,y*scale)
+  end
+
+  def closest_cardinal()
+    abs_vec = abs()
+    if abs_vec.x >= abs_vec.y
+      if abs_vec.x == 0
+        vec(0, 0)
+      else
+        vec(x / abs_vec.x, 0)
+      end
+    else
+      if abs_vec.y == 0
+        vec(0, 0)
+      else
+        vec(0, y / abs_vec.y)
+      end
+    end
+  end
+
+  def rotate()
+    vec(y, -x)
   end
 
   def magnitude
