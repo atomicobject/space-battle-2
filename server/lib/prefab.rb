@@ -22,7 +22,7 @@
 
   def self.resource(entity_manager:,x:,y:,map_info:,type:)
     if type == 'small'
-      res = Resource.new(total: 100, value:10)
+      res = Resource.new(total: 20, value:10)
     else
       res = Resource.new(total: 200, value:20)
     end

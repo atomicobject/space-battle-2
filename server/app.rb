@@ -69,6 +69,8 @@ class RtsGame < Gosu::Window
         if @turn_time > TURN_DURATION
           @turn_count += 1
           @turn_time -= TURN_DURATION
+          puts "WARNING! Not making turn time budget" if @turn_time > TURN_DURATION
+          @turn_time = 0
           # require 'objspace'
           # puts "MEM: #{ObjectSpace.memsize_of(@entity_manager)}"
           ents = @entity_manager.deep_clone

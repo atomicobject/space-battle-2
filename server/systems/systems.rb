@@ -74,6 +74,20 @@ class MovementSystem
         pos.x = movement.target_vec.x.round
         pos.y = movement.target_vec.y.round
 
+        base_ent = entity_manager.find(Base, PlayerOwned, Position).select{|ent| ent.get(PlayerOwned).id == pwn.id}.first
+        base_pos = base_ent.get(Position)
+
+        if base_pos.x - pos.x <= 1 && base_pos.y - pos.y <= 1
+          base = base_ent.get(Base)
+          unit_res_ent = entity_manager.find_by_id(ent_id, ResourceCarrier, Label)
+          if unit_res_ent
+            unit_res, unit_label = unit_res_ent.components
+            base.resource += unit_res.resource
+            unit_label.text = ""
+            unit_res = 0
+          end
+        end
+
         # TODO update for visible range
         range = 3
         TileInfoHelper.update_tile_visibility(tile_infos[pwn.id], pos.x, pos.y, range)
@@ -119,6 +133,7 @@ class CommandSystem
                                             component: MovementCommand.new(target_vec: target) )
               end
             end
+
           elsif c == 'GATHER'
             ent = entity_manager.find_by_id(uid, Unit, Position, PlayerOwned)
             u, pos, owner = ent.components
@@ -139,11 +154,15 @@ class CommandSystem
                 resource = resource_ent.get(Resource)
 
                 resource.total -= resource.value
-                resource_label = resource_ent.get(Label)
-                resource_label.text = "#{resource.value}/#{resource.total}"
+                resource_ent.get(Label).text = "#{resource.value}/#{resource.total}"
 
                 rc.resource = resource.value
                 entity_manager.add_component(id: uid, component: Label.new(size:14,text:rc.resource))
+
+                if resource.total <= 0
+                  MapInfoHelper.remove_resource_at(map_info, tile_x, tile_y)
+                  entity_manager.remove_entity(id: res_info[:id])
+                end
               end
 
             end

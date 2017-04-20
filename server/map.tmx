@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="32" height="32" tilewidth="64" tileheight="64" nextobjectid="9">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="32" height="32" tilewidth="64" tileheight="64" nextobjectid="16">
  <tileset firstgid="1" name="scifi_tilesheet" tilewidth="64" tileheight="64" tilecount="126" columns="18">
   <image source="assets/Tilesheet/scifi_tilesheet.png" width="1152" height="448"/>
  </tileset>
@@ -23,5 +23,12 @@
   <object id="5" type="base" gid="35" x="384" y="448" width="64" height="64"/>
   <object id="7" type="base" gid="35" x="1536" y="1408" width="64" height="64"/>
   <object id="8" type="large_resource" gid="114" x="640" y="512" width="64" height="64"/>
+  <object id="9" type="small_resource" gid="113" x="384" y="320" width="64" height="64"/>
+  <object id="10" type="small_resource" gid="113" x="256" y="320" width="64" height="64"/>
+  <object id="11" type="small_resource" gid="113" x="320" y="322" width="64" height="64"/>
+  <object id="12" type="small_resource" gid="113" x="448" y="320" width="64" height="64"/>
+  <object id="13" type="small_resource" gid="113" x="192" y="448" width="64" height="64"/>
+  <object id="14" type="small_resource" gid="113" x="192" y="512" width="64" height="64"/>
+  <object id="15" type="small_resource" gid="113" x="192" y="576" width="64" height="64"/>
  </objectgroup>
 </map>

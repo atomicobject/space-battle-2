@@ -35,6 +35,10 @@ class MapInfoHelper
       info.tiles[x][y]
     end
 
+    def remove_resource_at(info,x,y)
+      add_resource_at(info,x,y,nil)
+    end
+
     def add_resource_at(info,x,y,res)
       tile = at(info,x,y)
       if tile
@@ -120,7 +124,7 @@ class Tile
   end
 
   def blocked?
-    @blocked
+    @blocked || @resource
   end
 
   def image
