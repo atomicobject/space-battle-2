@@ -1,6 +1,7 @@
 require 'socket'
 require 'json'
 require_relative 'server/lib/vec'
+require_relative 'server/lib/dijkstra'
 
 server = TCPServer.new 9090
 
@@ -28,9 +29,37 @@ class Map
     @map[pos.x+@max_width][pos.y+@max_width].nil?
   end
 
+  def neighbors(pos)
+    ns = []
+    DIR_VECS.values.each do |offset|
+      neighbor = pos + offset
+      ns << neighbor if tile_walkable?(neighbor) && !tile_unexplored?(neighbor)
+    end
+    return ns
+  end
+
+
   def find_nearest_explorable_tile(pos, radius = nil)
     closest_tile(pos, radius) do |map, tile_pos|
-      tile_pos != pos && map.tile_walkable?(tile_pos) && closest_tile(tile_pos, 1, &lambda { |map, pos2| map.tile_unexplored?(pos2) })
+      tile_pos != pos && map.tile_walkable?(tile_pos) && closest_tile(tile_pos, 1, &lambda { |map, pos2| map.tile_unexplored?(pos2) }) 
+    end
+  end
+
+  def path_to_nearest_expolorable_tile(pos, radius = nil)
+    found_thing = closest_tile(pos, radius) do |map, tile_pos|
+      tile_pos != pos &&
+        map.tile_walkable?(tile_pos) &&
+        closest_tile(tile_pos, 1, &lambda { |map, pos2| map.tile_unexplored?(pos2) }) &&
+        Dijkstra.find_path(pos, tile_pos) do |location|
+          self.neighbors(location)
+        end
+    end
+    if found_thing
+      return Dijkstra.find_path(pos, found_thing) do |location|
+        self.neighbors(location)
+      end
+    else
+      return found_thing
     end
   end
 
@@ -98,13 +127,21 @@ def move_command(outstanding_unit_cmds, id)
   cmd
 end
 
-
+@path = {}
 
 def do_scout_ai(map, outstanding_unit_cmds, id, unit)
   outstanding_unit_cmds[id] = :move
   pos = vec(unit["x"], unit["y"])
   puts pos
-  nearest = map.find_nearest_explorable_tile(pos, 10)
+  nearest = nil
+  if !@path[id] || @path[id].empty?
+    @path[id] = map.path_to_nearest_expolorable_tile(pos, 10)
+  end
+
+  nearest = @path[id] && @path[id].shift
+
+  # nearest = map.path_to_nearest_expolorable_tile(pos, 10)
+  # nearest = nearest && nearest.first
   dir = nil
   if nearest
     puts "FOUND TILE!", nearest
