@@ -85,7 +85,15 @@ class Map
 
 
 
-  def pretty
+  def pretty(units={})
+    unit_lookup = Hash.new { |hash, key| hash[key] = {} }
+    units.values.each do |u|
+      ux = u['x']+@max_width
+      uy = u['y']+@max_height
+      col = unit_lookup[ux]
+      col[uy] = u
+    end
+    puts unit_lookup
     33.times { puts }
     puts("="*66)
     puts("START")
@@ -99,7 +107,11 @@ class Map
         elsif v['blocked']
           STDOUT.write "X"
         else
-          STDOUT.write " "
+          if unit_lookup[j][i]
+            STDOUT.write "^"
+          else
+            STDOUT.write " "
+          end
         end
       end
       STDOUT.puts "|"
@@ -132,7 +144,7 @@ end
 def do_scout_ai(map, outstanding_unit_cmds, id, unit)
   outstanding_unit_cmds[id] = :move
   pos = vec(unit["x"], unit["y"])
-  puts pos
+  # puts pos
   nearest = nil
   if !@path[id] || @path[id].empty?
     @path[id] = map.path_to_nearest_expolorable_tile(pos, 10)
@@ -144,7 +156,7 @@ def do_scout_ai(map, outstanding_unit_cmds, id, unit)
   # nearest = nearest && nearest.first
   dir = nil
   if nearest
-    puts "FOUND TILE!", nearest
+    # puts "FOUND TILE!", nearest
     dir_vec = (nearest - pos).closest_cardinal()
     dir = DIR_VECS.invert[dir_vec]
   else
@@ -175,19 +187,21 @@ loop do
     cmds = []
     cmd_msg = {commands: cmds, player_id: @player_id}
 
+    unit_updates = {}
+    (json['unit_updates'] || []).each do |uu|
+      unit_updates[uu['id']] = uu
+    end
+
     tile_updates = json['tile_updates']
     if tile_updates
       tile_updates.each do |tu|
         map.update_tile tu
       end
 
-      map.pretty
+      map.pretty(units)
     end
 
-    unit_updates = {}
-    (json['unit_updates'] || []).each do |uu|
-      unit_updates[uu['id']] = uu
-    end
+    
 
     unit_ids = unit_updates.keys | units.keys
     unit_ids.each do |id|
