@@ -145,12 +145,16 @@ def do_scout_ai(map, outstanding_unit_cmds, id, unit)
   outstanding_unit_cmds[id] = :move
   pos = vec(unit["x"], unit["y"])
   # puts pos
-  nearest = nil
-  if !@path[id] || @path[id].empty?
-    @path[id] = map.path_to_nearest_expolorable_tile(pos, 10)
-  end
+  # nearest = nil
+  # if !@path[id] || @path[id].empty?
+  #   @path[id] = map.path_to_nearest_expolorable_tile(pos, 10)
+  #   puts  @path[id]
+  # end
 
-  nearest = @path[id] && @path[id].shift
+  # nearest = @path[id] && @path[id].shift
+  # 
+  nearest = map.path_to_nearest_expolorable_tile(pos, 10)
+  nearest = nearest && nearest[0]
 
   # nearest = map.path_to_nearest_expolorable_tile(pos, 10)
   # nearest = nearest && nearest.first

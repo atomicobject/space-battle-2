@@ -8,12 +8,13 @@ module Dijkstra
     cost_lookup = { from => 0 }
     parent_lookup = {}
 
-    while current_location = open.pop
+    while current_location = open.shift
       if current_location == to
-        return build_path(parent_lookup, current_location)
+        return build_path(parent_lookup, current_location).drop(1)
       else
         closed << current_location
-        unvisited_neighbors = get_neighbors.call(current_location) - closed
+        unvisited_neighbors = get_neighbors.call(current_location) - closed - open
+        # puts unvisited_neighbors
         unvisited_neighbors.each do |n|
           parent_lookup[n] = current_location
           current_cost = cost_lookup[current_location]
