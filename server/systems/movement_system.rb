@@ -21,10 +21,12 @@ class MovementSystem
       pos.x += move.x
       pos.y += move.y
 
-      # TODO detect crossover of target point
+      # TODO detect crossover of target point (overshoot possible)
       if (movement.target_vec - pos.to_vec).magnitude < 3
         pos.x = movement.target_vec.x.round
         pos.y = movement.target_vec.y.round
+        u.dirty = true
+        u.status = :idle
 
         base_ent = entity_manager.find(Base, PlayerOwned, Position, Label).select{|ent| ent.get(PlayerOwned).id == pwn.id}.first
         base_pos = base_ent.get(Position)
@@ -41,11 +43,11 @@ class MovementSystem
           end
         end
 
-        # TODO update for visible range
-        range = 3
-        TileInfoHelper.update_tile_visibility(tile_infos[pwn.id], pos.x, pos.y, range)
-        u.status = :idle
-        # XXX ¯\_(ツ)_/¯ can I do this safely while iterating?
+        # TODO dirty its previous tile somehow...  :/
+        tile_infos.values.each do |tile_info|
+          TileInfoHelper.dirty_tile(tile_info, pos.x, pos.y)
+        end
+
         entity_manager.remove_component(klass: MovementCommand, id: ent_id)
       end
     end

@@ -35,9 +35,9 @@ class RenderSystem
           t.objects.each do |obj|
             images[obj.image].draw base_x, base_y, ZOrder::Env
           end
-          t.units.each do |u|
-            images[u.image].draw base_x, base_y, ZOrder::Units
-          end
+          # t.units.each do |u|
+          #   images[u.image].draw base_x, base_y, ZOrder::Units
+          # end
 
         end
       end

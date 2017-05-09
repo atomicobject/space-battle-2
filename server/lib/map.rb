@@ -2,19 +2,31 @@ require 'tmx'
 
 class TileInfoHelper
   class << self
-    def update_tile_visibility(tile_info, x, y, range)
+    def tiles_near_unit(tile_info, u, pos)
+      tiles = Set.new
+      range = 3
+      x = pos.x
+      y = pos.y
       tile_size = RtsGame::TILE_SIZE
 
-      # TODO more info than just 'true'
       tile_x = (x.to_f/tile_size).floor
       tile_y = (y.to_f/tile_size).floor
 
       ((tile_x-range)..(tile_x+range)).each do |x|
         ((tile_y-range)..(tile_y+range)).each do |y|
-          tile_info.tiles[x][y] = true
+          tiles << [x,y]
         end
       end
+      tiles
+    end
 
+    # these are tiles who's occupants or resources have changed
+    def dirty_tile(tile_info, x, y)
+      tile_info.dirty_tiles << [x,y]
+    end
+
+    def dirty_tiles(tile_info)
+      tile_info.dirty_tiles = Set.new
     end
   end
 end

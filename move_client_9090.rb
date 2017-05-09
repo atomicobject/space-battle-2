@@ -23,8 +23,17 @@ class Map
   end
 
   def pretty(units)
-    # TODO draw units?
-    33.times { puts }
+    unit_lookup = Hash.new { |hash, key| hash[key] = {} }
+    units.values.each do |u|
+      ux = u['x']+@max_width
+      uy = u['y']+@max_height
+      col = unit_lookup[ux]
+      col[uy] = u
+    end
+    (33-units.size).times { puts }
+    units.values.each do |u|
+      puts "#{u['id']} #{u['type']} #{u['status']}"
+    end
     puts("="*66)
     @map.transpose.each.with_index do |rows, i|
       STDOUT.write "|"
@@ -35,8 +44,14 @@ class Map
           STDOUT.write "$"
         elsif v['blocked']
           STDOUT.write "X"
+        elsif !v['visible']
+          STDOUT.write "."
         else
-          STDOUT.write " "
+          if unit_lookup[j][i]
+            STDOUT.write "^"
+          else
+            STDOUT.write " "
+          end
         end
       end
       STDOUT.puts "|"
@@ -102,19 +117,16 @@ loop do
 
 	while msg = server_connection.gets
     json = JSON.parse(msg)
-    # puts json
-
     @player_id ||= json['player']
 
     cmds = []
     cmd_msg = {commands: cmds, player_id: @player_id}
 
-    tile_updates = json['tile_updates']
-    if tile_updates || json['unit_updates']
-      if tile_updates
-        tile_updates.each do |tu|
-          map.update_tile tu
-        end
+    tile_updates = json['tile_updates'] || []
+    unit_updates = json['unit_updates'] || []
+    unless tile_updates.empty? && unit_updates.empty?
+      tile_updates.each do |tu|
+        map.update_tile tu
       end
 
       map.pretty(units)
@@ -132,7 +144,6 @@ loop do
         if uu['status'] == 'moving'
           outstanding_unit_cmds.delete(id) if outstanding_unit_cmds[id] == :move
         elsif uu['status'] == 'idle'
-
           base = units.values.find{|u| u['type'] == 'base'}
           res_dir = resource_adjacent_to(map, base, uu)
           if res_dir && (!uu['resource'] || uu['resource'] == 0)

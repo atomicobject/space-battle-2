@@ -14,8 +14,10 @@ def define_component(opts={})
 end
 
 class TileInfo
-  attr_accessor :tiles
+  attr_accessor :tiles, :dirty_tiles, :interesting_tiles
   def initialize
+    @dirty_tiles = Set.new
+    @interesting_tiles = Set.new
     @tiles = Hash.new do |h, k| 
       h[k] = {}
     end
@@ -41,9 +43,14 @@ class MovementCommand
 end
 
 class Unit
-  attr_accessor :status
-  def initialize(status: :idle)
+  attr_accessor :status, :dirty, :type
+  def initialize(status: :idle, type: :worker)
     @status = status
+    @dirty = true
+    @type = type
+  end
+  def dirty?
+    @dirty
   end
 end
 class ResourceCarrier

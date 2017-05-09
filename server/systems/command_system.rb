@@ -41,6 +41,15 @@ class CommandSystem
               res_info = MapInfoHelper.resource_at(map_info, tile_x, tile_y)
               if res_info
 
+                tile_infos =  {} 
+                entity_manager.each_entity(PlayerOwned, TileInfo) do |ent|
+                  player, tile_info = ent.components
+                  tile_infos[player.id] = tile_info
+                end
+                tile_infos.values.each do |tile_info|
+                  TileInfoHelper.dirty_tile(tile_info, target.x, target.y)
+                end
+
                 rc = entity_manager.find_by_id(uid, ResourceCarrier).get(ResourceCarrier)
 
                 resource_ent = entity_manager.find_by_id(res_info[:id], Resource, Label)
@@ -50,6 +59,8 @@ class CommandSystem
                 resource_ent.get(Label).text = "#{resource.value}/#{resource.total}"
 
                 rc.resource = resource.value
+                u.dirty = true
+                u.status = :idle
                 entity_manager.add_component(id: uid, component: Label.new(size:14,text:rc.resource))
 
                 if resource.total <= 0

@@ -93,7 +93,6 @@ class Map
       col = unit_lookup[ux]
       col[uy] = u
     end
-    puts unit_lookup
     33.times { puts }
     puts("="*66)
     puts("START")

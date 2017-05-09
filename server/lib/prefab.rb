@@ -6,19 +6,12 @@
     entity_manager.add_entity PlayerOwned.new(id: player_id), tile_info
 
     b = Base.new(resource: RtsGame::PLAYER_START_RESOURCE)
-    entity_manager.add_entity Unit.new(status: :base), b, Position.new(x:x, y:y, z:10), PlayerOwned.new(id: player_id), Sprited.new(image: :base1), Label.new(size: 24, text: b.resource)
-
-    range = 3
-    TileInfoHelper.update_tile_visibility(tile_info, x, y, range)
-
+    entity_manager.add_entity Unit.new(status: :base, type: :base), b, Position.new(x:x, y:y, z:10), PlayerOwned.new(id: player_id), Sprited.new(image: :base1), Label.new(size: 24, text: b.resource)
     tile_info
   end
 
   def self.worker(entity_manager:,x:,y:,player_id:,tile_info:)
     entity_manager.add_entity Unit.new, Position.new(x:x, y:y), PlayerOwned.new(id: player_id), Sprited.new(image: :worker1), ResourceCarrier.new
-
-    range = 3
-    TileInfoHelper.update_tile_visibility(tile_info, x, y, range)
   end
 
   def self.resource(entity_manager:,x:,y:,map_info:,type:)

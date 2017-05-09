@@ -1,20 +1,20 @@
 require 'gosu'
 require 'awesome_print'
 require 'json'
-require 'easy_diff'
 require 'thread'
+require 'set'
 
-require_relative 'lib/core_ext'
-require_relative 'lib/vec'
-require_relative 'components/components'
-require_relative 'lib/prefab'
-require_relative 'systems/render_system'
-require_relative 'systems/systems'
-require_relative 'lib/world'
-require_relative 'lib/map'
-require_relative 'lib/entity_manager'
-require_relative 'lib/input_cacher'
-require_relative 'lib/network_manager'
+require_relative '../lib/core_ext'
+require_relative '../lib/vec'
+require_relative '../components/components'
+require_relative '../lib/prefab'
+require_relative '../systems/render_system'
+require_relative '../systems/systems'
+require_relative '../lib/world'
+require_relative '../lib/map'
+require_relative '../lib/entity_manager'
+require_relative '../lib/input_cacher'
+require_relative '../lib/network_manager'
 
 ASSETS = {
   dirt1: 'assets/PNG/Default Size/Tile/scifiTile_41.png',
@@ -36,6 +36,7 @@ class RtsGame < Gosu::Window
   TURN_DURATION = 100
   TILE_SIZE = 64
   PLAYER_START_RESOURCE = 100
+  MAX_SIMULATION_STEP = 20
 
   DIR_VECS = {
     'N' => vec(0,-1),
@@ -87,12 +88,16 @@ class RtsGame < Gosu::Window
           # require 'objspace'
           # puts "MEM: #{ObjectSpace.memsize_of(@entity_manager)}"
           ents = @entity_manager.deep_clone
-          ents.send(:instance_variable_set, '@prev', @entity_manager)
+          # ents.send(:instance_variable_set, '@prev', @entity_manager)
           @data_out_queue << ents
         end
       end
 
-      @world.update @entity_manager, delta, input, @resources
+      input[:turn] = @turn_count
+
+      (delta / MAX_SIMULATION_STEP + 1).floor.times do
+        @world.update @entity_manager, MAX_SIMULATION_STEP, input, @resources
+      end
     rescue Exception => ex
       puts ex.inspect
       puts ex.backtrace.inspect
@@ -100,11 +105,98 @@ class RtsGame < Gosu::Window
   end
 
   def generate_message_for(entity_manager, player_id, turn_count)
-    @state_cache ||= {}
-    prev_state = @state_cache[player_id] || {}
-    new_state = build_state_for_player(entity_manager, player_id)
-    @state_cache[player_id] = new_state
-    msg = build_diff_message(prev_state, new_state)
+    tiles = []
+    units = []
+
+    base_ent = entity_manager.find(Base, Unit, PlayerOwned, Position).select{|ent| ent.get(PlayerOwned).id == player_id}.first
+    base_id = base_ent.id
+    base_pos = base_ent.get(Position)
+    base_unit = base_ent.get(Unit)
+    base = base_ent.get(Base)
+
+    tile_info = entity_manager.find(PlayerOwned, TileInfo).
+      first{|ent| ent.get(PlayerOwned).id == player_id}.get(TileInfo)
+
+    base_tile_x = (base_pos.x.to_f/TILE_SIZE).floor
+    base_tile_y = (base_pos.y.to_f/TILE_SIZE).floor
+    map = entity_manager.first(MapInfo).get(MapInfo)
+
+    prev_interesting_tiles = tile_info.interesting_tiles
+    interesting_tiles = Set.new
+    entity_manager.each_entity(Unit, PlayerOwned, Position, ResourceCarrier) do |ent|
+      u, player, pos, res_car = ent.components
+      if player.id == player_id
+        interesting_tiles.merge(TileInfoHelper.tiles_near_unit(tile_info, u, pos))
+      end
+    end
+    tile_info.interesting_tiles = interesting_tiles
+    newly_visible_tiles = interesting_tiles - prev_interesting_tiles
+    no_longer_visible_tiles = prev_interesting_tiles - interesting_tiles 
+
+    dirty_tiles = TileInfoHelper.dirty_tiles(tile_info)
+
+    ((interesting_tiles & dirty_tiles) | newly_visible_tiles).each do |i,j|
+      res = MapInfoHelper.resource_at(map,i,j)
+      blocked = MapInfoHelper.blocked?(map,i,j)
+      tiles << {
+        visible: true,
+        x: i-base_tile_x,
+        y: j-base_tile_y,
+        blocked: blocked,
+        resources: res,
+        units: [{
+          player_id: 0, 
+          x: (i-base_tile_x)*TILE_SIZE,
+          y: (j-base_tile_y)*TILE_SIZE,
+          type: 'worker'
+        }],
+      }
+    end
+
+    no_longer_visible_tiles.each do |i,j|
+      res = MapInfoHelper.resource_at(map,i,j)
+      blocked = MapInfoHelper.blocked?(map,i,j)
+      tiles << {
+        visible: false,
+        x: i-base_tile_x,
+        y: j-base_tile_y,
+        blocked: blocked,
+        resources: res,
+        units: [{
+          player_id: 0, 
+          x: (i-base_tile_x)*TILE_SIZE,
+          y: (j-base_tile_y)*TILE_SIZE,
+          type: 'worker'
+        }],
+      }
+    end
+
+    if base_unit.dirty?
+      units << { id: base_ent.id, player_id: player_id, 
+        x: 0,
+        y: 0,
+        status: base_unit.status,
+        type: base_unit.type,
+        resource: base.resource
+      }
+    end
+
+    entity_manager.each_entity(Unit, PlayerOwned, Position, ResourceCarrier) do |ent|
+      u, player, pos, res_car = ent.components
+      if u.dirty?
+        if player.id == player_id
+          units << { id: ent.id, player_id: player.id, 
+            x: ((pos.x-base_pos.x).to_f/TILE_SIZE).floor, 
+            y: ((pos.y-base_pos.y).to_f/TILE_SIZE).floor, 
+            status: u.status,
+            type: u.type,
+            resource: res_car.resource
+          }
+        end
+        u.dirty = false
+      end
+    end
+    msg = {unit_updates: units, tile_updates: tiles}
     msg.merge!( player: player_id, turn: turn_count)
     msg.to_json
   end
@@ -163,16 +255,6 @@ class RtsGame < Gosu::Window
     {units: units, tiles: tiles}
   end
 
-  def build_diff_message(prev_state, new_state)
-    # start = Time.now
-    rem, diff = prev_state.easy_diff(new_state)
-    # puts Time.now-start
-    msg = {}
-    msg[:unit_updates] = diff[:units] if diff[:units]
-    msg[:tile_updates] = diff[:tiles] if diff[:tiles]
-    msg
-  end
-
   def draw
     @render_system.draw self, @entity_manager, @resources
   end
@@ -193,8 +275,6 @@ class RtsGame < Gosu::Window
 
   def preload_assets!(res)
     images = {}
-    # images[:dirt1] = Gosu::Image.new(ASSETS[:dirt1], tileable: true)
-    # images[:dirt2] = Gosu::Image.new(ASSETS[:dirt2], tileable: true)
     ASSETS.each do |name,file|
       images[name] ||= Gosu::Image.new(file, tileable: true)
     end
@@ -252,6 +332,7 @@ class RtsGame < Gosu::Window
 end
 
 if $0 == __FILE__
+  Thread.abort_on_exception = true
   $window = RtsGame.new
   $window.show
 end

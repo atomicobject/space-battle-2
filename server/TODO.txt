@@ -1,10 +1,15 @@
-add harvest command
-render environment tiles
-render player scores
+fix diff / slowness
+use cmd line clients host:port
+add create unit cmd
+
+add timer 
+  display it on the screen
+  send it to the clients
+Add winner declaration w/ game pause?
 
 translate incoming commands
 
-draw sprites
+additional env tiles
 
 move turn management out of app
 player join should create base? should player id be the server info not an id? (reconnect?)
@@ -12,7 +17,11 @@ player join should create base? should player id be the server info not an id? (
 
 do not block server for client comm
   timeouts?
+handle disconnects
 
 how to kill a unit??
   status: dead... then no more updates
+
+Compile to exe for windows
+Headless mode? w/ remote server for gfx?
 
