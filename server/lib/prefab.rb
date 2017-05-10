@@ -2,15 +2,13 @@
   include Gosu
 
   def self.base(entity_manager:,x:,y:,player_id:,map_info:)
-    tile_info = TileInfo.new
-    entity_manager.add_entity PlayerOwned.new(id: player_id), tile_info
+    entity_manager.add_entity PlayerOwned.new(id: player_id), TileInfo.new
 
     b = Base.new(resource: RtsGame::PLAYER_START_RESOURCE)
     entity_manager.add_entity Unit.new(status: :base, type: :base), b, Position.new(x:x, y:y, z:10), PlayerOwned.new(id: player_id), Sprited.new(image: :base1), Label.new(size: 24, text: b.resource)
-    tile_info
   end
 
-  def self.worker(entity_manager:,x:,y:,player_id:,tile_info:)
+  def self.worker(entity_manager:,x:,y:,player_id:)
     entity_manager.add_entity Unit.new, Position.new(x:x, y:y), PlayerOwned.new(id: player_id), Sprited.new(image: :worker1), ResourceCarrier.new
   end
 
@@ -45,10 +43,10 @@
     info
   end
 
-  def self.map(entity_manager:, resources:)
+  def self.map(player_count:, entity_manager:, resources:)
     info = map_info(entity_manager: entity_manager, static_map: resources[:map])
 
-    bases(player_count: 1, entity_manager: entity_manager, static_map: resources[:map], map_info:  info)
+    bases(player_count: player_count, entity_manager: entity_manager, static_map: resources[:map], map_info:  info)
 
     resources(entity_manager: entity_manager, static_map: resources[:map], map_info: info)
   end
@@ -57,17 +55,12 @@
     bases = static_map.objects.select{|o|o['type'] == "base"}
     player_count.times do |i|
       start_point = vec(bases[i].x, bases[i].y)
-      tile_info = base(entity_manager: entity_manager, x: start_point.x, y: start_point.y, 
+      base(entity_manager: entity_manager, x: start_point.x, y: start_point.y, 
            player_id: i, map_info: map_info)
 
-      worker(entity_manager: entity_manager, x: start_point.x, y: start_point.y, 
-             player_id: i, tile_info: tile_info)
-      worker(entity_manager: entity_manager, x: start_point.x, y: start_point.y, 
-             player_id: i, tile_info: tile_info)
-      worker(entity_manager: entity_manager, x: start_point.x, y: start_point.y, 
-             player_id: i, tile_info: tile_info)
-      worker(entity_manager: entity_manager, x: start_point.x, y: start_point.y, 
-             player_id: i, tile_info: tile_info)
+      10.times do
+        worker(entity_manager: entity_manager, x: start_point.x, y: start_point.y, player_id: i)
+      end
     end
   end
 

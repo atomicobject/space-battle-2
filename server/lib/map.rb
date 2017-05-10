@@ -4,7 +4,7 @@ class TileInfoHelper
   class << self
     def tiles_near_unit(tile_info, u, pos)
       tiles = Set.new
-      range = 3
+      range = 2
       x = pos.x
       y = pos.y
       tile_size = RtsGame::TILE_SIZE
@@ -26,7 +26,9 @@ class TileInfoHelper
     end
 
     def dirty_tiles(tile_info)
+      dirties = tile_info.dirty_tiles 
       tile_info.dirty_tiles = Set.new
+      dirties
     end
   end
 end

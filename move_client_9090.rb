@@ -1,7 +1,9 @@
 require 'socket'
 require 'json'
 
-server = TCPServer.new 9090
+
+port = ARGV.size > 0 ? ARGV[0].to_i : 9090
+server = TCPServer.new port
 
 class Map
   def initialize(max_width=32, max_height=32)
@@ -111,12 +113,14 @@ end
 
 loop do
   server_connection = server.accept    # Wait for a server_connection to connect
+  puts "CONNECTED"
   units = {}
   outstanding_unit_cmds = {}
   map = Map.new
 
 	while msg = server_connection.gets
     json = JSON.parse(msg)
+    # puts json['unit_updates'] unless json['unit_updates'].empty?
     @player_id ||= json['player']
 
     cmds = []

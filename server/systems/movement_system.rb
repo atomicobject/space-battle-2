@@ -4,7 +4,6 @@ class MovementSystem
     tile_size = RtsGame::TILE_SIZE
     speed = tile_size.to_f/(RtsGame::TURN_DURATION * 5)
 
-    # TODO update tile info on unit creation
     tile_infos =  {} 
     entity_manager.each_entity(PlayerOwned, TileInfo) do |ent|
       player, tile_info = ent.components
