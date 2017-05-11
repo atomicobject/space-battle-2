@@ -21,7 +21,8 @@ class MovementSystem
       pos.y += move.y
 
       # TODO detect crossover of target point (overshoot possible)
-      if (movement.target_vec - pos.to_vec).magnitude < 3
+      close_enough = 10.0/RtsGame::TURN_DURATION
+      if dir.magnitude < close_enough
         pos.x = movement.target_vec.x.round
         pos.y = movement.target_vec.y.round
         u.dirty = true

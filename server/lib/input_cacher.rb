@@ -33,6 +33,9 @@ class InputSnapshot
   def []=(k,v)
     @data[k] = v
   end
+  def delete(k)
+    @data.delete k
+  end
 
 end
 

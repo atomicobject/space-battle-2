@@ -58,7 +58,7 @@
       base(entity_manager: entity_manager, x: start_point.x, y: start_point.y, 
            player_id: i, map_info: map_info)
 
-      10.times do
+      RtsGame::STARTING_WORKERS.times do
         worker(entity_manager: entity_manager, x: start_point.x, y: start_point.y, player_id: i)
       end
     end

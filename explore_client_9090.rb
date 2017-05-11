@@ -105,6 +105,8 @@ class Map
           STDOUT.write "$"
         elsif v['blocked']
           STDOUT.write "X"
+        elsif !v['visible']
+          STDOUT.write "."
         else
           if unit_lookup[j][i]
             STDOUT.write "^"

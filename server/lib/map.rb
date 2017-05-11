@@ -8,7 +8,6 @@ class TileInfoHelper
       x = pos.x
       y = pos.y
       tile_size = RtsGame::TILE_SIZE
-
       tile_x = (x.to_f/tile_size).floor
       tile_y = (y.to_f/tile_size).floor
 

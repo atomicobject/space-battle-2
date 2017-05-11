@@ -34,7 +34,8 @@ class RtsGame
   TURN_DURATION = 100
   TILE_SIZE = 64
   PLAYER_START_RESOURCE = 100
-  MAX_SIMULATION_STEP = 20
+  SIMULATION_STEP = 20
+  STARTING_WORKERS = 10
 
   DIR_VECS = {
     'N' => vec(0,-1),
@@ -48,10 +49,14 @@ class RtsGame
   def initialize(clients:)
     build_world clients
     @data_out_queue = Queue.new
+    steps_per_turn = TURN_DURATION / SIMULATION_STEP
     @sync_data_out_thread = Thread.new do
       loop do
-        ents = @data_out_queue.pop
-
+        ents, input = @data_out_queue.pop
+        steps_per_turn.times do
+          @world.update ents, SIMULATION_STEP, input, @resources
+          input.delete(:messages)
+        end
         @network_manager.clients.each do |player_id|
           msg = generate_message_for(ents, player_id, @turn_count)
           @network_manager.write(player_id, msg) if msg
@@ -59,6 +64,14 @@ class RtsGame
         @network_manager.flush!
       end
     end
+  end
+
+  def send_update_to_clients(ents, input)
+    # require 'objspace'
+    # puts "MEM: #{ObjectSpace.memsize_of(@entity_manager)}"
+    # ents.send(:instance_variable_set, '@prev', @entity_manager)
+    # ents = @entity_manager.deep_clone
+    @data_out_queue << [ents, input]
   end
 
   def start!
@@ -71,26 +84,35 @@ class RtsGame
   def update(delta:, input:)
     begin
       if @start
-				input[:messages] = @network_manager.pop_messages!
         @turn_count ||= 0
         @turn_time += delta
+        msgs = {}
+        input[:turn] = @turn_count
+
         if @turn_time > TURN_DURATION
+          @entity_manager = @clone if @clone
+
+          @clone = @entity_manager.deep_clone
+          msgs = @network_manager.pop_messages!
+          input[:messages] = msgs
+
           @turn_count += 1
           @turn_time -= TURN_DURATION
           puts "WARNING! Not making turn time budget" if @turn_time > TURN_DURATION
           @turn_time = 0
-          # require 'objspace'
-          # puts "MEM: #{ObjectSpace.memsize_of(@entity_manager)}"
-          ents = @entity_manager.deep_clone
-          # ents.send(:instance_variable_set, '@prev', @entity_manager)
-          @data_out_queue << ents
+          send_update_to_clients(@clone, input)
         end
       end
+      input[:messages] = msgs
 
-      input[:turn] = @turn_count
-
-      (delta / MAX_SIMULATION_STEP + 1).floor.times do
-        @world.update @entity_manager, MAX_SIMULATION_STEP, input, @resources
+      @rollover ||= 1
+      @rollover += delta
+      if @rollover > SIMULATION_STEP
+        (@rollover / SIMULATION_STEP).floor.times do
+          @world.update @entity_manager, SIMULATION_STEP, input, @resources
+          input.delete(:messages)
+        end
+        @rollover %= SIMULATION_STEP
       end
     rescue Exception => ex
       puts ex.inspect
