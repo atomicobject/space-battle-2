@@ -9,8 +9,8 @@ class EntityManager
   end
 
   def clear!
-    @comp_to_id = Hash.new {|h, k| h[k] = []}
-    @id_to_comp = Hash.new {|h, k| h[k] = {}}
+    @comp_to_id = {}#Hash.new {|h, k| h[k] = []}
+    @id_to_comp = {}#Hash.new {|h, k| h[k] = {}}
     @cache = {}
     @num_entities = 0
 
@@ -21,7 +21,12 @@ class EntityManager
     @ents_to_remove_later = []
   end
 
+  def clear_cache!
+    @cache = {}
+  end
+
   def find_by_id(id, *klasses)
+    @id_to_comp[id] ||= {}
     ent_record = @id_to_comp[id]
     components = ent_record.values_at(*klasses)
     rec = build_record(id, components) unless components.any?(&:nil?)
@@ -37,7 +42,10 @@ class EntityManager
     cache_hit = @cache[klasses]
     return cache_hit if cache_hit
 
-    id_collection = @comp_to_id.values_at *klasses
+    klasses.each do |k|
+      @comp_to_id[k] ||= []
+    end
+    id_collection = @comp_to_id.values_at(*klasses)
     intersecting_ids = id_collection.inject &:&
     result = intersecting_ids.map do |id|
       build_record id, @id_to_comp[id].values_at(*klasses)
@@ -156,7 +164,9 @@ class EntityManager
   end
 
   def _add_component(component:,id:)
+    @comp_to_id[component.class] ||= []
     @comp_to_id[component.class] << id
+    @id_to_comp[id] ||= {}
     ent_record = @id_to_comp[id]
     klass = component.class
     ent_record[klass] = component
@@ -171,7 +181,9 @@ class EntityManager
   end
 
   def _remove_component(klass:, id:)
+    @comp_to_id[klass] ||= []
     @comp_to_id[klass].delete id
+    @id_to_comp[id] ||= {}
     @id_to_comp[id].delete klass
 
     @cache.each do |comp_klasses, results|

@@ -1,4 +1,4 @@
-require 'awesome_print'
+# require 'awesome_print'
 require 'json'
 require 'thread'
 require 'set'
@@ -54,7 +54,7 @@ class RtsGame
       loop do
         ents, input = @data_out_queue.pop
         steps_per_turn.times do
-          @world.update ents, SIMULATION_STEP, input, @resources
+          @world.update @clone, SIMULATION_STEP, input, @resources
           input.delete(:messages)
         end
         @network_manager.clients.each do |player_id|
@@ -100,6 +100,7 @@ class RtsGame
           @turn_time -= TURN_DURATION
           puts "WARNING! Not making turn time budget" if @turn_time > TURN_DURATION
           @turn_time = 0
+
           send_update_to_clients(@clone, input)
         end
       end

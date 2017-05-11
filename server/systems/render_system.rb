@@ -1,5 +1,5 @@
 module ZOrder
-  Terrain, Env, Units, HUD = *(0..100)
+  Terrain, Env, Units, HUD, Debug = *(0..100)
 end
 
 
@@ -42,6 +42,18 @@ class RenderSystem
         end
       end
 
+#       entity_manager.each_entity Sprited, Position, Unit, PlayerOwned, Position do |rec|
+#         if rec.get(PlayerOwned).id == 0
+#           if rec.get(Unit).type == :worker
+#             pos = rec.get(Position).to_vec
+#             if @prev
+#               puts "DIFF: #{@prev - pos}"
+#             end
+#             @prev = pos
+#           end
+#         end
+#       end
+#
       entity_manager.each_entity Sprited, Position do |rec|
         sprited, pos = rec.components
         images[sprited.image].draw pos.x, pos.y, pos.z
@@ -53,12 +65,12 @@ class RenderSystem
         font.draw(label.text, pos.x, pos.y, pos.z)
       end
 
-      # entity_manager.each_entity Position, JoyColor, Boxed do |rec|
-      #   pos, color, boxed = rec.components
-      #   ent_id = rec.id
-      #   target.draw_quad(x1, y1, c1, x2, y2, c2, x3, y3, c3, x4, y4, c4, pos.z)
+      # map.width.times do |x|
+      #   target.draw_line(x*tile_size, 0, Gosu::Color::RED, x*tile_size, map.height*tile_size, Gosu::Color::RED, ZOrder::Debug)
       # end
-
+      # map.height.times do |y|
+      #   target.draw_line(0, y*tile_size, Gosu::Color::RED, map.width*tile_size, y*tile_size, Gosu::Color::RED, ZOrder::Debug)
+      # end
     end
   end
 end

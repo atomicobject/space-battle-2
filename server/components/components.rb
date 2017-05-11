@@ -14,13 +14,13 @@ def define_component(opts={})
 end
 
 class TileInfo
-  attr_accessor :tiles, :dirty_tiles, :interesting_tiles
+  attr_accessor :dirty_tiles, :interesting_tiles#, :tiles 
   def initialize
     @dirty_tiles = Set.new
     @interesting_tiles = Set.new
-    @tiles = Hash.new do |h, k| 
-      h[k] = {}
-    end
+    # @tiles = Hash.new do |h, k| 
+    #   h[k] = {}
+    # end
   end
 end
 
@@ -29,9 +29,10 @@ class MapInfo
   def initialize(width, height)
     @width = width
     @height = height
-    @tiles = Hash.new do |h, k| 
-      h[k] = {}
-    end
+    @tiles = {}
+    # @tiles = Hash.new do |h, k| 
+    #   h[k] = {}
+    # end
   end
 end
 

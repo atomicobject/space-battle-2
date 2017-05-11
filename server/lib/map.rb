@@ -40,12 +40,14 @@ class MapInfoHelper
     end
 
     def init_at(info,x,y,static_tile_info)
+      info.tiles[x] ||= {}
       info.tiles[x][y] = static_tile_info
     end
 
     def at(info,x,y)
       return nil if x < 0 || x > info.width-1 || y < 0 || y > info.height-1
-      info.tiles[x][y]
+      col = info.tiles[x]
+      col[y] if col
     end
 
     def remove_resource_at(info,x,y)
