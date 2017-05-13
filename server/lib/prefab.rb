@@ -43,7 +43,12 @@
     info
   end
 
+  def self.timer(entity_manager:)
+    entity_manager.add_entity(Timer.new("end-of-game", 300_000))
+  end
+
   def self.map(player_count:, entity_manager:, resources:)
+
     info = map_info(entity_manager: entity_manager, static_map: resources[:map])
 
     bases(player_count: player_count, entity_manager: entity_manager, static_map: resources[:map], map_info:  info)

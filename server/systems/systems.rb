@@ -39,6 +39,8 @@ class TimerSystem
           else
             entity_manager.remove_component(klass: timer.class, id: ent_id)
           end
+        else
+          timer.ttl -= delta
         end
       else
         timer.expires_at = current_time_ms + timer.total

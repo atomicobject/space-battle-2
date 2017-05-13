@@ -66,6 +66,7 @@ PlayerOwned = define_component(attrs: [:id])
 Health = define_component(attrs: [:points])
 EntityTarget = define_component(attrs: [:id])
 Resource = define_component(attrs: [:value, :total])
+Timed = define_component(attrs: [:accumulated_time_in_ms])
 
 class Position
   attr_accessor :x, :y, :z
@@ -84,15 +85,6 @@ class TilePosition < Position; end
 class Velocity < Vec
 end
 
-class LevelTimer; end
-class Timed
-  attr_accessor :accumulated_time_in_ms
-
-  def initialize
-    @accumulated_time_in_ms = 0
-  end
-end
-
 class Label
   attr_accessor :text, :size, :font
   def initialize(size:,text:"",font:nil)
@@ -102,9 +94,10 @@ class Label
   end
 end
 
+class LevelTimer; end
 class Timer
   attr_accessor :ttl, :repeat, :total, :event, :name, :expires_at
-  def initialize(name, ttl, repeat, event = nil)
+  def initialize(name, ttl, repeat=false, event = nil)
     @name = name
     @total = ttl
     @ttl = ttl

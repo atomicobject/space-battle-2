@@ -76,6 +76,7 @@ class RtsGame
 
   def start!
     @start = true
+    Prefab.timer(entity_manager: @entity_manager)
   end
   def started?
     @start
@@ -220,8 +221,9 @@ class RtsGame
         end
       end
     end
+    time_remaining = entity_manager.first(Timer).get(Timer).ttl
     msg = {unit_updates: units, tile_updates: tiles}
-    msg.merge!( player: player_id, turn: turn_count)
+    msg.merge!( player: player_id, turn: turn_count, time_remaining: time_remaining)
     msg.to_json
   end
 

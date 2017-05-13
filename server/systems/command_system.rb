@@ -19,6 +19,8 @@ class CommandSystem
 
           if c == 'MOVE'
             ent = entity_manager.find_by_id(uid, Unit, Position, PlayerOwned)
+            next unless ent
+
             u, pos, owner = ent.components
 
             if owner.id == msg.connection_id

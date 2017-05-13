@@ -24,7 +24,7 @@ class Map
     col[y+@max_height] if col
   end
 
-  def pretty(units)
+  def pretty(units, time_remaining)
     unit_lookup = Hash.new { |hash, key| hash[key] = {} }
     units.values.each do |u|
       ux = u['x']+@max_width
@@ -61,6 +61,7 @@ class Map
     puts("="*66)
     all_units = units.values
     base = all_units.find{|u| u['type'] == 'base'}
+    puts "TIME REMAINING: #{time_remaining}"
     puts "PLAYER RES: #{base['resource']}" if base
     puts "UNIT RES: #{((all_units-[base]).compact).map{|u|u['resource']}.compact.reduce(0, &:+)}"
   end
@@ -130,7 +131,7 @@ loop do
     json = JSON.parse(msg)
     @player_id ||= json['player']
     # TODO get time in each msg
-    time_remaining = json['time_remaining'] || 300
+    time_remaining = json['time_remaining'] || 300_000
 
     cmds = []
     cmd_msg = {commands: cmds, player_id: @player_id}
@@ -142,7 +143,7 @@ loop do
         map.update_tile tu
       end
 
-      map.pretty(units)
+      map.pretty(units, time_remaining)
     end
 
     unit_updates = {}
@@ -152,7 +153,7 @@ loop do
 
     unit_ids = unit_updates.keys | units.keys
     base = units.values.find{|u| u['type'] == 'base'}
-    if time_remaining > 200
+    if time_remaining > 200_000
       if base && base['resource'] >= COST_OF_WORKER
         cmds << create_command(:worker)
       end
