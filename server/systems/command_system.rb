@@ -1,9 +1,17 @@
 class CommandSystem
+  UNIT_COST = {
+    worker: 100,
+    scout: 130,
+    tank: 150,
+  }.freeze
+
   def update(entity_manager, dt, input, res)
     msgs = input[:messages]
     if msgs
       msgs.each do |msg|
-        cmds = msg.data['commands']
+        msg_data = msg.data
+        next unless msg_data
+        cmds = msg_data['commands']
         map_info = entity_manager.first(MapInfo).get(MapInfo)
         cmds.each do |cmd|
           c = cmd['command']
@@ -25,6 +33,22 @@ class CommandSystem
                 entity_manager.add_component(id: uid, 
                                             component: MovementCommand.new(target_vec: target) )
               end
+            end
+
+          elsif c == 'CREATE'
+            base_ent = entity_manager.find(Base, Unit, PlayerOwned, Position, Label).
+              select{|ent| ent.get(PlayerOwned).id == msg.connection_id}.first
+            base = base_ent.get(Base)
+            base_pos = base_ent.get(Position)
+            type = cmd['type']
+            next unless type && UNIT_COST.has_key?(type.to_sym)
+
+            cost = UNIT_COST[type.to_sym]
+            if base.resource >= cost
+              base.resource -= cost
+              base_ent.get(Label).text = base.resource
+              Prefab.send(type, entity_manager: entity_manager, x: base_pos.x, y: base_pos.y, player_id: msg.connection_id)
+              base_ent.get(Unit).dirty = true
             end
 
           elsif c == 'GATHER'

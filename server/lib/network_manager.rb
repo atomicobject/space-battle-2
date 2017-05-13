@@ -67,7 +67,10 @@ class Message
   end
 
   def data
-    @data = JSON.parse(@json)
+    begin
+      JSON.parse(@json)
+    rescue
+    end
   end
 
   def to_s

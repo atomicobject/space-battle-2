@@ -73,6 +73,7 @@ DIR_VECS = {
   'W' => vec(-1,0),
   'E' => vec(1,0),
 }
+COST_OF_WORKER = 100
 def resource_adjacent_to(map, base, unit_info)
   x = unit_info['x']
   y = unit_info['y']
@@ -101,6 +102,13 @@ def gather_command(dir, id)
   }
 end
 
+def create_command(type)
+  cmd = {
+    command: "CREATE",
+    type: type
+  }
+end
+
 def move_command(outstanding_unit_cmds, id)
   outstanding_unit_cmds[id] = :move
   dir = ["N","S","E","W"].sample
@@ -120,8 +128,9 @@ loop do
 
 	while msg = server_connection.gets
     json = JSON.parse(msg)
-    # puts json['unit_updates'] unless json['unit_updates'].empty?
     @player_id ||= json['player']
+    # TODO get time in each msg
+    time_remaining = json['time_remaining'] || 300
 
     cmds = []
     cmd_msg = {commands: cmds, player_id: @player_id}
@@ -142,6 +151,13 @@ loop do
     end
 
     unit_ids = unit_updates.keys | units.keys
+    base = units.values.find{|u| u['type'] == 'base'}
+    if time_remaining > 200
+      if base && base['resource'] >= COST_OF_WORKER
+        cmds << create_command(:worker)
+      end
+    end
+
     unit_ids.each do |id|
       if uu = unit_updates[id]
         units[id] =  uu

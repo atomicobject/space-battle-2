@@ -15,6 +15,9 @@ You will start receiving messages in the format:
 
 
     {
+      'player...
+      'turn...
+      'time...
       'unit-updates': [
         {id: 'XYZ', health: 2}
       ],
@@ -32,6 +35,7 @@ To command your units:
         {command: "MOVE", unit: "XYZ", dir: "N"},
         {command: "MOVE", unit: "ABC", dir: "S"},
         {command: "GATHER", unit: "123", dir: "S"},
+        {command: "CREATE", type: "worker"},
       ]
     }
 
@@ -44,3 +48,10 @@ To command your units:
 **Commands**
 
 _MOVE_: 
+_GATHER_: 
+_CREATE_: 
+
+
+**Notes**
+
+1. Disconnecting. Game will continue, but you will lose control of your units.
