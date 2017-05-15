@@ -37,6 +37,29 @@ class RtsGame
   SIMULATION_STEP = 20
   STARTING_WORKERS = 10
   GAME_LENGTH_IN_MS = 300_000
+  UNITS = {
+    worker: {
+      cost: 100,
+      range: 2,
+      speed: 5,
+      attack: 3,
+      hp: 5,
+    },
+    scout: {
+      cost: 130,
+      range: 4,
+      speed: 5,
+      attack: 1,
+      hp: 2,
+    },
+    tank: {
+      cost: 150,
+      range: 2,
+      speed: 5,
+      attack: 5,
+      hp: 10,
+    },
+  }
 
   DIR_VECS = {
     'N' => vec(0,-1),
@@ -167,21 +190,25 @@ class RtsGame
 
     ((interesting_tiles & dirty_tiles) | newly_visible_tiles).each do |i,j|
       res = MapInfoHelper.resource_at(map,i,j)
+      tile_units = MapInfoHelper.units_at(map,i,j)
       blocked = MapInfoHelper.blocked?(map,i,j)
+      unless tile_units.empty?
+        puts "TILE_UNITS! #{tile_units.inspect}"
+      end
       tiles << {
         visible: true,
         x: i-base_tile_x,
         y: j-base_tile_y,
         blocked: blocked,
         resources: res,
-        units: [
+        # TODO add more inf
+        units: tile_units.map{|tu|{id:tu}},
         #   {
         #   player_id: 0, 
         #   x: (i-base_tile_x)*TILE_SIZE,
         #   y: (j-base_tile_y)*TILE_SIZE,
         #   type: 'worker'
         # }
-      ],
       }
     end
 
@@ -192,16 +219,9 @@ class RtsGame
         visible: false,
         x: i-base_tile_x,
         y: j-base_tile_y,
-        blocked: blocked,
-        resources: res,
-        units: [
-        #   {
-        #   player_id: player_id, 
-        #   x: (i-base_tile_x)*TILE_SIZE,
-        #   y: (j-base_tile_y)*TILE_SIZE,
-        #   type: 'worker'
-        # }
-        ],
+        # blocked: blocked,
+        # resources: res,
+        # units: [],
       }
     end
 

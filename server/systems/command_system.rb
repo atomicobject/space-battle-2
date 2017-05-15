@@ -1,10 +1,4 @@
 class CommandSystem
-  UNIT_COST = {
-    worker: 100,
-    scout: 130,
-    tank: 150,
-  }.freeze
-
   def update(entity_manager, dt, input, res)
     msgs = input[:messages]
     if msgs
@@ -43,13 +37,15 @@ class CommandSystem
             base = base_ent.get(Base)
             base_pos = base_ent.get(Position)
             type = cmd['type']
-            next unless type && UNIT_COST.has_key?(type.to_sym)
+            next unless type && RtsGame::UNITS.has_key?(type.to_sym)
 
-            cost = UNIT_COST[type.to_sym]
+            cost = RtsGame::UNITS[type.to_sym][:cost]
             if base.resource >= cost
               base.resource -= cost
               base_ent.get(Label).text = base.resource
-              Prefab.send(type, entity_manager: entity_manager, x: base_pos.x, y: base_pos.y, player_id: msg.connection_id)
+              Prefab.send(type, entity_manager: entity_manager, map_info: map_info,
+                          x: base_pos.x, y: base_pos.y, 
+                          player_id: msg.connection_id)
               base_ent.get(Unit).dirty = true
             end
 

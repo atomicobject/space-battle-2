@@ -3,15 +3,13 @@ AO RTS
 
 
 
-**Goal:**
+### Goal
 
 Write an AI to command your troops to gather the most resources in the time allotted.
 
-**API**
+### API
 
-The server will connect to your client:
-
-You will start receiving messages in the format:
+The server will connect to your client. You will start receiving messages in the format:
 
 
     {
@@ -40,24 +38,23 @@ To command your units:
     }
 
 
-**unit-updates**
+##### unit-updates
 Any time something about a unit changes, (position, status, etc), you will receive an update.
 
-**tile-updates**
+##### tile-updates
 Any time something about a tile changes, (occupants, visibility, etc), you will receive an update.
 
-**time**
+##### time
 This is the amount of time remaining in the game (in milliseconds). 
-	
 
 
-**Commands**
+### Commands
 
-_MOVE_: 
+__MOVE__: `unit`,`dir` Move a unit by id in a given direction `N,W,E,W`. Command will be ignored if the unit cannot move in the specified direction.
 
-_GATHER_: 
+__GATHER__: `unit`,`dir` Tell a unit to collect from a resource in the specified direction `N,W,E,W`. Command will be ignored if the unit cannot gather in the specified direction. Resources are automatically deposited by walking over the players base.
 
-_CREATE_: 
+__CREATE__: `type` Create a new unit by type: `worker,scout,tank`. Command is ignored if the player's base does not have enough resources.
 
 
 **Notes**

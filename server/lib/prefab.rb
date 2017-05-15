@@ -5,11 +5,22 @@
     entity_manager.add_entity PlayerOwned.new(id: player_id), TileInfo.new
 
     b = Base.new(resource: RtsGame::PLAYER_START_RESOURCE)
-    entity_manager.add_entity Unit.new(status: :base, type: :base), b, Position.new(x:x, y:y, z:10), PlayerOwned.new(id: player_id), Sprited.new(image: :base1), Label.new(size: 24, text: b.resource)
+    id = entity_manager.add_entity Unit.new(status: :base, type: :base), b, Position.new(x:x, y:y, z:10), PlayerOwned.new(id: player_id), Sprited.new(image: :base1), Label.new(size: 24, text: b.resource)
+
+    tile_size = RtsGame::TILE_SIZE
+    tile_x = (x/tile_size).floor
+    tile_y = (y/tile_size).floor
+    MapInfoHelper.add_unit_at(map_info,tile_x,tile_y,id)
+    id
   end
 
-  def self.worker(entity_manager:,x:,y:,player_id:)
-    entity_manager.add_entity Unit.new, Position.new(x:x, y:y), PlayerOwned.new(id: player_id), Sprited.new(image: :worker1), ResourceCarrier.new
+  def self.worker(entity_manager:,x:,y:,player_id:,map_info:)
+    id = entity_manager.add_entity Unit.new, Position.new(x:x, y:y), PlayerOwned.new(id: player_id), Sprited.new(image: :worker1), ResourceCarrier.new
+    tile_size = RtsGame::TILE_SIZE
+    tile_x = (x/tile_size).floor
+    tile_y = (y/tile_size).floor
+    MapInfoHelper.add_unit_at(map_info,tile_x,tile_y,id)
+    id
   end
 
   def self.resource(entity_manager:,x:,y:,map_info:,type:)
@@ -66,7 +77,7 @@
            player_id: i, map_info: map_info)
 
       RtsGame::STARTING_WORKERS.times do
-        worker(entity_manager: entity_manager, x: start_point.x, y: start_point.y, player_id: i)
+        worker(entity_manager: entity_manager, x: start_point.x, y: start_point.y, player_id: i, map_info: map_info)
       end
     end
   end
