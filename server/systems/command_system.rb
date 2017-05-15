@@ -26,6 +26,7 @@ class CommandSystem
               unless MapInfoHelper.blocked?(map_info, tile_x, tile_y) || u.status == :moving
                 # TODO how to implement some sort of "has cmd" check?
                 u.status = :moving
+                u.dirty = true
                 entity_manager.add_component(id: uid, 
                                             component: MovementCommand.new(target_vec: target) )
               end

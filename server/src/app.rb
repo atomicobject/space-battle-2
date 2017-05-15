@@ -82,7 +82,7 @@ if $0 == __FILE__
   Thread.abort_on_exception = true
 
   clients = [
-    {host: "localhost", port: "8080"},
+    # {host: "localhost", port: "8080"},
     {host: "localhost", port: "9090"},
   ]
   $window = RtsWindow.new clients: clients

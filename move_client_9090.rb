@@ -1,6 +1,11 @@
 require 'socket'
 require 'json'
 
+$quiet = false
+if $quiet
+  def puts(*args)
+  end
+end
 
 port = ARGV.size > 0 ? ARGV[0].to_i : 9090
 server = TCPServer.new port
@@ -25,6 +30,7 @@ class Map
   end
 
   def pretty(units, time_remaining)
+    return if $quiet
     unit_lookup = Hash.new { |hash, key| hash[key] = {} }
     units.values.each do |u|
       ux = u['x']+@max_width
@@ -159,6 +165,8 @@ loop do
     end
 
     unit_ids.each do |id|
+      had_outstanding_move = outstanding_unit_cmds[id] == :move
+
       if uu = unit_updates[id]
         units[id] =  uu
         if uu['status'] == 'moving'
@@ -172,13 +180,15 @@ loop do
             cmds << move_command(outstanding_unit_cmds, id)
           end
         end
-      end
-      if outstanding_unit_cmds[id] == :move
+      elsif had_outstanding_move
         cmds << move_command(outstanding_unit_cmds, id)
       end
     end
 
-    server_connection.puts(cmd_msg.to_json) unless cmds.empty?
+    j = cmd_msg.to_json
+    puts "====="
+    puts j
+    server_connection.puts(j) unless cmds.empty?
 
   end
 

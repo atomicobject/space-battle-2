@@ -64,7 +64,8 @@ class MapInfoHelper
     end
 
     def units_at(info,x,y)
-      at(info,x,y).units
+      tile = at(info,x,y)
+      tile ? tile.units : []
     end
 
     def add_unit_at(info,x,y,id)
@@ -72,7 +73,7 @@ class MapInfoHelper
     end
 
     def remove_unit_from(info,x,y,id)
-      at(info,x,y).units.delete(id)
+      units_at(info,x,y).delete(id)
     end
 
     def resource_at(info,x,y)

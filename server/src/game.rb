@@ -35,6 +35,7 @@ class RtsGame
   TILE_SIZE = 64
   PLAYER_START_RESOURCE = 100
   SIMULATION_STEP = 20
+  STEPS_PER_TURN = TURN_DURATION / SIMULATION_STEP
   STARTING_WORKERS = 10
   GAME_LENGTH_IN_MS = 300_000
   UNITS = {
@@ -73,11 +74,12 @@ class RtsGame
   def initialize(clients:)
     build_world clients
     @data_out_queue = Queue.new
-    steps_per_turn = TURN_DURATION / SIMULATION_STEP
     @sync_data_out_thread = Thread.new do
       loop do
         ents, input = @data_out_queue.pop
-        steps_per_turn.times do
+        # cmds = (input[:messages] ||[]).map(&:data).map{|j|j['commands']}
+        # puts "POP: #{cmds.inspect}"
+        STEPS_PER_TURN.times do
           @world.update @clone, SIMULATION_STEP, input, @resources
           input.delete(:messages)
         end
@@ -86,6 +88,7 @@ class RtsGame
           @network_manager.write(player_id, msg) if msg
         end
         @network_manager.flush!
+        # puts "DONE."
       end
     end
   end
@@ -109,23 +112,18 @@ class RtsGame
   def update(delta:, input:)
     begin
       if @start && !@game_over
-        @turn_count ||= 0
-        @turn_time += delta
+        @remaining_steps ||= STEPS_PER_TURN
         msgs = {}
         input[:turn] = @turn_count
 
-        if @turn_time > TURN_DURATION
+        if @remaining_steps == 0
+          @remaining_steps = STEPS_PER_TURN
+          @rollover = 1
           @entity_manager = @clone if @clone
 
           @clone = @entity_manager.deep_clone
           msgs = @network_manager.pop_messages!
           input[:messages] = msgs
-
-          @turn_count += 1
-          @turn_time -= TURN_DURATION
-          puts "WARNING! Not making turn time budget" if @turn_time > TURN_DURATION
-          @turn_time = 0
-
           send_update_to_clients(@clone, input)
         end
 
@@ -133,8 +131,11 @@ class RtsGame
 
         @rollover ||= 1
         @rollover += delta
-        if @rollover > SIMULATION_STEP
+        if @rollover >= SIMULATION_STEP
           (@rollover / SIMULATION_STEP).floor.times do
+            next if @remaining_steps <= 0
+
+            @remaining_steps -= 1
             @world.update @entity_manager, SIMULATION_STEP, input, @resources
             input.delete(:messages)
           end
