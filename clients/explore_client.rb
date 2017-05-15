@@ -1,7 +1,7 @@
 require 'socket'
 require 'json'
-require_relative 'server/lib/vec'
-require_relative 'server/lib/dijkstra'
+require_relative '../server/lib/vec'
+require_relative '../server/lib/dijkstra'
 
 server = TCPServer.new 9090
 

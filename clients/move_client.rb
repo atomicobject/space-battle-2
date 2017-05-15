@@ -1,5 +1,6 @@
 require 'socket'
 require 'json'
+require_relative '../server/lib/vec'
 
 $quiet = false
 if $quiet
@@ -73,7 +74,6 @@ class Map
   end
 end
 
-require_relative './server/lib/vec'
 DIR_VECS = {
   'N' => vec(0,-1),
   'S' => vec(0,1),
