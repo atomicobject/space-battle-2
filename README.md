@@ -50,9 +50,9 @@ This is the amount of time remaining in the game (in milliseconds).
 
 ### Commands
 
-__MOVE__: `unit`,`dir` Move a unit by id in a given direction `N,W,E,W`. Command will be ignored if the unit cannot move in the specified direction.
+__MOVE__: `unit`,`dir` Move a unit by id in a given direction `N,S,E,W`. Command will be ignored if the unit cannot move in the specified direction.
 
-__GATHER__: `unit`,`dir` Tell a unit to collect from a resource in the specified direction `N,W,E,W`. Command will be ignored if the unit cannot gather in the specified direction. Resources are automatically deposited by walking over the players base.
+__GATHER__: `unit`,`dir` Tell a unit to collect from a resource in the specified direction `N,S,E,W`. Command will be ignored if the unit cannot gather in the specified direction. Resources are automatically deposited by walking over the players base.
 
 __CREATE__: `type` Create a new unit by type: `worker,scout,tank`. Command is ignored if the player's base does not have enough resources.
 

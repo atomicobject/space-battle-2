@@ -39,7 +39,7 @@ class MovementSystem
         u.dirty = true
         u.status = :idle
 
-        base_ent = entity_manager.find(Base, PlayerOwned, Position, Label).select{|ent| ent.get(PlayerOwned).id == pwn.id}.first
+        base_ent = entity_manager.find(Base, Unit, PlayerOwned, Position, Label).select{|ent| ent.get(PlayerOwned).id == pwn.id}.first
         base_pos = base_ent.get(Position)
 
         if (base_pos.x - pos.x).abs <= 1 && (base_pos.y - pos.y).abs <= 1
@@ -49,14 +49,15 @@ class MovementSystem
             unit_res, unit_label = unit_res_ent.components
             base.resource += unit_res.resource
             base_ent.get(Label).text = base.resource
+            base_ent.get(Unit).dirty = true
             unit_res.resource = 0
             unit_label.text = ""
           end
         end
 
-        # TODO dirty its previous tile somehow...  :/
         tile_infos.values.each do |tile_info|
-          TileInfoHelper.dirty_tile(tile_info, pos.x, pos.y)
+          TileInfoHelper.dirty_tile(tile_info, tile_x, tile_y)
+          TileInfoHelper.dirty_tile(tile_info, pre_tile_x, pre_tile_y)
         end
 
         entity_manager.remove_component(klass: MovementCommand, id: ent_id)
