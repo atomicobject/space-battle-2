@@ -130,8 +130,7 @@ loop do
 	while msg = server_connection.gets
     json = JSON.parse(msg)
     @player_id ||= json['player']
-    # TODO get time in each msg
-    time_remaining = json['time_remaining'] || 300_000
+    time_remaining = json['time'] || 300_000
 
     cmds = []
     cmd_msg = {commands: cmds, player_id: @player_id}

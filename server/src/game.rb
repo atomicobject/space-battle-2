@@ -36,6 +36,7 @@ class RtsGame
   PLAYER_START_RESOURCE = 100
   SIMULATION_STEP = 20
   STARTING_WORKERS = 10
+  GAME_LENGTH_IN_MS = 300_000
 
   DIR_VECS = {
     'N' => vec(0,-1),
@@ -84,7 +85,7 @@ class RtsGame
 
   def update(delta:, input:)
     begin
-      if @start
+      if @start && !@game_over
         @turn_count ||= 0
         @turn_time += delta
         msgs = {}
@@ -104,17 +105,21 @@ class RtsGame
 
           send_update_to_clients(@clone, input)
         end
-      end
-      input[:messages] = msgs
 
-      @rollover ||= 1
-      @rollover += delta
-      if @rollover > SIMULATION_STEP
-        (@rollover / SIMULATION_STEP).floor.times do
-          @world.update @entity_manager, SIMULATION_STEP, input, @resources
-          input.delete(:messages)
+        input[:messages] = msgs
+
+        @rollover ||= 1
+        @rollover += delta
+        if @rollover > SIMULATION_STEP
+          (@rollover / SIMULATION_STEP).floor.times do
+            @world.update @entity_manager, SIMULATION_STEP, input, @resources
+            input.delete(:messages)
+          end
+          @rollover %= SIMULATION_STEP
         end
-        @rollover %= SIMULATION_STEP
+
+        time_remaining = @entity_manager.first(Timer).get(Timer).ttl
+        @game_over = true if time_remaining <= 0
       end
     rescue Exception => ex
       puts ex.inspect
@@ -125,6 +130,11 @@ class RtsGame
   def generate_message_for(entity_manager, player_id, turn_count)
     tiles = []
     units = []
+
+    time_remaining = entity_manager.first(Timer).get(Timer).ttl
+    if time_remaining <= 0
+      return {player: player_id, turn: turn_count, time: time_remaining}.to_json
+    end
 
     base_ent = entity_manager.find(Base, Unit, PlayerOwned, Position).select{|ent| ent.get(PlayerOwned).id == player_id}.first
 
@@ -221,9 +231,8 @@ class RtsGame
         end
       end
     end
-    time_remaining = entity_manager.first(Timer).get(Timer).ttl
     msg = {unit_updates: units, tile_updates: tiles}
-    msg.merge!( player: player_id, turn: turn_count, time_remaining: time_remaining)
+    msg.merge!( player: player_id, turn: turn_count, time: time_remaining)
     msg.to_json
   end
 

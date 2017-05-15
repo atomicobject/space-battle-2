@@ -96,7 +96,7 @@ end
 
 class LevelTimer; end
 class Timer
-  attr_accessor :ttl, :repeat, :total, :event, :name, :expires_at
+  attr_accessor :ttl, :repeat, :total, :event, :name, :expires_at, :keep
   def initialize(name, ttl, repeat=false, event = nil)
     @name = name
     @total = ttl

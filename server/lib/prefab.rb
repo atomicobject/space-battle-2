@@ -44,7 +44,9 @@
   end
 
   def self.timer(entity_manager:)
-    entity_manager.add_entity(Timer.new("end-of-game", 300_000))
+    timer = Timer.new("end-of-game", RtsGame::GAME_LENGTH_IN_MS)
+    timer.keep = true
+    entity_manager.add_entity(timer)
   end
 
   def self.map(player_count:, entity_manager:, resources:)

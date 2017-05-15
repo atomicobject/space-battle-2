@@ -1,17 +1,9 @@
-fix diff / slowness
 use cmd line clients host:port
-add create unit cmd
 
-add timer 
-  display it on the screen
-  send it to the clients
 Add winner declaration w/ game pause?
-
-translate incoming commands
 
 additional env tiles
 
-move turn management out of app
 player join should create base? should player id be the server info not an id? (reconnect?)
 
 

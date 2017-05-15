@@ -30,13 +30,14 @@ class TimerSystem
 
       if timer.expires_at
         if timer.expires_at < current_time_ms
+          timer.ttl = 0
           if timer.event
             event_comp = timer.event.is_a?(Class) ? timer.event.new : timer.event
             entity_manager.add_component component: event_comp, id: ent_id
           end
           if timer.repeat
             timer.expires_at = current_time_ms + timer.total
-          else
+          elsif !timer.keep
             entity_manager.remove_component(klass: timer.class, id: ent_id)
           end
         else

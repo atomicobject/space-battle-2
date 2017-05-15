@@ -15,9 +15,9 @@ You will start receiving messages in the format:
 
 
     {
-      'player...
-      'turn...
-      'time...
+      player: 0,
+      turn: 12,
+      time: 300000,
       'unit-updates': [
         {id: 'XYZ', health: 2}
       ],
@@ -41,14 +41,22 @@ To command your units:
 
 
 **unit-updates**
+Any time something about a unit changes, (position, status, etc), you will receive an update.
+
 **tile-updates**
+Any time something about a tile changes, (occupants, visibility, etc), you will receive an update.
+
+**time**
+This is the amount of time remaining in the game (in milliseconds). 
 	
 
 
 **Commands**
 
 _MOVE_: 
+
 _GATHER_: 
+
 _CREATE_: 
 
 
