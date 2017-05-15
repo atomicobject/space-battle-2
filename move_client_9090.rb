@@ -186,8 +186,8 @@ loop do
     end
 
     j = cmd_msg.to_json
-    puts "====="
-    puts j
+    # puts "====="
+    # puts j
     server_connection.puts(j) unless cmds.empty?
 
   end

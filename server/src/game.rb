@@ -77,8 +77,6 @@ class RtsGame
     @sync_data_out_thread = Thread.new do
       loop do
         ents, input = @data_out_queue.pop
-        # cmds = (input[:messages] ||[]).map(&:data).map{|j|j['commands']}
-        # puts "POP: #{cmds.inspect}"
         STEPS_PER_TURN.times do
           @world.update @clone, SIMULATION_STEP, input, @resources
           input.delete(:messages)
@@ -112,12 +110,14 @@ class RtsGame
   def update(delta:, input:)
     begin
       if @start && !@game_over
+        @turn_count ||= 0
         @remaining_steps ||= STEPS_PER_TURN
         msgs = {}
         input[:turn] = @turn_count
 
         if @remaining_steps == 0
           @remaining_steps = STEPS_PER_TURN
+          @turn_count += 1
           @rollover = 1
           @entity_manager = @clone if @clone
 
@@ -193,9 +193,6 @@ class RtsGame
       res = MapInfoHelper.resource_at(map,i,j)
       tile_units = MapInfoHelper.units_at(map,i,j)
       blocked = MapInfoHelper.blocked?(map,i,j)
-      unless tile_units.empty?
-        puts "TILE_UNITS! #{tile_units.inspect}"
-      end
       tiles << {
         visible: true,
         x: i-base_tile_x,
