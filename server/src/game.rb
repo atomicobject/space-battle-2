@@ -25,7 +25,8 @@ class RtsGame
     tree5: 'assets/PNG/Default Size/Tile/scifiTile_29.png',
     tree6: 'assets/PNG/Default Size/Tile/scifiTile_30.png',
     base1: 'assets/PNG/Default Size/Structure/scifiStructure_01.png',
-    worker: 'assets/PNG/Default Size/Unit/scifiUnit_01.png',
+    worker: 'assets/PNG/Default Size/Unit/scifiUnit_02.png',
+    scout: 'assets/PNG/Default Size/Unit/scifiUnit_06.png',
     small_res1: 'assets/PNG/Default Size/Environment/scifiEnvironment_09.png',
     large_res1: 'assets/PNG/Default Size/Environment/scifiEnvironment_10.png',
   }
@@ -33,7 +34,7 @@ class RtsGame
   MAX_UPDATE_SIZE_IN_MILLIS = 500
   TURN_DURATION = 200
   TILE_SIZE = 64
-  PLAYER_START_RESOURCE = 100
+  PLAYER_START_RESOURCE = 430
   SIMULATION_STEP = 20
   STEPS_PER_TURN = TURN_DURATION / SIMULATION_STEP
   STARTING_WORKERS = 10
@@ -49,10 +50,11 @@ class RtsGame
       speed: 3,
       attack: 3,
       hp: 5,
+      can_carry: true,
     },
     scout: {
       cost: 130,
-      range: 4,
+      range: 8,
       speed: 5,
       attack: 1,
       hp: 2,
@@ -238,16 +240,22 @@ class RtsGame
       base_unit.dirty = false
     end
 
-    entity_manager.each_entity(Unit, PlayerOwned, Position, ResourceCarrier) do |ent|
-      u, player, pos, res_car = ent.components
+    entity_manager.each_entity(Unit, PlayerOwned, Position) do |ent|
+      u, player, pos = ent.components
       if u.dirty?
         if player.id == player_id
+          res_car_result = entity_manager.find_by_id(ent.id, ResourceCarrier)
+          if res_car_result
+            res = res_car_result.get(ResourceCarrier).resource
+          else
+            res = nil
+          end
           units << { id: ent.id, player_id: player.id, 
             x: ((pos.x-base_pos.x).to_f/TILE_SIZE).floor, 
             y: ((pos.y-base_pos.y).to_f/TILE_SIZE).floor, 
             status: u.status,
             type: u.type,
-            resource: res_car.resource
+            resource: res,
           }
           u.dirty = false
         end

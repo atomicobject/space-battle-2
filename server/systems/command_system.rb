@@ -44,15 +44,17 @@ class CommandSystem
             if base.resource >= cost
               base.resource -= cost
               base_ent.get(Label).text = base.resource
-              Prefab.send(type, entity_manager: entity_manager, map_info: map_info,
+              Prefab.unit(type: type.to_sym, entity_manager: entity_manager, map_info: map_info,
                           x: base_pos.x, y: base_pos.y, 
                           player_id: msg.connection_id)
               base_ent.get(Unit).dirty = true
             end
 
           elsif c == 'GATHER'
-            ent = entity_manager.find_by_id(uid, Unit, Position, PlayerOwned)
-            u, pos, owner = ent.components
+            ent = entity_manager.find_by_id(uid, Unit, Position, ResourceCarrier, PlayerOwned)
+            next unless ent
+
+            u, pos, res_car, owner = ent.components
 
             if owner.id == msg.connection_id
               tile_size = RtsGame::TILE_SIZE
@@ -73,18 +75,16 @@ class CommandSystem
                   TileInfoHelper.dirty_tile(tile_info, target.x, target.y)
                 end
 
-                rc = entity_manager.find_by_id(uid, ResourceCarrier).get(ResourceCarrier)
-
                 resource_ent = entity_manager.find_by_id(res_info[:id], Resource, Label)
                 resource = resource_ent.get(Resource)
 
                 resource.total -= resource.value
                 resource_ent.get(Label).text = "#{resource.value}/#{resource.total}"
 
-                rc.resource = resource.value
+                res_car.resource = resource.value
                 u.dirty = true
                 u.status = :idle
-                entity_manager.add_component(id: uid, component: Label.new(size:14,text:rc.resource))
+                entity_manager.add_component(id: uid, component: Label.new(size:14,text:res_car.resource))
 
                 if resource.total <= 0
                   MapInfoHelper.remove_resource_at(map_info, tile_x, tile_y)

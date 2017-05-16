@@ -81,6 +81,7 @@ DIR_VECS = {
   'E' => vec(1,0),
 }
 COST_OF_WORKER = 100
+COST_OF_SCOUT = 130
 def resource_adjacent_to(map, base, unit_info)
   x = unit_info['x']
   y = unit_info['y']
@@ -159,8 +160,9 @@ loop do
     unit_ids = unit_updates.keys | units.keys
     base = units.values.find{|u| u['type'] == 'base'}
     if time_remaining > 200_000
-      if base && base['resource'] >= COST_OF_WORKER
-        cmds << create_command(:worker)
+      if base && base['resource'] >= COST_OF_SCOUT
+        # cmds << create_command(:worker)
+        cmds << create_command(:scout)
       end
     end
 
@@ -172,13 +174,14 @@ loop do
         if uu['status'] == 'moving'
           outstanding_unit_cmds.delete(id) if outstanding_unit_cmds[id] == :move
         elsif uu['status'] == 'idle'
-          base = units.values.find{|u| u['type'] == 'base'}
           res_dir = resource_adjacent_to(map, base, uu)
-          if res_dir && (!uu['resource'] || uu['resource'] == 0)
+          if res_dir && (!uu['resource'] || uu['resource'] == 0) && uu['type'] == 'worker'
             cmds << gather_command(res_dir, id)
           else
             cmds << move_command(outstanding_unit_cmds, id)
           end
+        elsif uu['type'] != 'base'
+          cmds << move_command(outstanding_unit_cmds, id)
         end
       elsif had_outstanding_move
         cmds << move_command(outstanding_unit_cmds, id)
