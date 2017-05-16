@@ -99,8 +99,8 @@ class RtsGame
 
   attr_accessor :entity_manager, :render_system, :resources
 
-  def initialize(clients:)
-    build_world clients
+  def initialize(map:,clients:)
+    build_world clients, map
     @data_out_queue = Queue.new
     @sync_data_out_thread = Thread.new do
       loop do
@@ -299,14 +299,14 @@ class RtsGame
 
   private
 
-  def load_map!(res)
-    res[:map] = Map.load_from_file('map.tmx')
+  def load_map!(res, map_name)
+    res[:map] = Map.load_from_file(map_name)
   end
 
-  def build_world(clients)
+  def build_world(clients, map_name)
     @turn_time = 0
     @resources = {}
-    load_map! @resources
+    load_map! @resources, map_name
     @entity_manager = EntityManager.new
     @network_manager = NetworkManager.new
 
