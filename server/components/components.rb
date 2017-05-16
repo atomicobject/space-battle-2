@@ -67,6 +67,7 @@ Health = define_component(attrs: [:points])
 EntityTarget = define_component(attrs: [:id])
 Resource = define_component(attrs: [:value, :total])
 Timed = define_component(attrs: [:accumulated_time_in_ms])
+Ranged = define_component(attrs: [:distance])
 
 class Position
   attr_accessor :x, :y, :z

@@ -25,7 +25,7 @@ class RtsGame
     tree5: 'assets/PNG/Default Size/Tile/scifiTile_29.png',
     tree6: 'assets/PNG/Default Size/Tile/scifiTile_30.png',
     base1: 'assets/PNG/Default Size/Structure/scifiStructure_01.png',
-    worker1: 'assets/PNG/Default Size/Unit/scifiUnit_01.png',
+    worker: 'assets/PNG/Default Size/Unit/scifiUnit_01.png',
     small_res1: 'assets/PNG/Default Size/Environment/scifiEnvironment_09.png',
     large_res1: 'assets/PNG/Default Size/Environment/scifiEnvironment_10.png',
   }
@@ -39,10 +39,14 @@ class RtsGame
   STARTING_WORKERS = 10
   GAME_LENGTH_IN_MS = 300_000
   UNITS = {
+    base: {
+      range: 2,
+      hp: 50,
+    },
     worker: {
       cost: 100,
       range: 2,
-      speed: 5,
+      speed: 3,
       attack: 3,
       hp: 5,
     },
@@ -56,7 +60,7 @@ class RtsGame
     tank: {
       cost: 150,
       range: 2,
-      speed: 5,
+      speed: 2,
       attack: 5,
       hp: 10,
     },
@@ -177,10 +181,10 @@ class RtsGame
 
     prev_interesting_tiles = tile_info.interesting_tiles
     interesting_tiles = Set.new
-    entity_manager.each_entity(Unit, PlayerOwned, Position, ResourceCarrier) do |ent|
-      u, player, pos, res_car = ent.components
+    entity_manager.each_entity(Unit, PlayerOwned, Position, Ranged, ResourceCarrier) do |ent|
+      u, player, pos, rang, res_car = ent.components
       if player.id == player_id
-        interesting_tiles.merge(TileInfoHelper.tiles_near_unit(tile_info, u, pos))
+        interesting_tiles.merge(TileInfoHelper.tiles_near_unit(tile_info, u, pos, rang))
       end
     end
     tile_info.interesting_tiles = interesting_tiles

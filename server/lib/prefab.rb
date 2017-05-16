@@ -5,7 +5,8 @@
     entity_manager.add_entity PlayerOwned.new(id: player_id), TileInfo.new
 
     b = Base.new(resource: RtsGame::PLAYER_START_RESOURCE)
-    id = entity_manager.add_entity Unit.new(status: :base, type: :base), b, Position.new(x:x, y:y, z:10), PlayerOwned.new(id: player_id), Sprited.new(image: :base1), Label.new(size: 24, text: b.resource)
+    r = Ranged.new(distance: RtsGame::UNITS[:base][:range])
+    id = entity_manager.add_entity Unit.new(status: :base, type: :base), b, Position.new(x:x, y:y, z:10), PlayerOwned.new(id: player_id), Sprited.new(image: :base1), Label.new(size: 24, text: b.resource), r
 
     tile_size = RtsGame::TILE_SIZE
     tile_x = (x/tile_size).floor
@@ -15,7 +16,7 @@
   end
 
   def self.worker(entity_manager:,x:,y:,player_id:,map_info:)
-    id = entity_manager.add_entity Unit.new, Position.new(x:x, y:y), PlayerOwned.new(id: player_id), Sprited.new(image: :worker1), ResourceCarrier.new
+    id = entity_manager.add_entity Unit.new, Position.new(x:x, y:y), Ranged.new(distance: RtsGame::UNITS[:worker][:range]), PlayerOwned.new(id: player_id), Sprited.new(image: :worker), ResourceCarrier.new
     tile_size = RtsGame::TILE_SIZE
     tile_x = (x/tile_size).floor
     tile_y = (y/tile_size).floor
