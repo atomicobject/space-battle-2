@@ -101,7 +101,7 @@ class RtsGame
     @sync_data_out_thread = Thread.new do
       loop do
         ents, input = @data_out_queue.pop
-        input[:messages].each do |msg|
+        input[:messages] && input[:messages].each do |msg|
           GameLogger.log("\nreceived msg from #{msg.connection_id}: #{msg.data}")
         end
         STEPS_PER_TURN.times do
@@ -229,14 +229,19 @@ class RtsGame
         y: j-base_tile_y,
         blocked: blocked,
         resources: res,
-        # TODO add more inf
-        units: tile_units.map{|tu|{id:tu}},
-        #   {
-        #   player_id: 0, 
-        #   x: (i-base_tile_x)*TILE_SIZE,
-        #   y: (j-base_tile_y)*TILE_SIZE,
-        #   type: 'worker'
-        # }
+        units: tile_units.map do |tu|
+          ent = entity_manager.find_by_id(tu, Position, PlayerOwned, Unit, Health)
+          pid = ent.get(PlayerOwned).id
+          pid != player_id ? 
+          {
+            id: tu,
+            x: ent.get(Position).x.round,
+            y: ent.get(Position).y.round,
+            type: ent.get(Unit).type,
+            player_id: pid,
+            hp: ent.get(Health).points,
+          } : nil
+        end.compact
       }
     end
 
@@ -247,9 +252,6 @@ class RtsGame
         visible: false,
         x: i-base_tile_x,
         y: j-base_tile_y,
-        # blocked: blocked,
-        # resources: res,
-        # units: [],
       }
     end
 

@@ -6,7 +6,8 @@
 
     b = Base.new(resource: RtsGame::PLAYER_START_RESOURCE)
     r = Ranged.new(distance: RtsGame::UNITS[:base][:range])
-    id = entity_manager.add_entity Unit.new(status: :base, type: :base), b, Position.new(x:x, y:y, z:10), PlayerOwned.new(id: player_id), Sprited.new(image: :base1), Label.new(size: 24, text: b.resource), r
+    hp = Health.new(points: RtsGame::UNITS[:base][:health])
+    id = entity_manager.add_entity Unit.new(status: :base, type: :base), b, Position.new(x:x, y:y, z:10), PlayerOwned.new(id: player_id), Sprited.new(image: :base1), Label.new(size: 24, text: b.resource), r, hp
 
     tile_size = RtsGame::TILE_SIZE
     tile_x = (x/tile_size).floor
