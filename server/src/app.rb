@@ -1,4 +1,5 @@
 require 'gosu'
+require 'slop'
 # require 'awesome_print'
 require_relative './game'
 
@@ -79,12 +80,26 @@ class RtsWindow < Gosu::Window
 end
 
 if $0 == __FILE__
-  Thread.abort_on_exception = true
 
+	opts = Slop.parse do |o|
+		o.string '-p1', '--p1_host', 'player 1 host', default: 'localhost'
+		o.integer '-p1p', '--p1_port', 'player 1 port', default: 9090
+		o.string '-p2', '--p2_host', 'player 2 host'
+		o.integer '-p2p', '--p2_port', 'player 2 port', default: 9090
+		o.bool '-q', '--quiet', 'suppress output (quiet mode)'
+		o.bool '-l', '--log', 'log entire game'
+    o.on '--help', 'print this help' do
+      puts o
+      exit
+    end
+	end
+
+  Thread.abort_on_exception = true
   clients = [
-    {host: "localhost", port: "8080"},
-    {host: "localhost", port: "9090"},
+    {host: opts[:p1_host], port: opts[:p1_port]},
   ]
+  clients << {host: opts[:p2_host], port: opts[:p2_port]} if opts[:p2_host]
+
   $window = RtsWindow.new clients: clients
   $window.show
 end

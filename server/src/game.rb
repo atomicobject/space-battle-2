@@ -35,8 +35,32 @@ class RtsGame
   TILE_SIZE = 64
   PLAYER_START_RESOURCE = 100
   SIMULATION_STEP = 20
+  STEPS_PER_TURN = TURN_DURATION / SIMULATION_STEP
   STARTING_WORKERS = 10
   GAME_LENGTH_IN_MS = 300_000
+  UNITS = {
+    worker: {
+      cost: 100,
+      range: 2,
+      speed: 5,
+      attack: 3,
+      hp: 5,
+    },
+    scout: {
+      cost: 130,
+      range: 4,
+      speed: 5,
+      attack: 1,
+      hp: 2,
+    },
+    tank: {
+      cost: 150,
+      range: 2,
+      speed: 5,
+      attack: 5,
+      hp: 10,
+    },
+  }
 
   DIR_VECS = {
     'N' => vec(0,-1),
@@ -50,11 +74,10 @@ class RtsGame
   def initialize(clients:)
     build_world clients
     @data_out_queue = Queue.new
-    steps_per_turn = TURN_DURATION / SIMULATION_STEP
     @sync_data_out_thread = Thread.new do
       loop do
         ents, input = @data_out_queue.pop
-        steps_per_turn.times do
+        STEPS_PER_TURN.times do
           @world.update @clone, SIMULATION_STEP, input, @resources
           input.delete(:messages)
         end
@@ -63,6 +86,7 @@ class RtsGame
           @network_manager.write(player_id, msg) if msg
         end
         @network_manager.flush!
+        # puts "DONE."
       end
     end
   end
@@ -87,22 +111,19 @@ class RtsGame
     begin
       if @start && !@game_over
         @turn_count ||= 0
-        @turn_time += delta
+        @remaining_steps ||= STEPS_PER_TURN
         msgs = {}
         input[:turn] = @turn_count
 
-        if @turn_time > TURN_DURATION
+        if @remaining_steps == 0
+          @remaining_steps = STEPS_PER_TURN
+          @turn_count += 1
+          @rollover = 1
           @entity_manager = @clone if @clone
 
           @clone = @entity_manager.deep_clone
           msgs = @network_manager.pop_messages!
           input[:messages] = msgs
-
-          @turn_count += 1
-          @turn_time -= TURN_DURATION
-          puts "WARNING! Not making turn time budget" if @turn_time > TURN_DURATION
-          @turn_time = 0
-
           send_update_to_clients(@clone, input)
         end
 
@@ -110,8 +131,11 @@ class RtsGame
 
         @rollover ||= 1
         @rollover += delta
-        if @rollover > SIMULATION_STEP
+        if @rollover >= SIMULATION_STEP
           (@rollover / SIMULATION_STEP).floor.times do
+            next if @remaining_steps <= 0
+
+            @remaining_steps -= 1
             @world.update @entity_manager, SIMULATION_STEP, input, @resources
             input.delete(:messages)
           end
@@ -167,6 +191,7 @@ class RtsGame
 
     ((interesting_tiles & dirty_tiles) | newly_visible_tiles).each do |i,j|
       res = MapInfoHelper.resource_at(map,i,j)
+      tile_units = MapInfoHelper.units_at(map,i,j)
       blocked = MapInfoHelper.blocked?(map,i,j)
       tiles << {
         visible: true,
@@ -174,14 +199,14 @@ class RtsGame
         y: j-base_tile_y,
         blocked: blocked,
         resources: res,
-        units: [
+        # TODO add more inf
+        units: tile_units.map{|tu|{id:tu}},
         #   {
         #   player_id: 0, 
         #   x: (i-base_tile_x)*TILE_SIZE,
         #   y: (j-base_tile_y)*TILE_SIZE,
         #   type: 'worker'
         # }
-      ],
       }
     end
 
@@ -192,16 +217,9 @@ class RtsGame
         visible: false,
         x: i-base_tile_x,
         y: j-base_tile_y,
-        blocked: blocked,
-        resources: res,
-        units: [
-        #   {
-        #   player_id: player_id, 
-        #   x: (i-base_tile_x)*TILE_SIZE,
-        #   y: (j-base_tile_y)*TILE_SIZE,
-        #   type: 'worker'
-        # }
-        ],
+        # blocked: blocked,
+        # resources: res,
+        # units: [],
       }
     end
 

@@ -1,5 +1,3 @@
-use cmd line clients host:port
-
 Add winner declaration w/ game pause?
 
 additional env tiles
@@ -14,6 +12,9 @@ handle disconnects
 how to kill a unit??
   status: dead... then no more updates
 
+make units "bounce" while moving
+
 Compile to exe for windows
 Headless mode? w/ remote server for gfx?
+Cap number of units?
 
