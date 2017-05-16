@@ -41,10 +41,14 @@ class RtsGame
     tree4: 'assets/PNG/Default Size/Tile/scifiTile_28.png',
     tree5: 'assets/PNG/Default Size/Tile/scifiTile_29.png',
     tree6: 'assets/PNG/Default Size/Tile/scifiTile_30.png',
-    base1: 'assets/PNG/Default Size/Structure/scifiStructure_01.png',
-    worker: 'assets/PNG/Default Size/Unit/scifiUnit_02.png',
-    scout: 'assets/PNG/Default Size/Unit/scifiUnit_06.png',
-    tank: 'assets/PNG/Default Size/Unit/scifiUnit_09.png',
+    base0: 'assets/PNG/Default Size/Structure/scifiStructure_08.png',
+    worker0: 'assets/PNG/Default Size/Unit/scifiUnit_02.png',
+    scout0: 'assets/PNG/Default Size/Unit/scifiUnit_06.png',
+    tank0: 'assets/PNG/Default Size/Unit/scifiUnit_09.png',
+    base1: 'assets/PNG/Default Size/Structure/scifiStructure_03.png',
+    worker1: 'assets/PNG/Default Size/Unit/scifiUnit_14.png',
+    scout1: 'assets/PNG/Default Size/Unit/scifiUnit_18.png',
+    tank1: 'assets/PNG/Default Size/Unit/scifiUnit_21.png',
     small_res1: 'assets/PNG/Default Size/Environment/scifiEnvironment_09.png',
     large_res1: 'assets/PNG/Default Size/Environment/scifiEnvironment_10.png',
   }
@@ -52,10 +56,9 @@ class RtsGame
   MAX_UPDATE_SIZE_IN_MILLIS = 500
   TURN_DURATION = 200
   TILE_SIZE = 64
-  PLAYER_START_RESOURCE = 430
   SIMULATION_STEP = 20
   STEPS_PER_TURN = TURN_DURATION / SIMULATION_STEP
-  STARTING_WORKERS = 10
+  STARTING_WORKERS = 5
   GAME_LENGTH_IN_MS = 300_000
   UNITS = {
     base: {
@@ -75,7 +78,7 @@ class RtsGame
       range: 5,
       speed: 2,
       attack: 1,
-      hp: 2,
+      hp: 3,
     },
     tank: {
       cost: 150,
@@ -85,6 +88,7 @@ class RtsGame
       hp: 10,
     },
   }
+  PLAYER_START_RESOURCE = UNITS[:tank][:cost]
 
   DIR_VECS = {
     'N' => vec(0,-1),
@@ -190,8 +194,7 @@ class RtsGame
       return {player: player_id, turn: turn_count, time: time_remaining}.to_json
     end
 
-    base_ent = entity_manager.find(Base, Unit, PlayerOwned, Position).select{|ent| ent.get(PlayerOwned).id == player_id}.first
-
+    base_ent = entity_manager.find(Base, Unit, Health, PlayerOwned, Position).select{|ent| ent.get(PlayerOwned).id == player_id}.first
 
     base_id = base_ent.id
     base_pos = base_ent.get(Position)
@@ -239,7 +242,7 @@ class RtsGame
             y: ent.get(Position).y.round,
             type: ent.get(Unit).type,
             player_id: pid,
-            hp: ent.get(Health).points,
+            health: ent.get(Health).points,
           } : nil
         end.compact
       }
@@ -261,13 +264,14 @@ class RtsGame
         y: 0,
         status: base_unit.status,
         type: base_unit.type,
-        resource: base.resource
+        resource: base.resource,
+        health: base_ent.get(Health).points,
       }
       base_unit.dirty = false
     end
 
-    entity_manager.each_entity(Unit, PlayerOwned, Position) do |ent|
-      u, player, pos = ent.components
+    entity_manager.each_entity(Unit, Health, PlayerOwned, Position) do |ent|
+      u, health, player, pos = ent.components
       if u.dirty?
         if player.id == player_id
           res_car_result = entity_manager.find_by_id(ent.id, ResourceCarrier)
@@ -282,6 +286,7 @@ class RtsGame
             status: u.status,
             type: u.type,
             resource: res,
+            health: health.points, 
           }
           u.dirty = false
         end

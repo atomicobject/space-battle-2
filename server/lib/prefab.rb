@@ -6,8 +6,19 @@
 
     b = Base.new(resource: RtsGame::PLAYER_START_RESOURCE)
     r = Ranged.new(distance: RtsGame::UNITS[:base][:range])
-    hp = Health.new(points: RtsGame::UNITS[:base][:health])
-    id = entity_manager.add_entity Unit.new(status: :base, type: :base), b, Position.new(x:x, y:y, z:10), PlayerOwned.new(id: player_id), Sprited.new(image: :base1), Label.new(size: 24, text: b.resource), r, hp
+
+    hp = RtsGame::UNITS[:base][:hp]
+    health = Health.new(points: hp, max: hp)
+    id = entity_manager.add_entity(
+      Unit.new(status: :base, type: :base), 
+      b,
+      Position.new(x:x, y:y, z:10),
+      PlayerOwned.new(id: player_id),
+      Sprited.new(image: "base#{player_id}".to_sym),
+      Label.new(size: 24, text: b.resource),
+      r,
+      health
+    )
 
     tile_size = RtsGame::TILE_SIZE
     tile_x = (x/tile_size).floor
@@ -18,14 +29,16 @@
 
   def self.unit(type:,entity_manager:,x:,y:,player_id:,map_info:)
     unit_def = RtsGame::UNITS[type.to_sym]
+    health = Health.new(points: unit_def[:hp], max: unit_def[:hp])
+    health.points -= 2 if type.to_sym == :scout
     id = entity_manager.add_entity(
       Unit.new(type: type.to_sym),
       Position.new(x:x, y:y),
       Ranged.new(distance: unit_def[:range]),
       Speed.new(speed: unit_def[:speed]),
-      Health.new(points: unit_def[:hp]),
       PlayerOwned.new(id: player_id),
-      Sprited.new(image: type.to_sym),
+      Sprited.new(image: "#{type}#{player_id}".to_sym),
+      health
     )
     entity_manager.add_component component: ResourceCarrier.new, id: id if unit_def[:can_carry]
 
@@ -85,7 +98,7 @@
   def self.bases(player_count:, entity_manager:, static_map:, map_info:)
     bases = static_map.objects.select{|o|o['type'] == "base"}
     player_count.times do |i|
-      start_point = vec(bases[i].x, bases[i].y)
+      start_point = vec(bases[i].x, bases[i].y-RtsGame::TILE_SIZE)
       base(entity_manager: entity_manager, x: start_point.x, y: start_point.y, 
            player_id: i, map_info: map_info)
 
