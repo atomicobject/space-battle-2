@@ -8,9 +8,17 @@ class Connection
 
   def initialize(host, port)
     @socket = TCPSocket.open host, port
+    GameLogger.log("Connected to #{host}:#{port}")
+    @alive = true
+    @host = host
+    @port = port
     @messages = []
     @outgoing = []
     @mutex = Mutex.new
+  end
+
+  def alive?
+    @alive
   end
 
   def clear!
@@ -21,16 +29,22 @@ class Connection
 
   def start
     @thread = Thread.start do
-      loop do
-        msg = @socket.gets
-        @mutex.synchronize do
-          @messages << msg
+      begin
+        loop do
+          msg = @socket.gets
+          @mutex.synchronize do
+            @messages << msg
+          end
         end
+      rescue
+        puts "Client at #{@host}:#{@port} died"
+        @alive = false
       end
     end
   end
 
   def write(json)
+    return unless @alive
     # puts "queueing writing #{json}"
     @mutex.synchronize do
       @outgoing << json
@@ -38,6 +52,7 @@ class Connection
   end
 
   def flush!
+    return unless @alive
     # puts "flushing conn"
     @mutex.synchronize do
       @outgoing.each do |msg|
@@ -49,6 +64,7 @@ class Connection
   end
 
   def stop
+    @alive = false
     Thread.kill(@thread) if @thread
     @socket.close if @socket
   end

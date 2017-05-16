@@ -5,7 +5,9 @@
     entity_manager.add_entity PlayerOwned.new(id: player_id), TileInfo.new
 
     b = Base.new(resource: RtsGame::PLAYER_START_RESOURCE)
-    id = entity_manager.add_entity Unit.new(status: :base, type: :base), b, Position.new(x:x, y:y, z:10), PlayerOwned.new(id: player_id), Sprited.new(image: :base1), Label.new(size: 24, text: b.resource)
+    r = Ranged.new(distance: RtsGame::UNITS[:base][:range])
+    hp = Health.new(points: RtsGame::UNITS[:base][:health])
+    id = entity_manager.add_entity Unit.new(status: :base, type: :base), b, Position.new(x:x, y:y, z:10), PlayerOwned.new(id: player_id), Sprited.new(image: :base1), Label.new(size: 24, text: b.resource), r, hp
 
     tile_size = RtsGame::TILE_SIZE
     tile_x = (x/tile_size).floor
@@ -14,8 +16,19 @@
     id
   end
 
-  def self.worker(entity_manager:,x:,y:,player_id:,map_info:)
-    id = entity_manager.add_entity Unit.new, Position.new(x:x, y:y), PlayerOwned.new(id: player_id), Sprited.new(image: :worker1), ResourceCarrier.new
+  def self.unit(type:,entity_manager:,x:,y:,player_id:,map_info:)
+    unit_def = RtsGame::UNITS[type.to_sym]
+    id = entity_manager.add_entity(
+      Unit.new(type: type.to_sym),
+      Position.new(x:x, y:y),
+      Ranged.new(distance: unit_def[:range]),
+      Speed.new(speed: unit_def[:speed]),
+      Health.new(points: unit_def[:hp]),
+      PlayerOwned.new(id: player_id),
+      Sprited.new(image: type.to_sym),
+    )
+    entity_manager.add_component component: ResourceCarrier.new, id: id if unit_def[:can_carry]
+
     tile_size = RtsGame::TILE_SIZE
     tile_x = (x/tile_size).floor
     tile_y = (y/tile_size).floor
@@ -77,7 +90,9 @@
            player_id: i, map_info: map_info)
 
       RtsGame::STARTING_WORKERS.times do
-        worker(entity_manager: entity_manager, x: start_point.x, y: start_point.y, player_id: i, map_info: map_info)
+        unit(type: :worker, entity_manager: entity_manager, 
+             player_id: i, map_info: map_info,
+             x: start_point.x, y: start_point.y)
       end
     end
   end

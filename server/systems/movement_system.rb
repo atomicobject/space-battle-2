@@ -1,19 +1,19 @@
 class MovementSystem
-  def update(entity_manager, dt, input, res)
-    # TODO add unit speed
-    tile_size = RtsGame::TILE_SIZE
-    speed = tile_size.to_f/(RtsGame::TURN_DURATION * 5)
 
+  def update(entity_manager, dt, input, res)
     tile_infos =  {} 
     entity_manager.each_entity(PlayerOwned, TileInfo) do |ent|
       player, tile_info = ent.components
       tile_infos[player.id] = tile_info
     end
       
-    # TODO what about non-player owned movement? sep query?
-    entity_manager.each_entity PlayerOwned, Unit, MovementCommand, Position do |ent|
-      pwn, u, movement, pos = ent.components
+    tile_size = RtsGame::TILE_SIZE
+    base_speed = tile_size.to_f/(RtsGame::TURN_DURATION * 5)
+    entity_manager.each_entity PlayerOwned, Unit, MovementCommand, Position, Speed do |ent|
+      pwn, u, movement, pos, s = ent.components
       ent_id = ent.id
+
+      speed = base_speed * s.speed
 
       dir = movement.target_vec - pos.to_vec
       move = dir.unit * dt * speed

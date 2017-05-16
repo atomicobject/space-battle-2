@@ -14,6 +14,23 @@ require_relative '../lib/map'
 require_relative '../lib/entity_manager'
 require_relative '../lib/input_cacher'
 require_relative '../lib/network_manager'
+
+class GameLogger
+  require 'singleton'
+  include Singleton
+  def initialize
+    @log_file = File.open('game-log.txt', 'w+')
+  end
+  def log(msg)
+    @log_file.puts(msg)
+  end
+
+  def self.log(msg)
+    self.instance.log(msg)
+  end
+end
+
+
 class RtsGame
   ASSETS = {
     dirt1: 'assets/PNG/Default Size/Tile/scifiTile_41.png',
@@ -25,7 +42,9 @@ class RtsGame
     tree5: 'assets/PNG/Default Size/Tile/scifiTile_29.png',
     tree6: 'assets/PNG/Default Size/Tile/scifiTile_30.png',
     base1: 'assets/PNG/Default Size/Structure/scifiStructure_01.png',
-    worker1: 'assets/PNG/Default Size/Unit/scifiUnit_01.png',
+    worker: 'assets/PNG/Default Size/Unit/scifiUnit_02.png',
+    scout: 'assets/PNG/Default Size/Unit/scifiUnit_06.png',
+    tank: 'assets/PNG/Default Size/Unit/scifiUnit_09.png',
     small_res1: 'assets/PNG/Default Size/Environment/scifiEnvironment_09.png',
     large_res1: 'assets/PNG/Default Size/Environment/scifiEnvironment_10.png',
   }
@@ -33,30 +52,35 @@ class RtsGame
   MAX_UPDATE_SIZE_IN_MILLIS = 500
   TURN_DURATION = 200
   TILE_SIZE = 64
-  PLAYER_START_RESOURCE = 100
+  PLAYER_START_RESOURCE = 430
   SIMULATION_STEP = 20
   STEPS_PER_TURN = TURN_DURATION / SIMULATION_STEP
   STARTING_WORKERS = 10
   GAME_LENGTH_IN_MS = 300_000
   UNITS = {
+    base: {
+      range: 2,
+      hp: 50,
+    },
     worker: {
       cost: 100,
       range: 2,
-      speed: 5,
+      speed: 1,
       attack: 3,
       hp: 5,
+      can_carry: true,
     },
     scout: {
       cost: 130,
-      range: 4,
-      speed: 5,
+      range: 5,
+      speed: 2,
       attack: 1,
       hp: 2,
     },
     tank: {
       cost: 150,
       range: 2,
-      speed: 5,
+      speed: 0.5,
       attack: 5,
       hp: 10,
     },
@@ -77,13 +101,19 @@ class RtsGame
     @sync_data_out_thread = Thread.new do
       loop do
         ents, input = @data_out_queue.pop
+        input[:messages] && input[:messages].each do |msg|
+          GameLogger.log("\nreceived msg from #{msg.connection_id}: #{msg.data}")
+        end
         STEPS_PER_TURN.times do
           @world.update @clone, SIMULATION_STEP, input, @resources
           input.delete(:messages)
         end
         @network_manager.clients.each do |player_id|
           msg = generate_message_for(ents, player_id, @turn_count)
-          @network_manager.write(player_id, msg) if msg
+          if msg
+            GameLogger.log("\nsent msg to #{player_id}: #{msg}")
+            @network_manager.write(player_id, msg)
+          end
         end
         @network_manager.flush!
         # puts "DONE."
@@ -177,10 +207,10 @@ class RtsGame
 
     prev_interesting_tiles = tile_info.interesting_tiles
     interesting_tiles = Set.new
-    entity_manager.each_entity(Unit, PlayerOwned, Position, ResourceCarrier) do |ent|
-      u, player, pos, res_car = ent.components
+    entity_manager.each_entity(Unit, PlayerOwned, Position, Ranged, ResourceCarrier) do |ent|
+      u, player, pos, rang, res_car = ent.components
       if player.id == player_id
-        interesting_tiles.merge(TileInfoHelper.tiles_near_unit(tile_info, u, pos))
+        interesting_tiles.merge(TileInfoHelper.tiles_near_unit(tile_info, u, pos, rang))
       end
     end
     tile_info.interesting_tiles = interesting_tiles
@@ -199,14 +229,19 @@ class RtsGame
         y: j-base_tile_y,
         blocked: blocked,
         resources: res,
-        # TODO add more inf
-        units: tile_units.map{|tu|{id:tu}},
-        #   {
-        #   player_id: 0, 
-        #   x: (i-base_tile_x)*TILE_SIZE,
-        #   y: (j-base_tile_y)*TILE_SIZE,
-        #   type: 'worker'
-        # }
+        units: tile_units.map do |tu|
+          ent = entity_manager.find_by_id(tu, Position, PlayerOwned, Unit, Health)
+          pid = ent.get(PlayerOwned).id
+          pid != player_id ? 
+          {
+            id: tu,
+            x: ent.get(Position).x.round,
+            y: ent.get(Position).y.round,
+            type: ent.get(Unit).type,
+            player_id: pid,
+            hp: ent.get(Health).points,
+          } : nil
+        end.compact
       }
     end
 
@@ -217,9 +252,6 @@ class RtsGame
         visible: false,
         x: i-base_tile_x,
         y: j-base_tile_y,
-        # blocked: blocked,
-        # resources: res,
-        # units: [],
       }
     end
 
@@ -234,16 +266,22 @@ class RtsGame
       base_unit.dirty = false
     end
 
-    entity_manager.each_entity(Unit, PlayerOwned, Position, ResourceCarrier) do |ent|
-      u, player, pos, res_car = ent.components
+    entity_manager.each_entity(Unit, PlayerOwned, Position) do |ent|
+      u, player, pos = ent.components
       if u.dirty?
         if player.id == player_id
+          res_car_result = entity_manager.find_by_id(ent.id, ResourceCarrier)
+          if res_car_result
+            res = res_car_result.get(ResourceCarrier).resource
+          else
+            res = nil
+          end
           units << { id: ent.id, player_id: player.id, 
             x: ((pos.x-base_pos.x).to_f/TILE_SIZE).floor, 
             y: ((pos.y-base_pos.y).to_f/TILE_SIZE).floor, 
             status: u.status,
             type: u.type,
-            resource: res_car.resource
+            resource: res,
           }
           u.dirty = false
         end

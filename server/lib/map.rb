@@ -2,9 +2,9 @@ require 'tmx'
 
 class TileInfoHelper
   class << self
-    def tiles_near_unit(tile_info, u, pos)
+    def tiles_near_unit(tile_info, u, pos, r)
       tiles = Set.new
-      range = 2
+      range = r.distance
       x = pos.x
       y = pos.y
       tile_size = RtsGame::TILE_SIZE
