@@ -21,6 +21,8 @@
       Unit.new(type: type.to_sym),
       Position.new(x:x, y:y),
       Ranged.new(distance: unit_def[:range]),
+      Speed.new(speed: unit_def[:speed]),
+      Health.new(points: unit_def[:hp]),
       PlayerOwned.new(id: player_id),
       Sprited.new(image: type.to_sym),
     )

@@ -1,13 +1,20 @@
+Game connection header
+  turn duration
+  # turns
+  accept players name and display on game
+
 Add winner declaration w/ game pause?
 
 additional env tiles
 
 player join should create base? should player id be the server info not an id? (reconnect?)
 
-
 do not block server for client comm
   timeouts?
 handle disconnects
+
+ATTACK command
+Add health to unit "packet"
 
 how to kill a unit??
   status: dead... then no more updates
@@ -18,3 +25,12 @@ Compile to exe for windows
 Headless mode? w/ remote server for gfx?
 Cap number of units?
 
+flip images based on last X direction
+
+
+attempt to make logical client(s) with different strategies:
+  scout early
+  res & return
+  zerg rush w/ tank
+  unit claims a resource til it's gone
+  look for big resources
