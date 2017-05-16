@@ -14,6 +14,23 @@ require_relative '../lib/map'
 require_relative '../lib/entity_manager'
 require_relative '../lib/input_cacher'
 require_relative '../lib/network_manager'
+
+class GameLogger
+  require 'singleton'
+  include Singleton
+  def initialize
+    @log_file = File.open('game-log.txt', 'w+')
+  end
+  def log(msg)
+    @log_file.puts(msg)
+  end
+
+  def self.log(msg)
+    self.instance.log(msg)
+  end
+end
+
+
 class RtsGame
   ASSETS = {
     dirt1: 'assets/PNG/Default Size/Tile/scifiTile_41.png',
@@ -84,13 +101,19 @@ class RtsGame
     @sync_data_out_thread = Thread.new do
       loop do
         ents, input = @data_out_queue.pop
+        input[:messages].each do |msg|
+          GameLogger.log("\nreceived msg from #{msg.connection_id}: #{msg.data}")
+        end
         STEPS_PER_TURN.times do
           @world.update @clone, SIMULATION_STEP, input, @resources
           input.delete(:messages)
         end
         @network_manager.clients.each do |player_id|
           msg = generate_message_for(ents, player_id, @turn_count)
-          @network_manager.write(player_id, msg) if msg
+          if msg
+            GameLogger.log("\nsent msg to #{player_id}: #{msg}")
+            @network_manager.write(player_id, msg)
+          end
         end
         @network_manager.flush!
         # puts "DONE."

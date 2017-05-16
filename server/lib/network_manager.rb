@@ -8,6 +8,7 @@ class Connection
 
   def initialize(host, port)
     @socket = TCPSocket.open host, port
+    GameLogger.log("Connected to #{host}:#{port}")
     @messages = []
     @outgoing = []
     @mutex = Mutex.new

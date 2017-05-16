@@ -1,3 +1,5 @@
+Add game log
+
 Game connection header
   turn duration
   # turns
