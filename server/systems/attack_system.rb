@@ -43,10 +43,10 @@ class AttackSystem
       tile_units.each do |tu_id|
         target_ent = entity_manager.find_by_id(tu_id, Unit, Health)
         target_health = target_ent.get(Health)
+
         target_health.points = [target_health.points-attack.damage, 0].max
         if target_health.points <= 0
           target_unit = target_ent.get(Unit)
-          puts "KILLED: #{tu_id}"
           target_unit.status = :dead
           target_unit.dirty = true
 
