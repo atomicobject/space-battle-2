@@ -1,6 +1,5 @@
 require 'socket'
 class Connection
-  attr_reader :messages
 
   def self.open(host, port)
     new(host, port)
@@ -21,10 +20,18 @@ class Connection
     @alive
   end
 
-  def clear!
+  def has_message_pending?
+    @pending
+  end
+
+  def pop_messages!
+    msgs = nil
     @mutex.synchronize do
+      msgs = @messages
       @messages = []
+      @pending = false
     end
+    msgs
   end
 
   def start
@@ -34,6 +41,7 @@ class Connection
           msg = @socket.gets
           @mutex.synchronize do
             @messages << msg
+            @pending = true
           end
         end
       rescue
@@ -84,7 +92,8 @@ class Message
 
   def data
     begin
-      JSON.parse(@json)
+      Oj.load(@json)
+      # JSON.parse(@json)
     rescue
     end
   end
@@ -102,6 +111,11 @@ class NetworkManager
   def initialize
     @connection_count = 0
     @connections = {}
+  end
+
+  def message_received_for_all_clients?
+    # TODO need a mutex here?
+    @connections.values.all?(&:has_message_pending?)
   end
 
   def connect(host, port)
@@ -125,13 +139,10 @@ class NetworkManager
   end
   
   def pop_messages!
-
     @connections.flat_map do |id, conn|
-      msgs = conn.messages.map do |msg|
+      conn.pop_messages!.map do |msg|
         Message.from_json(id, "#{msg}".strip)
       end
-      conn.clear!
-      msgs
     end
   end
 

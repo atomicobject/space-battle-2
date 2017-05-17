@@ -4,12 +4,12 @@ require 'slop'
 require_relative './game'
 
 class RtsWindow < Gosu::Window
-  def initialize(clients:,map:)
+  def initialize(**opts)
     super(1024,1024,false)
     @input_cacher = InputCacher.new
     @last_millis = Gosu::milliseconds.to_f
 
-    @game = RtsGame.new clients: clients, map: map
+    @game = RtsGame.new **opts
     preload_assets! @game.resources
   end
 
@@ -79,7 +79,7 @@ class RtsWindow < Gosu::Window
   end
 end
 
-if $0 == __FILE__
+# if $0 == __FILE__
 
 	opts = Slop.parse do |o|
 		o.string '-p1', '--p1_host', 'player 1 host', default: 'localhost'
@@ -89,6 +89,7 @@ if $0 == __FILE__
 		o.string '-m', '--map', 'map filename to play (tmx format)', default: 'map.tmx'
 		o.bool '-q', '--quiet', 'suppress output (quiet mode)'
 		o.bool '-l', '--log', 'log entire game'
+		o.bool '-f', '--fast', 'advance to the next turn as soon as all clients have sent a message'
     o.on '--help', 'print this help' do
       puts o
       exit
@@ -101,6 +102,6 @@ if $0 == __FILE__
   ]
   clients << {host: opts[:p2_host], port: opts[:p2_port]} if opts[:p2_host]
 
-  $window = RtsWindow.new map: opts[:map], clients: clients 
+  $window = RtsWindow.new map: opts[:map], clients: clients, fast: opts[:fast]
   $window.show
-end
+# end

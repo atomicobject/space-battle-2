@@ -1,5 +1,6 @@
 # require 'awesome_print'
 require 'json'
+require 'oj'
 require 'thread'
 require 'set'
 
@@ -22,7 +23,7 @@ class GameLogger
     @log_file = File.open('game-log.txt', 'w+')
   end
   def log(msg)
-    @log_file.puts(msg)
+    @log_file.puts("#{Time.now.to_ms}: #{msg}")
     @log_file.flush
   end
 
@@ -139,8 +140,9 @@ class RtsGame
     return t
   end
 
-  def initialize(map:,clients:)
+  def initialize(map:,clients:,fast:false)
     build_world clients, map
+    @fast_mode = fast
     @next_turn_queue = Queue.new
     @data_out_queue = Queue.new
     @messages_queue ||= Queue.new
@@ -174,7 +176,8 @@ class RtsGame
         @turn_time ||= 0
         @turn_time += delta
         @sim_steps ||= 0
-        if @sim_steps >= STEPS_PER_TURN
+        can_skip = (@fast_mode && @network_manager.message_received_for_all_clients?)
+        if @sim_steps >= STEPS_PER_TURN || can_skip
           @sim_steps =0
           msgs = @network_manager.pop_messages!
           input[:messages] = msgs
@@ -187,10 +190,12 @@ class RtsGame
           input[:messages] = []
         end
 
-        while (@sim_steps * SIMULATION_STEP <= @turn_time) && (@sim_steps < STEPS_PER_TURN)
-          @world.update @entity_manager, SIMULATION_STEP, input, @resources
-          input.delete(:messages)
-          @sim_steps+=1
+        unless can_skip
+          while (@sim_steps * SIMULATION_STEP <= @turn_time) && (@sim_steps < STEPS_PER_TURN)
+            @world.update @entity_manager, SIMULATION_STEP, input, @resources
+            input.delete(:messages)
+            @sim_steps+=1
+          end
         end
 
         time_remaining = @entity_manager.first(Timer).get(Timer).ttl
@@ -208,7 +213,7 @@ class RtsGame
 
     time_remaining = entity_manager.first(Timer).get(Timer).ttl
     if time_remaining <= 0
-      return {player: player_id, turn: turn_count, time: time_remaining}.to_json
+      return Oj.dump({player: player_id, turn: turn_count, time: time_remaining}, mode: :compat)
     end
 
     base_ent = entity_manager.find(Base, Unit, Health, PlayerOwned, Position).select{|ent| ent.get(PlayerOwned).id == player_id}.first
@@ -312,7 +317,7 @@ class RtsGame
     end
     msg = {unit_updates: units, tile_updates: tiles}
     msg.merge!( player: player_id, turn: turn_count, time: time_remaining)
-    msg.to_json
+    Oj.dump(msg, mode: :compat)
   end
 
   private

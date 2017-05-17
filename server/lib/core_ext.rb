@@ -1,3 +1,8 @@
+class Time
+  def to_ms
+    (self.to_f * 1000.0).to_i
+  end
+end
 module Enumerable
   def sum
     size > 0 ? inject(0, &:+) : 0

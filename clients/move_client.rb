@@ -1,15 +1,16 @@
 require 'socket'
 require 'json'
+require 'oj'
 require_relative '../server/lib/vec'
 require_relative './client_map'
 
-$quiet = false
+port = ARGV.size > 0 ? ARGV[0].to_i : 9090
+$quiet = ARGV.size > 1
+
 if $quiet
   def puts(*args)
   end
 end
-
-port = ARGV.size > 0 ? ARGV[0].to_i : 9090
 server = TCPServer.new port
 
 DIR_VECS = {
@@ -89,7 +90,7 @@ loop do
         map.update_tile tu
       end
 
-      map.pretty(units, time_remaining)
+      map.pretty(units, time_remaining) unless $quiet
     end
 
     unit_updates = {}
@@ -128,10 +129,10 @@ loop do
       end
     end
 
-    j = cmd_msg.to_json
+    j = Oj.dump(cmd_msg, mode: :compat)
     # puts "====="
     # puts j
-    server_connection.puts(j) unless cmds.empty?
+    server_connection.puts(j)# unless cmds.empty?
 
   end
 

@@ -5,4 +5,5 @@ gem "easy_diff"
 gem 'tmx'
 gem 'rspec'
 gem 'slop', '4.4.3'
+gem 'oj'
 gem 'pry', '0.11.0.pre2'
