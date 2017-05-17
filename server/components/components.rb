@@ -49,6 +49,7 @@ class Unit
     @status = status
     @dirty = true
     @type = type
+    @alive = true
   end
   def dirty?
     @dirty
@@ -69,6 +70,9 @@ Resource = define_component(attrs: [:value, :total])
 Timed = define_component(attrs: [:accumulated_time_in_ms])
 Ranged = define_component(attrs: [:distance])
 Speed = define_component(attrs: [:speed])
+Attack = define_component(attrs: [:damage,:range])
+AttackCommand = define_component(attrs: [:id,:dx,:dy])
+Shooter = define_component(attrs: [:reload_time, :current_reload])
 
 class Position
   attr_accessor :x, :y, :z

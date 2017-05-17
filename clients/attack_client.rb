@@ -21,7 +21,6 @@ DIR_VECS = {
 COST_OF_WORKER = 100
 COST_OF_SCOUT = 130
 COST_OF_TANK = 150
-
 def resource_adjacent_to(map, base, unit_info)
   x = unit_info['x']
   y = unit_info['y']
@@ -54,6 +53,14 @@ def create_command(type)
   cmd = {
     command: "CREATE",
     type: type
+  }
+end
+def attack_command(dx,dy,id)
+  cmd = {
+    command: "ATTACK",
+    dx: dx,
+    dy: dy,
+    unit: id,
   }
 end
 
@@ -89,7 +96,7 @@ loop do
         map.update_tile tu
       end
 
-      map.pretty(units, time_remaining)
+      # map.pretty(units, time_remaining)
     end
 
     unit_updates = {}
@@ -101,7 +108,7 @@ loop do
     base = units.values.find{|u| u['type'] == 'base'}
     if time_remaining > 200_000
       if base && base['resource'] >= COST_OF_TANK
-        cmds << create_command([:scout,:tank].sample)
+        cmds << create_command(:tank)
       end
     end
 
@@ -122,6 +129,24 @@ loop do
         elsif uu['type'] != 'base'
           cmds << move_command(outstanding_unit_cmds, id)
         end
+
+        if uu['type'] == 'tank'
+          x = uu['x']
+          y = uu['y']
+          catch :found_target do
+            ((x-2)..(x+2)).each do |tx|
+              ((y-2)..(y+2)).each do |ty|
+                tile = map.at(tx,ty)
+                unless tile.nil? || tile['units'].nil? || tile['units'].empty?
+                  # TODO search for biggest bang-for-buck target
+                  cmds << attack_command(tx-x,ty-y,id)
+                  throw :found_target
+                end
+              end
+            end
+          end
+        end
+
       elsif had_outstanding_move
         cmds << move_command(outstanding_unit_cmds, id)
       end

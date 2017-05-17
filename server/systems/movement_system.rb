@@ -11,7 +11,13 @@ class MovementSystem
     base_speed = tile_size.to_f/(RtsGame::TURN_DURATION * 5)
     entity_manager.each_entity PlayerOwned, Unit, MovementCommand, Position, Speed do |ent|
       pwn, u, movement, pos, s = ent.components
+
       ent_id = ent.id
+
+      if u.status == :dead
+        entity_manager.remove_component(klass: MovementCommand, id: ent_id)
+        next
+      end
 
       speed = base_speed * s.speed
 

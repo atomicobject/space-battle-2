@@ -1,4 +1,8 @@
-Add game log
+ATTACK command
+  add attack cooldown to unit packet
+  have system respect cooldown
+  have attack_client respect cooldown
+
 
 Game connection header
   turn duration
@@ -15,11 +19,7 @@ do not block server for client comm
   timeouts?
 handle disconnects
 
-ATTACK command
-Add health to unit "packet"
 
-how to kill a unit??
-  status: dead... then no more updates
 
 make units "bounce" while moving
 

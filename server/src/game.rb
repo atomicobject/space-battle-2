@@ -6,14 +6,14 @@ require 'set'
 require_relative '../lib/core_ext'
 require_relative '../lib/vec'
 require_relative '../components/components'
-require_relative '../lib/prefab'
 require_relative '../systems/render_system'
 require_relative '../systems/systems'
 require_relative '../lib/world'
 require_relative '../lib/map'
 require_relative '../lib/entity_manager'
 require_relative '../lib/input_cacher'
-require_relative '../lib/network_manager'
+require_relative '../src/network_manager'
+require_relative '../src/prefab'
 
 class GameLogger
   require 'singleton'
@@ -70,6 +70,8 @@ class RtsGame
       range: 2,
       speed: 1,
       attack: 3,
+      attack_type: :melee,
+      attack_cooldown: 2,
       hp: 5,
       can_carry: true,
     },
@@ -78,6 +80,8 @@ class RtsGame
       range: 5,
       speed: 2,
       attack: 1,
+      attack_type: :melee,
+      attack_cooldown: 2,
       hp: 3,
     },
     tank: {
@@ -86,6 +90,9 @@ class RtsGame
       speed: 0.5,
       attack: 5,
       hp: 10,
+      attack_type: :ranged,
+      attack_cooldown: 3,
+      reload: 3,
     },
   }
   PLAYER_START_RESOURCE = UNITS[:tank][:cost]
@@ -321,6 +328,7 @@ class RtsGame
     @world = World.new [
       CommandSystem.new,
       MovementSystem.new,
+      AttackSystem.new,
       TimerSystem.new,
       TimedSystem.new,
       TimedLevelSystem.new,

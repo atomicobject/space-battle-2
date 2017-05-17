@@ -18,6 +18,7 @@ class CommandSystem
             u, pos, owner = ent.components
 
             if owner.id == msg.connection_id
+              # TODO move this check logic to MovementSystem
               tile_size = RtsGame::TILE_SIZE
               target = pos.to_vec + RtsGame::DIR_VECS[cmd['dir']]*tile_size
 
@@ -40,6 +41,7 @@ class CommandSystem
             type = cmd['type']
             next unless type && RtsGame::UNITS.has_key?(type.to_sym)
 
+            # TODO move to UnitCreationSystem
             cost = RtsGame::UNITS[type.to_sym][:cost]
             if base.resource >= cost
               base.resource -= cost
@@ -48,6 +50,17 @@ class CommandSystem
                           x: base_pos.x, y: base_pos.y, 
                           player_id: msg.connection_id)
               base_ent.get(Unit).dirty = true
+            end
+
+
+          elsif c == 'ATTACK'
+            dx, dy, uid = cmd.values_at('dx','dy','unit')
+            ent = entity_manager.find_by_id(uid, Unit, Position, PlayerOwned)
+            next unless ent 
+
+            u, pos, owner = ent.components
+            if owner.id == msg.connection_id
+              entity_manager.add_component(id: uid, component: AttackCommand.new(id: uid, dx: dx, dy: dy))
             end
 
           elsif c == 'GATHER'
