@@ -225,8 +225,8 @@ class RtsGame
 
     prev_interesting_tiles = tile_info.interesting_tiles
     interesting_tiles = Set.new
-    entity_manager.each_entity(Unit, PlayerOwned, Position, Ranged, ResourceCarrier) do |ent|
-      u, player, pos, rang, res_car = ent.components
+    entity_manager.each_entity(Unit, PlayerOwned, Position, Ranged) do |ent|
+      u, player, pos, rang = ent.components
       if player.id == player_id
         interesting_tiles.merge(TileInfoHelper.tiles_near_unit(tile_info, u, pos, rang))
       end
