@@ -1,6 +1,14 @@
  module Prefab
   include Gosu
 
+  def self.explosion(entity_manager:,x:,y:)
+    entity_manager.add_entity(
+      Explosion.new,
+      Position.new(x:x, y:y, z:10),
+      Label.new(size: 64, text: '#')
+    )
+  end
+
   def self.base(entity_manager:,x:,y:,player_id:,map_info:)
     entity_manager.add_entity PlayerOwned.new(id: player_id), TileInfo.new
 
@@ -19,6 +27,7 @@
       r,
       health
     )
+    puts "#{player_id}: BASE: #{id}"
 
     tile_size = RtsGame::TILE_SIZE
     tile_x = (x/tile_size).floor
@@ -35,14 +44,21 @@
       Unit.new(type: type.to_sym),
       Position.new(x:x, y:y),
       Ranged.new(distance: unit_def[:range]),
-      Attack.new(damage: unit_def[:attack], range: unit_def[:range]),
+      Attack.new(damage: unit_def[:attack], 
+                 range: unit_def[:range], 
+                 cooldown: unit_def[:attack_cooldown],
+                 current_cooldown: 0,
+                 can_attack: true
+                ),
       Speed.new(speed: unit_def[:speed]),
       PlayerOwned.new(id: player_id),
       Sprited.new(image: "#{type}#{player_id}".to_sym),
       health
     )
+
+    puts "#{player_id}: #{type.to_s.upcase}: #{id}"
     entity_manager.add_component component: ResourceCarrier.new, id: id if unit_def[:can_carry]
-    entity_manager.add_component component: Shooter.new(reload_time: unit_def[:reload], current_reload: 0), id: id if unit_def[:attack_type] == :ranged
+    entity_manager.add_component component: Shooter.new, id: id if unit_def[:attack_type] == :ranged
 
     tile_size = RtsGame::TILE_SIZE
     tile_x = (x/tile_size).floor

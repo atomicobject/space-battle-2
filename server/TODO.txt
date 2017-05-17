@@ -1,8 +1,5 @@
 ATTACK command
-  add attack cooldown to unit packet
-  have system respect cooldown
-  have attack_client respect cooldown
-
+  fix targeting
 
 Game connection header
   turn duration

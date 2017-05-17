@@ -12,7 +12,7 @@ class RenderSystem
 
   def get_cached_font(font:nil,size:)
     @font_cache[font] ||= {}
-    opts = {}
+    opts = {} 
     opts[:name] if font if font
     @font_cache[font][size] ||= Gosu::Font.new size, opts
   end
@@ -27,7 +27,6 @@ class RenderSystem
           t = map.at(x,y)
           base_x = x*tile_size
           base_y = y*tile_size
-          # puts "#{base_x},#{base_y}"
           img = images[t.image]
           puts "could not find image for: #{t.image}" unless img
           img.draw base_x, base_y, ZOrder::Terrain
@@ -49,13 +48,21 @@ class RenderSystem
         font.draw(label.text, pos.x, pos.y, pos.z)
       end
 
+      entity_manager.each_entity Attack, Position do |rec|
+        attack, pos = rec.components
+        font = get_cached_font size: 10
+        if attack.current_cooldown > 0
+          font.draw(attack.current_cooldown, pos.x+10, pos.y+50, ZOrder::HUD)
+        end
+      end
+
       entity_manager.each_entity Health, Position do |rec|
         h, pos = rec.components
         x = pos.x
         y = pos.y
         bg_c = Gosu::Color.rgba(255,255,255,128)
         hp_c = Gosu::Color.rgba(20,255,20,128)
-        if h.points < h.max
+        if h.points < h.max && h.points > 0
           draw_rect(target, x, y-10, ZOrder::HUD, 60, 10, bg_c)
           draw_rect(target, x+1, y-9, ZOrder::HUD, 58*(h.points.to_f/h.max), 8, hp_c)
         end

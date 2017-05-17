@@ -72,7 +72,7 @@ class RtsGame
       speed: 1,
       attack: 3,
       attack_type: :melee,
-      attack_cooldown: 2,
+      attack_cooldown: 2 * STEPS_PER_TURN,
       hp: 5,
       can_carry: true,
     },
@@ -82,18 +82,17 @@ class RtsGame
       speed: 2,
       attack: 1,
       attack_type: :melee,
-      attack_cooldown: 2,
+      attack_cooldown: 2 * STEPS_PER_TURN,
       hp: 3,
     },
     tank: {
       cost: 150,
       range: 2,
       speed: 0.5,
-      attack: 5,
+      attack: 4,
       hp: 10,
       attack_type: :ranged,
-      attack_cooldown: 3,
-      reload: 3,
+      attack_cooldown: 5 * STEPS_PER_TURN,
     },
   }
   PLAYER_START_RESOURCE = UNITS[:tank][:cost]
@@ -253,12 +252,14 @@ class RtsGame
         units: tile_units.map do |tu|
           ent = entity_manager.find_by_id(tu, Position, PlayerOwned, Unit, Health)
           pid = ent.get(PlayerOwned).id
+          status = ent.get(Unit).status == :dead ? :dead : :unknown
           pid != player_id ? 
           {
             id: tu,
             x: ent.get(Position).x.round,
             y: ent.get(Position).y.round,
             type: ent.get(Unit).type,
+            status: status,
             player_id: pid,
             health: ent.get(Health).points,
           } : nil
@@ -293,11 +294,11 @@ class RtsGame
       if u.dirty?
         if player.id == player_id
           res_car_result = entity_manager.find_by_id(ent.id, ResourceCarrier)
-          if res_car_result
-            res = res_car_result.get(ResourceCarrier).resource
-          else
-            res = nil
-          end
+          res = res_car_result&.get(ResourceCarrier)&.resource
+
+          attack_res = entity_manager.find_by_id(ent.id, Attack)
+          can_attack = attack_res&.get(Attack)&.can_attack
+
           units << { id: ent.id, player_id: player.id, 
             x: ((pos.x-base_pos.x).to_f/TILE_SIZE).floor, 
             y: ((pos.y-base_pos.y).to_f/TILE_SIZE).floor, 
@@ -305,6 +306,7 @@ class RtsGame
             type: u.type,
             resource: res,
             health: health.points, 
+            can_attack: can_attack,
           }
           u.dirty = false
         end
@@ -338,8 +340,8 @@ class RtsGame
 
     @world = World.new [
       CommandSystem.new,
-      MovementSystem.new,
       AttackSystem.new,
+      MovementSystem.new,
       TimerSystem.new,
       TimedSystem.new,
       TimedLevelSystem.new,

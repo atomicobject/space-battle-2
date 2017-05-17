@@ -110,6 +110,7 @@ loop do
 
       if uu = unit_updates[id]
         units[id] =  uu
+        next if uu['status'] == 'dead'
         if uu['status'] == 'moving'
           outstanding_unit_cmds.delete(id) if outstanding_unit_cmds[id] == :move
         elsif uu['status'] == 'idle'

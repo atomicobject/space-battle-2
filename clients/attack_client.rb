@@ -116,6 +116,10 @@ loop do
       had_outstanding_move = outstanding_unit_cmds[id] == :move
 
       if uu = unit_updates[id]
+        if uu['status'] == 'dead'
+          outstanding_unit_cmds.delete id
+          next
+        end
         units[id] =  uu
         if uu['status'] == 'moving'
           outstanding_unit_cmds.delete(id) if outstanding_unit_cmds[id] == :move
@@ -130,17 +134,22 @@ loop do
           cmds << move_command(outstanding_unit_cmds, id)
         end
 
-        if uu['type'] == 'tank'
+        if uu['type'] == 'tank' && uu['can_attack']
           x = uu['x']
           y = uu['y']
           catch :found_target do
             ((x-2)..(x+2)).each do |tx|
               ((y-2)..(y+2)).each do |ty|
+
+                next if tx == x || ty == y # don't shoot self
                 tile = map.at(tx,ty)
                 unless tile.nil? || tile['units'].nil? || tile['units'].empty?
                   # TODO search for biggest bang-for-buck target
-                  cmds << attack_command(tx-x,ty-y,id)
-                  throw :found_target
+                  puts tile['units'].map{|tu|tu['status']}
+                  if tile['units'].any?{|tu|tu['status'] != 'dead'}
+                    cmds << attack_command(tx-x,ty-y,id)
+                    throw :found_target
+                  end
                 end
               end
             end

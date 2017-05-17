@@ -70,9 +70,10 @@ Resource = define_component(attrs: [:value, :total])
 Timed = define_component(attrs: [:accumulated_time_in_ms])
 Ranged = define_component(attrs: [:distance])
 Speed = define_component(attrs: [:speed])
-Attack = define_component(attrs: [:damage,:range])
+Attack = define_component(attrs: [:damage,:range,:cooldown,:current_cooldown,:can_attack])
 AttackCommand = define_component(attrs: [:id,:dx,:dy])
-Shooter = define_component(attrs: [:reload_time, :current_reload])
+Shooter = define_component
+Explosion = define_component
 
 class Position
   attr_accessor :x, :y, :z
