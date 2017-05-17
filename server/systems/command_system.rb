@@ -18,18 +18,16 @@ class CommandSystem
             u, pos, owner = ent.components
 
             if owner.id == msg.connection_id
-              # TODO move this check logic to MovementSystem
-              tile_size = RtsGame::TILE_SIZE
-              target = pos.to_vec + RtsGame::DIR_VECS[cmd['dir']]*tile_size
+              dir = RtsGame::DIR_VECS[cmd['dir']]
+              target_tile_x = pos.tile_x + dir.x
+              target_tile_y = pos.tile_y + dir.y
+              target = vec(target_tile_x, target_tile_y)*RtsGame::TILE_SIZE
 
-              tile_x = (target.x / tile_size).floor
-              tile_y = (target.y / tile_size).floor
-              unless MapInfoHelper.blocked?(map_info, tile_x, tile_y) || u.status == :moving
-                # TODO how to implement some sort of "has cmd" check?
-                u.status = :moving
-                u.dirty = true
-                entity_manager.add_component(id: uid, 
-                                            component: MovementCommand.new(target_vec: target) )
+              unless MapInfoHelper.blocked?(map_info, target_tile_x, target_tile_y) || 
+                u.status == :moving || u.status == :dead
+                u.status
+                  entity_manager.add_component(id: uid, 
+                    component: MovementCommand.new(target_vec: target) )
               end
             end
 

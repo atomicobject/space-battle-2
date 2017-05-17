@@ -76,11 +76,13 @@ Shooter = define_component
 Explosion = define_component
 
 class Position
-  attr_accessor :x, :y, :z
-  def initialize(x:,y:,z:2)
+  attr_accessor :x, :y, :z, :tile_x, :tile_y
+  def initialize(x:,y:,tile_x:nil,tile_y:nil,z:2)
     @x = x
     @y = y
     @z = z
+    @tile_x = tile_x
+    @tile_y = tile_y
   end
 
   def to_vec

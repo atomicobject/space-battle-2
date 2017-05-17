@@ -59,7 +59,7 @@ class RtsGame
   TILE_SIZE = 64
   SIMULATION_STEP = 20
   STEPS_PER_TURN = TURN_DURATION / SIMULATION_STEP
-  STARTING_WORKERS = 5
+  STARTING_WORKERS = 10
   GAME_LENGTH_IN_MS = 300_000
   UNITS = {
     base: {
@@ -221,8 +221,6 @@ class RtsGame
     tile_info = entity_manager.find(PlayerOwned, TileInfo).
       find{|ent| ent.get(PlayerOwned).id == player_id}.get(TileInfo)
 
-    base_tile_x = (base_pos.x.to_f/TILE_SIZE).floor
-    base_tile_y = (base_pos.y.to_f/TILE_SIZE).floor
     map = entity_manager.first(MapInfo).get(MapInfo)
 
     prev_interesting_tiles = tile_info.interesting_tiles
@@ -245,8 +243,8 @@ class RtsGame
       blocked = MapInfoHelper.blocked?(map,i,j)
       tiles << {
         visible: true,
-        x: i-base_tile_x,
-        y: j-base_tile_y,
+        x: i-base_pos.tile_x,
+        y: j-base_pos.tile_y,
         blocked: blocked,
         resources: res,
         units: tile_units.map do |tu|
@@ -256,8 +254,8 @@ class RtsGame
           pid != player_id ? 
           {
             id: tu,
-            x: ent.get(Position).x.round,
-            y: ent.get(Position).y.round,
+            x: ent.get(Position).tile_x,
+            y: ent.get(Position).tile_y,
             type: ent.get(Unit).type,
             status: status,
             player_id: pid,
@@ -272,8 +270,8 @@ class RtsGame
       blocked = MapInfoHelper.blocked?(map,i,j)
       tiles << {
         visible: false,
-        x: i-base_tile_x,
-        y: j-base_tile_y,
+        x: i-base_pos.tile_x,
+        y: j-base_pos.tile_y,
       }
     end
 
@@ -300,8 +298,8 @@ class RtsGame
           can_attack = attack_res&.get(Attack)&.can_attack
 
           units << { id: ent.id, player_id: player.id, 
-            x: ((pos.x-base_pos.x).to_f/TILE_SIZE).floor, 
-            y: ((pos.y-base_pos.y).to_f/TILE_SIZE).floor, 
+            x: (pos.tile_x-base_pos.tile_x),
+            y: (pos.tile_y-base_pos.tile_y),
             status: u.status,
             type: u.type,
             resource: res,

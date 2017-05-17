@@ -5,12 +5,8 @@ class TileInfoHelper
     def tiles_near_unit(tile_info, u, pos, r)
       tiles = Set.new
       range = r.distance
-      x = pos.x
-      y = pos.y
-      tile_size = RtsGame::TILE_SIZE
-      tile_x = (x.to_f/tile_size).floor
-      tile_y = (y.to_f/tile_size).floor
-
+      tile_x = pos.tile_x
+      tile_y = pos.tile_y
       ((tile_x-range)..(tile_x+range)).each do |x|
         ((tile_y-range)..(tile_y+range)).each do |y|
           tiles << [x,y]
@@ -80,6 +76,7 @@ class MapInfoHelper
       tile = at(info, x, y)
       tile && tile.resource
     end
+
   end
 end
 

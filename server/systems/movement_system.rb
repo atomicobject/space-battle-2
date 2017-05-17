@@ -18,6 +18,8 @@ class MovementSystem
         entity_manager.remove_component(klass: MovementCommand, id: ent_id)
         next
       end
+      u.status = :moving
+      u.dirty = true
 
       speed = base_speed * s.speed
 
@@ -36,8 +38,8 @@ class MovementSystem
 
       if (movement.target_vec - pos.to_vec).magnitude <= close_enough
         map_info = entity_manager.first(MapInfo).get(MapInfo)
-        pre_tile_x = (pre_move_pos.x/tile_size).floor
-        pre_tile_y = (pre_move_pos.y/tile_size).floor
+        pre_tile_x = pre_move_pos.tile_x
+        pre_tile_y = pre_move_pos.tile_y
         MapInfoHelper.remove_unit_from(map_info,pre_tile_x,pre_tile_y,ent_id)
 
         pos.x = movement.target_vec.x.round
@@ -45,6 +47,8 @@ class MovementSystem
 
         tile_x = (pos.x/tile_size).floor
         tile_y = (pos.y/tile_size).floor
+        pos.tile_x = tile_x
+        pos.tile_y = tile_y
         MapInfoHelper.add_unit_at(map_info,tile_x,tile_y,ent_id)
         u.dirty = true
         u.status = :idle
@@ -52,7 +56,7 @@ class MovementSystem
         base_ent = entity_manager.find(Base, Unit, PlayerOwned, Position, Label).select{|ent| ent.get(PlayerOwned).id == pwn.id}.first
         base_pos = base_ent.get(Position)
 
-        if (base_pos.x - pos.x).abs <= 1 && (base_pos.y - pos.y).abs <= 1
+        if (tile_x - base_pos.tile_x).abs <= 1 && (tile_y - base_pos.tile_y).abs <= 1
           base = base_ent.get(Base)
           unit_res_ent = entity_manager.find_by_id(ent_id, ResourceCarrier, Label)
           if unit_res_ent

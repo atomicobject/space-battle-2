@@ -146,7 +146,9 @@ loop do
                 unless tile.nil? || tile['units'].nil? || tile['units'].empty?
                   # TODO search for biggest bang-for-buck target
                   puts tile['units'].map{|tu|tu['status']}
-                  if tile['units'].any?{|tu|tu['status'] != 'dead'}
+                  non_dead = tile['units'].select{|tu|tu['status'] != 'dead'}
+                  unless non_dead.empty?
+                    p non_dead.inspect
                     cmds << attack_command(tx-x,ty-y,id)
                     throw :found_target
                   end

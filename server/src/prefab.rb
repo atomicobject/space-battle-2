@@ -17,10 +17,11 @@
 
     hp = RtsGame::UNITS[:base][:hp]
     health = Health.new(points: hp, max: hp)
+    tile_size = RtsGame::TILE_SIZE
     id = entity_manager.add_entity(
       Unit.new(status: :base, type: :base), 
       b,
-      Position.new(x:x, y:y, z:10),
+      Position.new(x:x, y:y, tile_x: (x/tile_size).floor, tile_y: (y/tile_size).floor, z:10),
       PlayerOwned.new(id: player_id),
       Sprited.new(image: "base#{player_id}".to_sym),
       Label.new(size: 24, text: b.resource),
@@ -40,9 +41,10 @@
     unit_def = RtsGame::UNITS[type.to_sym]
     health = Health.new(points: unit_def[:hp], max: unit_def[:hp])
     health.points -= 2 if type.to_sym == :scout
+    tile_size = RtsGame::TILE_SIZE
     id = entity_manager.add_entity(
       Unit.new(type: type.to_sym),
-      Position.new(x:x, y:y),
+      Position.new(x:x, y:y, tile_x: (x/tile_size).floor, tile_y: (y/tile_size).floor),
       Ranged.new(distance: unit_def[:range]),
       Attack.new(damage: unit_def[:attack], 
                  range: unit_def[:range], 
