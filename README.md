@@ -34,6 +34,7 @@ To command your units:
         {command: "MOVE", unit: "ABC", dir: "S"},
         {command: "GATHER", unit: "123", dir: "S"},
         {command: "CREATE", type: "worker"},
+        {command: "ATTACK", unit: "ABC", dx: 3, dy: 2},
       ]
     }
 
@@ -56,6 +57,7 @@ __GATHER__: `unit`,`dir` Tell a unit to collect from a resource in the specified
 
 __CREATE__: `type` Create a new unit by type: `worker,scout,tank`. Command is ignored if the player's base does not have enough resources.
 
+__ATTACK__: `unit`,`dx`,`dy` Tell the unit to attack a location relative to the attacker. All units at the location will be damaged (including your own). Command is ignored if the location is out of the attacker's range.
 
 **Notes**
 

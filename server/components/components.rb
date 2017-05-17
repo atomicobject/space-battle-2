@@ -63,7 +63,7 @@ end
 Base = define_component(attrs: [:resource])
 Sprited = define_component(attrs: [:image])
 PlayerOwned = define_component(attrs: [:id])
-Health = define_component(attrs: [:points])
+Health = define_component(attrs: [:points, :max])
 EntityTarget = define_component(attrs: [:id])
 Resource = define_component(attrs: [:value, :total])
 Timed = define_component(attrs: [:accumulated_time_in_ms])

@@ -82,6 +82,7 @@ DIR_VECS = {
 }
 COST_OF_WORKER = 100
 COST_OF_SCOUT = 130
+COST_OF_TANK = 150
 def resource_adjacent_to(map, base, unit_info)
   x = unit_info['x']
   y = unit_info['y']
@@ -160,9 +161,8 @@ loop do
     unit_ids = unit_updates.keys | units.keys
     base = units.values.find{|u| u['type'] == 'base'}
     if time_remaining > 200_000
-      if base && base['resource'] >= COST_OF_SCOUT
-        # cmds << create_command(:worker)
-        cmds << create_command(:scout)
+      if base && base['resource'] >= COST_OF_TANK
+        cmds << create_command([:scout,:tank].sample)
       end
     end
 

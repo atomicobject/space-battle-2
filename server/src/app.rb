@@ -4,12 +4,12 @@ require 'slop'
 require_relative './game'
 
 class RtsWindow < Gosu::Window
-  def initialize(clients:)
+  def initialize(clients:,map:)
     super(1024,1024,false)
     @input_cacher = InputCacher.new
     @last_millis = Gosu::milliseconds.to_f
 
-    @game = RtsGame.new clients: clients
+    @game = RtsGame.new clients: clients, map: map
     preload_assets! @game.resources
   end
 
@@ -86,6 +86,7 @@ if $0 == __FILE__
 		o.integer '-p1p', '--p1_port', 'player 1 port', default: 9090
 		o.string '-p2', '--p2_host', 'player 2 host'
 		o.integer '-p2p', '--p2_port', 'player 2 port', default: 9090
+		o.string '-m', '--map', 'map filename to play (tmx format)', default: 'map.tmx'
 		o.bool '-q', '--quiet', 'suppress output (quiet mode)'
 		o.bool '-l', '--log', 'log entire game'
     o.on '--help', 'print this help' do
@@ -100,6 +101,6 @@ if $0 == __FILE__
   ]
   clients << {host: opts[:p2_host], port: opts[:p2_port]} if opts[:p2_host]
 
-  $window = RtsWindow.new clients: clients
+  $window = RtsWindow.new map: opts[:map], clients: clients 
   $window.show
 end

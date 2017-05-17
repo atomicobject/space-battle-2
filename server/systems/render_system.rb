@@ -49,6 +49,19 @@ class RenderSystem
         font.draw(label.text, pos.x, pos.y, pos.z)
       end
 
+      entity_manager.each_entity Health, Position do |rec|
+        h, pos = rec.components
+        x = pos.x
+        y = pos.y
+        bg_c = Gosu::Color.rgba(255,255,255,128)
+        hp_c = Gosu::Color.rgba(20,255,20,128)
+        if h.points < h.max
+          draw_rect(target, x, y-10, ZOrder::HUD, 60, 10, bg_c)
+          draw_rect(target, x+1, y-9, ZOrder::HUD, 58*(h.points.to_f/h.max), 8, hp_c)
+        end
+      end
+
+
       score_x = 50
       entity_manager.each_entity Base, PlayerOwned do |rec|
         base, player = rec.components
@@ -66,6 +79,11 @@ class RenderSystem
       end
     end
   end
+
+private
+  def draw_rect(t, x, y, z, width, height, color)
+    t.draw_quad(x, y, color, x+width, y, color, x, y+height, color, x+width, y+height, color, z)
+	end
 
   def format_time_string(ms)
     seconds = ms/1000
