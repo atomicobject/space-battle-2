@@ -1,12 +1,12 @@
 require 'set'
 
 class InputSnapshot
-  attr_reader :mouse_pos, :total_time
+  attr_reader :mouse_pos, :total_time, :down_ids
 
   def initialize(previous_snapshot=nil, total_time=0, down_ids=Set.new, mouse_pos={})
     @total_time = total_time
     @mouse_pos = mouse_pos.freeze
-    @previous_snapshot = previous_snapshot
+    @previous_down_ids = previous_snapshot&.down_ids
     @down_ids = down_ids
     @data = {}
   end
@@ -20,11 +20,11 @@ class InputSnapshot
   end
 
   def pressed?(id)
-    @down_ids && @down_ids.include?(id) && !@previous_snapshot.down?(id)
+    @down_ids && @down_ids.include?(id) && @previous_down_ids && !@previous_down_ids.include?(id)
   end
 
   def released?(id)
-    @down_ids && !@down_ids.include?(id) && @previous_snapshot && @previous_snapshot.down?(id)
+    @down_ids && !@down_ids.include?(id) && @previous_down_ids && @previous_down_ids.include?(id)
   end
 
   def [](k)
