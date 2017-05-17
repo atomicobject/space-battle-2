@@ -68,13 +68,11 @@ class CommandSystem
             u, pos, res_car, owner = ent.components
 
             if owner.id == msg.connection_id
-              tile_size = RtsGame::TILE_SIZE
-              target = pos.to_vec + RtsGame::DIR_VECS[cmd['dir']]*tile_size
+              dir = RtsGame::DIR_VECS[cmd['dir']]
+              target_tile_x = pos.tile_x + dir.x
+              target_tile_y = pos.tile_y + dir.y
 
-              tile_x = (target.x / tile_size).floor
-              tile_y = (target.y / tile_size).floor
-
-              res_info = MapInfoHelper.resource_at(map_info, tile_x, tile_y)
+              res_info = MapInfoHelper.resource_at(map_info, target_tile_x, target_tile_y)
               if res_info
 
                 tile_infos =  {} 
@@ -83,7 +81,7 @@ class CommandSystem
                   tile_infos[player.id] = tile_info
                 end
                 tile_infos.values.each do |tile_info|
-                  TileInfoHelper.dirty_tile(tile_info, target.x, target.y)
+                  TileInfoHelper.dirty_tile(tile_info, target_tile_x, target_tile_y)
                 end
 
                 resource_ent = entity_manager.find_by_id(res_info[:id], Resource, Label)
@@ -98,7 +96,7 @@ class CommandSystem
                 entity_manager.add_component(id: uid, component: Label.new(size:14,text:res_car.resource))
 
                 if resource.total <= 0
-                  MapInfoHelper.remove_resource_at(map_info, tile_x, tile_y)
+                  MapInfoHelper.remove_resource_at(map_info, target_tile_x, target_tile_y)
                   entity_manager.remove_entity(id: res_info[:id])
                 end
               end
