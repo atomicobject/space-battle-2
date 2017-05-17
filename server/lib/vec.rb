@@ -51,6 +51,25 @@ class Vec
     Math.sqrt(@x*@x + @y*@y)
   end
 
+  def clipTo(maxMagnitude)
+    mag = magnitude
+    if mag > maxMagnitude
+      self * (maxMagnitude / mag)
+    else
+      self
+    end
+  end
+
+  def move_toward(pos, distance)
+    displacement = self - pos
+    if displacement.magnitude >= distance
+      pos
+    else
+      self + (displacement.unit * distance)
+    end
+  end
+
+
   def unit
     m = Math.sqrt(x*x+y*y)
     vec(x/m, y/m)

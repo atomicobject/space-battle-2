@@ -21,16 +21,20 @@ class MovementSystem
 
       speed = base_speed * s.speed
 
-      dir = movement.target_vec - pos.to_vec
-      move = dir.unit * dt * speed
+      displacement = movement.target_vec - pos.to_vec
+      dist = displacement.magnitude
+      move = (displacement.unit * dt * speed).clipTo(dist) # clip any overshoot
 
       pre_move_pos = pos.deep_clone
       pos.x += move.x
       pos.y += move.y
 
-      # TODO detect crossover of target point (overshoot possible)
-      close_enough = 10.0/RtsGame::TURN_DURATION
-      if dir.magnitude < close_enough
+      # semi arbitrarily set to 1/4 the distance a unit could travel in a simulation step
+      #   should be much larger than any rounding error
+      #   and much smaller than any real/indented gap
+      close_enough = RtsGame::SIMULATION_STEP/4.0 * speed
+
+      if (movement.target_vec - pos.to_vec).magnitude <= close_enough
         map_info = entity_manager.first(MapInfo).get(MapInfo)
         pre_tile_x = (pre_move_pos.x/tile_size).floor
         pre_tile_y = (pre_move_pos.y/tile_size).floor

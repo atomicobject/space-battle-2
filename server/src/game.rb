@@ -181,6 +181,7 @@ class RtsGame
           input[:messages] = msgs
 
           send_update_to_clients(input.deep_clone)
+          @entity_manager = @next_turn_queue.pop
 
           @turn_time -= TURN_DURATION
         else
