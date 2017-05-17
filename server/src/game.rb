@@ -23,6 +23,7 @@ class GameLogger
   end
   def log(msg)
     @log_file.puts(msg)
+    @log_file.flush
   end
 
   def self.log(msg)
@@ -106,44 +107,61 @@ class RtsGame
 
   attr_accessor :entity_manager, :render_system, :resources
 
-  def initialize(map:,clients:)
-    build_world clients, map
-    @data_out_queue = Queue.new
-    @sync_data_out_thread = Thread.new do
+  def start_sim_thread(initial_state, input_queue, output_queue)
+    t = Thread.new do
+      ents = initial_state
+      turn_count = 0
+
       loop do
-        ents, input = @data_out_queue.pop
+        input = input_queue.pop
+
         input[:messages] && input[:messages].each do |msg|
           GameLogger.log("\nreceived msg from #{msg.connection_id}: #{msg.data}")
         end
         STEPS_PER_TURN.times do
-          @world.update @clone, SIMULATION_STEP, input, @resources
+          @world.update ents, SIMULATION_STEP, input, nil
           input.delete(:messages)
         end
         @network_manager.clients.each do |player_id|
-          msg = generate_message_for(ents, player_id, @turn_count)
+          msg = generate_message_for(ents, player_id, turn_count)
           if msg
             GameLogger.log("\nsent msg to #{player_id}: #{msg}")
             @network_manager.write(player_id, msg)
           end
         end
         @network_manager.flush!
+
+        output_queue << ents.deep_clone
+
+        turn_count += 1
         # puts "DONE."
       end
     end
+    return t
   end
 
-  def send_update_to_clients(ents, input)
+  def initialize(map:,clients:)
+    build_world clients, map
+    @next_turn_queue = Queue.new
+    @data_out_queue = Queue.new
+    @messages_queue ||= Queue.new
+  end
+
+  def send_update_to_clients(input)
     # require 'objspace'
     # puts "MEM: #{ObjectSpace.memsize_of(@entity_manager)}"
     # ents.send(:instance_variable_set, '@prev', @entity_manager)
     # ents = @entity_manager.deep_clone
-    @data_out_queue << [ents, input]
+    @data_out_queue << input
+    true
   end
 
   def start!
     @start = true
     Prefab.timer(entity_manager: @entity_manager)
+    start_sim_thread(@entity_manager.deep_clone, @data_out_queue, @next_turn_queue)
   end
+
   def started?
     @start
   end
@@ -151,36 +169,28 @@ class RtsGame
   def update(delta:, input:)
     begin
       if @start && !@game_over
-        @turn_count ||= 0
-        @remaining_steps ||= STEPS_PER_TURN
-        msgs = {}
-        input[:turn] = @turn_count
 
-        if @remaining_steps == 0
-          @remaining_steps = STEPS_PER_TURN
-          @turn_count += 1
-          @rollover = 1
-          @entity_manager = @clone if @clone
+        @bla ||= send_update_to_clients(input)
 
-          @clone = @entity_manager.deep_clone
+        @turn_time ||= 0
+        @turn_time += delta
+        @sim_steps ||= 0
+        if @sim_steps >= STEPS_PER_TURN
+          @sim_steps =0
           msgs = @network_manager.pop_messages!
           input[:messages] = msgs
-          send_update_to_clients(@clone, input)
+
+          send_update_to_clients(input.deep_clone)
+
+          @turn_time -= TURN_DURATION
+        else
+          input[:messages] = []
         end
 
-        input[:messages] = msgs
-
-        @rollover ||= 1
-        @rollover += delta
-        if @rollover >= SIMULATION_STEP
-          (@rollover / SIMULATION_STEP).floor.times do
-            next if @remaining_steps <= 0
-
-            @remaining_steps -= 1
-            @world.update @entity_manager, SIMULATION_STEP, input, @resources
-            input.delete(:messages)
-          end
-          @rollover %= SIMULATION_STEP
+        while (@sim_steps * SIMULATION_STEP <= @turn_time) && (@sim_steps < STEPS_PER_TURN)
+          @world.update @entity_manager, SIMULATION_STEP, input, @resources
+          input.delete(:messages)
+          @sim_steps+=1
         end
 
         time_remaining = @entity_manager.first(Timer).get(Timer).ttl

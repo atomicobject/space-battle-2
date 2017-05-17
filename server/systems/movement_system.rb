@@ -8,7 +8,7 @@ class MovementSystem
     end
       
     tile_size = RtsGame::TILE_SIZE
-    base_speed = tile_size.to_f/(RtsGame::TURN_DURATION * 5)
+    base_speed = tile_size.to_f/(RtsGame::TURN_DURATION * 5 - RtsGame::SIMULATION_STEP)
     entity_manager.each_entity PlayerOwned, Unit, MovementCommand, Position, Speed do |ent|
       pwn, u, movement, pos, s = ent.components
 
