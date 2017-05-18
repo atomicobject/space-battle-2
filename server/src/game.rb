@@ -111,10 +111,10 @@ class RtsGame
     t = Thread.new do
       ents = initial_state
       turn_count = 0
-
+      msgs = []
       loop do
-        input = input_queue.pop
-
+        input = InputSnapshot.new
+        input[:messages] = msgs
         input[:messages] && input[:messages].each do |msg|
           GameLogger.log("\nreceived msg from #{msg.connection_id}: #{msg.data}")
         end
@@ -131,10 +131,12 @@ class RtsGame
         end
         @network_manager.flush!
 
-        output_queue << ents.deep_clone
+        output_queue << [ents.deep_clone, msgs]
 
         turn_count += 1
         # puts "DONE."
+        # puts "#{turn_count}"
+        msgs = input_queue.pop
       end
     end
     return t
@@ -148,23 +150,13 @@ class RtsGame
     build_world clients, map
     @fast_mode = fast
     @next_turn_queue = Queue.new
-    @data_out_queue = Queue.new
-    @messages_queue ||= Queue.new
-  end
-
-  def send_update_to_clients(input)
-    # require 'objspace'
-    # puts "MEM: #{ObjectSpace.memsize_of(@entity_manager)}"
-    # ents.send(:instance_variable_set, '@prev', @entity_manager)
-    # ents = @entity_manager.deep_clone
-    @data_out_queue << input
-    true
+    @input_queue = @fast_mode ? @network_manager.messages_queue : Queue.new
   end
 
   def start!
     @start = true
     Prefab.timer(entity_manager: @entity_manager)
-    start_sim_thread(@entity_manager.deep_clone, @data_out_queue, @next_turn_queue)
+    start_sim_thread(@entity_manager.deep_clone, @input_queue, @next_turn_queue)
   end
 
   def started?
@@ -175,19 +167,20 @@ class RtsGame
     begin
       if @start && !@game_over
 
-        @bla ||= send_update_to_clients(input)
-
         @turn_time ||= 0
         @turn_time += delta
         @sim_steps ||= 0
-        can_skip = (@fast_mode && @network_manager.message_received_for_all_clients?)
+        can_skip = @fast_mode
         if @sim_steps >= STEPS_PER_TURN || can_skip
           @sim_steps =0
-          msgs = @network_manager.pop_messages!
-          input[:messages] = msgs
 
-          send_update_to_clients(input.deep_clone)
-          @entity_manager = @next_turn_queue.pop
+          if can_skip
+            @entity_manager, msgs = @next_turn_queue.pop
+          else
+            @input_queue << @network_manager.messages_queue.pop
+            _, msgs = @next_turn_queue.pop
+          end
+          input[:messages] = msgs
 
           @turn_time -= TURN_DURATION
         else
@@ -211,6 +204,7 @@ class RtsGame
     rescue Exception => ex
       puts ex.inspect
       puts ex.backtrace.inspect
+      raise ex
     end
   end
 

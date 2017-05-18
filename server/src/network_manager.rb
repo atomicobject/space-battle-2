@@ -1,11 +1,11 @@
 require 'socket'
 class Connection
 
-  def self.open(host, port)
-    new(host, port)
+  def self.open(network_manager, host, port)
+    new(network_manager, host, port)
   end
 
-  def initialize(host, port)
+  def initialize(network_manager, host, port)
     @socket = TCPSocket.open host, port
     GameLogger.log("Connected to #{host}:#{port}")
     @alive = true
@@ -14,6 +14,7 @@ class Connection
     @messages = []
     @outgoing = []
     @mutex = Mutex.new
+    @network_manager = network_manager
   end
 
   def alive?
@@ -43,6 +44,7 @@ class Connection
             @messages << msg
             @pending = true
           end
+          @network_manager.new_message_recieved
         end
       rescue
         puts "Client at #{@host}:#{@port} died"
@@ -104,6 +106,8 @@ class Message
 end
 
 class NetworkManager
+  attr_reader :messages_queue
+
   def clients
     @connections.keys
   end
@@ -111,11 +115,18 @@ class NetworkManager
   def initialize
     @connection_count = 0
     @connections = {}
+    @messages_queue = Queue.new
   end
 
   def message_received_for_all_clients?
     # TODO need a mutex here?
     @connections.values.all?(&:has_message_pending?)
+  end
+
+  def new_message_recieved
+    if message_received_for_all_clients?
+      @messages_queue << pop_messages!
+    end
   end
 
   def connect(host, port)
@@ -148,7 +159,7 @@ class NetworkManager
 
   private
   def _connect(host, port)
-    Connection.open(host, port)
+    Connection.open(self, host, port)
   end
 end
 
