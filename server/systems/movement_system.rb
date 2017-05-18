@@ -25,7 +25,7 @@ class MovementSystem
 
       displacement = movement.target_vec - pos.to_vec
       dist = displacement.magnitude
-      move = (displacement.unit * dt * speed).clipTo(dist) # clip any overshoot
+      move = (displacement.unit * dt * speed).clip_to(dist) # clip any overshoot
 
       pre_move_pos = pos.deep_clone
       pos.x += move.x

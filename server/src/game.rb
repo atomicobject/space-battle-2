@@ -146,16 +146,17 @@ class RtsGame
     @game_over
   end
 
-  def initialize(map:,clients:,fast:false)
+  def initialize(map:,clients:,fast:false,time:)
     build_world clients, map
     @fast_mode = fast
+    @time = time
     @next_turn_queue = Queue.new
     @input_queue = @fast_mode ? @network_manager.messages_queue : Queue.new
   end
 
   def start!
     @start = true
-    Prefab.timer(entity_manager: @entity_manager)
+    Prefab.timer(entity_manager: @entity_manager, time: @time)
     start_sim_thread(@entity_manager.deep_clone, @input_queue, @next_turn_queue)
   end
 

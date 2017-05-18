@@ -100,8 +100,8 @@
     info
   end
 
-  def self.timer(entity_manager:)
-    timer = Timer.new("end-of-game", RtsGame::GAME_LENGTH_IN_MS)
+  def self.timer(entity_manager:,time:)
+    timer = Timer.new("end-of-game", time)
     timer.keep = true
     entity_manager.add_entity(timer)
   end

@@ -51,10 +51,10 @@ class Vec
     Math.sqrt(@x*@x + @y*@y)
   end
 
-  def clipTo(maxMagnitude)
+  def clip_to(max_magnitude)
     mag = magnitude
-    if mag > maxMagnitude
-      self * (maxMagnitude / mag)
+    if mag > max_magnitude
+      self * (max_magnitude / mag)
     else
       self
     end
