@@ -12,16 +12,35 @@ Write an AI to command your troops to gather the most resources in the time allo
 The server will connect to your client. You will start receiving messages in the format:
 
 
+sent msg to 1: {
     {
       player: 0,
       turn: 12,
-      time: 300000,
-      'unit-updates': [
-        {id: 'XYZ', health: 2}
-      ],
-      'tile-updates': [
+      time: 300000, // time remaining in game
+      'unit-updates': [{ // your unit's updates
+        id:16,
+        player_id: 0,
+        x: 0, y: 0,
+        status:"moving",
+        type:"worker",
+        resource:0,
+        health:5,
+        can_attack:true // cooldown is ready
+      }],
+      'tile-updates': [{
         // relative to your base
-        {x: 5, y: -2, blocked: true},
+        x: 7, y: -9,
+        visible: true,
+        blocked: null,
+        resources: null,
+        units: [{
+          id:60,
+          x: 7, y: -9
+          type:"tank",
+          status:"unknown", // tile update statuses can only be unknown or dead
+          player_id: 1,
+          health: 10
+        }]}
       ],
     }
     
@@ -79,3 +98,4 @@ __ATTACK__: `unit`,`dx`,`dy` Tell the unit to attack a location relative to the 
 **Notes**
 
 1. Disconnecting. Game will continue, but you will lose control of your units.
+2. Games are logged to game-log.txt.
