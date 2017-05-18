@@ -47,13 +47,17 @@ To command your units:
 
     {
       commands: [
-        {command: "MOVE", unit: "XYZ", dir: "N"},
-        {command: "MOVE", unit: "ABC", dir: "S"},
-        {command: "GATHER", unit: "123", dir: "S"},
+        {command: "MOVE", unit: 2, dir: "N"},
+        {command: "MOVE", unit: 3, dir: "S"},
+        {command: "GATHER", unit: 7, dir: "S"},
         {command: "CREATE", type: "worker"},
-        {command: "ATTACK", unit: "ABC", dx: 3, dy: 2},
+        {command: "ATTACK", unit: 4, dx: 3, dy: 2},
       ]
     }
+
+#### Warning!
+
+    The protocol is newline delimited. Make sure your JSON has its newlines stripped!
 
 
 ##### unit-updates
