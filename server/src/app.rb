@@ -118,17 +118,12 @@ end
       @game.update delta: RtsGame::SIMULATION_STEP , input: input 
     end
 
-    max_score = -999
-    max_player = nil
-    @game.entity_manager.each_entity(Base, PlayerOwned) do |ent|
-      b,owner = ent.components
-      puts "Player #{owner.id}: #{b.resource}"
-      if b.resource > max_score
-        max_player = owner.id
-      end
+    @game.scores.each do |id, score|
+      puts "Player #{id}: #{score}"
     end
-    puts "Player #{max_player} wins!"
-    exit max_player
+    winner = @game.winner
+    puts "Player #{winner} wins!"
+    exit winner
 
     # require 'pry'
     # binding.pry

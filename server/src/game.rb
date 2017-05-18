@@ -146,6 +146,28 @@ class RtsGame
     @game_over
   end
 
+  def winner
+    max_score = -999
+    max_player = nil
+    scores.each do |id, score|
+      if score > max_score
+        max_score = score
+        max_player = id
+      end
+    end
+    max_player
+  end
+
+  def scores
+    player_scores = {}
+    # TODO add other stats... units created/killed/harvested/commands sent?
+    @entity_manager.each_entity(Base, PlayerOwned) do |ent|
+      b,owner = ent.components
+      player_scores[owner.id] = b.resource
+    end
+    player_scores
+  end
+
   def initialize(map:,clients:,fast:false,time:)
     build_world clients, map
     @fast_mode = fast
