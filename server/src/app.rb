@@ -91,6 +91,7 @@ end
 		o.bool '-l', '--log', 'log entire game'
 		o.bool '-f', '--fast', 'advance to the next turn as soon as all clients have sent a message'
 		o.bool '-nu', '--no_ui', 'No GUI; exit code is winning player'
+		o.integer '-t', '--time', 'length of game in ms', default: RtsGame::GAME_LENGTH_IN_MS
     o.on '--help', 'print this help' do
       puts o
       exit
@@ -107,7 +108,7 @@ end
     class FakeInput < Hash
       attr_accessor :total_time
     end
-    @game = RtsGame.new map: opts[:map], clients: clients, fast: opts[:fast]
+    @game = RtsGame.new map: opts[:map], clients: clients, fast: opts[:fast], time: opts[:time]
     @game.start!
     total_time = 0
     until @game.game_over?
