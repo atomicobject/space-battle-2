@@ -93,6 +93,7 @@ private
 	end
 
   def format_time_string(ms)
+    return "00:00" if ms <= 0
     seconds = ms/1000
     Time.at(seconds).strftime("%M:%S")
   end
