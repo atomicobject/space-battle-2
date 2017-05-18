@@ -132,6 +132,7 @@ loop do
             cmds << move_command(outstanding_unit_cmds, id)
           end
         elsif uu['type'] != 'base'
+          # TODO can this go away?
           cmds << move_command(outstanding_unit_cmds, id)
         end
 

@@ -224,7 +224,7 @@ loop do
     end
     cmds.compact!
 
-    server_connection.puts(cmd_msg.to_json) unless cmds.empty?
+    server_connection.puts(cmd_msg.to_json) # enable FAST MODE; unless cmds.empty?
 
   end
 

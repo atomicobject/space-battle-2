@@ -59,6 +59,23 @@ __CREATE__: `type` Create a new unit by type: `worker,scout,tank`. Command is ig
 
 __ATTACK__: `unit`,`dx`,`dy` Tell the unit to attack a location relative to the attacker. All units at the location will be damaged (including your own). Command is ignored if the location is out of the attacker's range.
 
+
+### Running the game
+
+	$ruby src/app.rb --help
+	usage: src/app.rb [options]
+    -p1,  --p1_host  player 1 host, default localhost
+    -p1p, --p1_port  player 1 port, default 9090
+    -p2,  --p2_host  player 2 host
+    -p2p, --p2_port  player 2 port
+    -m,   --map      map filename to play (tmx format)
+    -q,   --quiet    suppress output (quiet mode)
+    -l,   --log      log entire game
+    -f,   --fast     advance to the next turn as soon as all clients have sent a message
+    -nu,  --no_ui    No GUI; exit code is winning player
+    -t,   --time     length of game in ms
+    --help           print this help
+
 **Notes**
 
 1. Disconnecting. Game will continue, but you will lose control of your units.
