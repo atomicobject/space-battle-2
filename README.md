@@ -11,8 +11,6 @@ Write an AI to command your troops to gather the most resources in the time allo
 
 The server will connect to your client. You will start receiving messages in the format:
 
-
-sent msg to 1: {
     {
       player: 0,
       turn: 12,
