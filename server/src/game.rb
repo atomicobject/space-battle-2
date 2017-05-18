@@ -140,6 +140,10 @@ class RtsGame
     return t
   end
 
+  def game_over?
+    @game_over
+  end
+
   def initialize(map:,clients:,fast:false)
     build_world clients, map
     @fast_mode = fast
@@ -199,7 +203,10 @@ class RtsGame
         end
 
         time_remaining = @entity_manager.first(Timer).get(Timer).ttl
-        @game_over = true if time_remaining <= 0
+        if time_remaining <= 0
+          puts "GAME OVER!"
+          @game_over = true 
+        end
       end
     rescue Exception => ex
       puts ex.inspect

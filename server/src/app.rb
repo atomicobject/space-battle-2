@@ -5,7 +5,7 @@ require_relative './game'
 
 class RtsWindow < Gosu::Window
   def initialize(**opts)
-    super(1024,1024,false)
+    super(1024,1024,fullscreen: false)
     @input_cacher = InputCacher.new
     @last_millis = Gosu::milliseconds.to_f
 
@@ -90,6 +90,7 @@ end
 		o.bool '-q', '--quiet', 'suppress output (quiet mode)'
 		o.bool '-l', '--log', 'log entire game'
 		o.bool '-f', '--fast', 'advance to the next turn as soon as all clients have sent a message'
+		o.bool '-nu', '--no_ui', 'No GUI; exit code is winning player'
     o.on '--help', 'print this help' do
       puts o
       exit
@@ -102,6 +103,38 @@ end
   ]
   clients << {host: opts[:p2_host], port: opts[:p2_port]} if opts[:p2_host]
 
-  $window = RtsWindow.new map: opts[:map], clients: clients, fast: opts[:fast]
-  $window.show
+  if opts[:no_ui]
+    class FakeInput < Hash
+      attr_accessor :total_time
+    end
+    @game = RtsGame.new map: opts[:map], clients: clients, fast: opts[:fast]
+    @game.start!
+    total_time = 0
+    until @game.game_over?
+      total_time += RtsGame::SIMULATION_STEP
+      input = FakeInput.new
+      input.total_time = total_time
+      @game.update delta: RtsGame::SIMULATION_STEP , input: input 
+    end
+
+    max_score = -999
+    max_player = nil
+    @game.entity_manager.each_entity(Base, PlayerOwned) do |ent|
+      b,owner = ent.components
+      puts "Player #{owner.id}: #{b.resource}"
+      if b.resource > max_score
+        max_player = owner.id
+      end
+    end
+    puts "Player #{max_player} wins!"
+    exit max_player
+
+    # require 'pry'
+    # binding.pry
+    # puts "YAY"
+
+  else
+    $window = RtsWindow.new map: opts[:map], clients: clients, fast: opts[:fast]
+    $window.show
+  end
 # end
