@@ -1,35 +1,40 @@
-ATTACK command
-  fix targeting
+DOCS
+  about status / idle-ness
+  multi-turn commands
+  total resource
+  how to turn-in resources
+  only workers can carry resources
 
-Game connection header
-  turn duration
-  # turns
-  accept players name and display on game
+remove resource from non-carrying units
 
-Add winner declaration w/ game pause?
+TODO
+  verify melee attacking
 
-additional env tiles
+  Invalid commands should print an error in the server
 
-player join should create base? should player id be the server info not an id? (reconnect?)
+  Game connection header
+    turn duration
+    # turns
+    accept players name and display on game
 
-do not block server for client comm
-  timeouts?
-handle disconnects
+  Add winner declaration w/ game pause?
 
+  additional env tiles
 
+  do not block server for client comm
+    timeouts?
+  handle disconnects
 
-make units "bounce" while moving
+  make units "bounce" while moving
 
-Compile to exe for windows
-Headless mode? w/ remote server for gfx?
-Cap number of units?
+  Compile to exe for windows
+  Cap number of units?
 
-flip images based on last X direction
+  flip images based on last X direction
 
-
-attempt to make logical client(s) with different strategies:
-  scout early
-  res & return
-  zerg rush w/ tank
-  unit claims a resource til it's gone
-  look for big resources
+  attempt to make logical client(s) with different strategies:
+    scout early
+    res & return
+    zerg rush w/ tank
+    unit claims a resource til it's gone
+    look for big resources

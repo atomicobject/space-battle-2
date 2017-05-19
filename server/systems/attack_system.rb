@@ -2,6 +2,9 @@ class AttackSystem
   def update(entity_manager, dt, input, res)
     map_info = entity_manager.first(MapInfo).get(MapInfo)
 
+    entity_manager.each_entity(MeleeEffect) do |ent|
+      entity_manager.remove_entity(id: ent.id)
+    end
     entity_manager.each_entity(Explosion) do |ent|
       entity_manager.remove_entity(id: ent.id)
     end
@@ -23,7 +26,11 @@ class AttackSystem
       entity_manager.remove_component klass: AttackCommand, id: ent.id
       next if u.status == :dead || !attack.can_attack
 
-      range = attack.range
+      shooter = entity_manager.find_by_id(ent.id, Shooter)
+      melee = entity_manager.find_by_id(ent.id, Melee)
+
+      range = 1 if melee
+      range = attack.range if shooter
       # they shoot farther on the diagonal.. sue me  ;)
       dx = cmd.dx
       dy = cmd.dy
@@ -37,7 +44,8 @@ class AttackSystem
       tx = pos.tile_x+dx
       ty = pos.tile_y+dy
 
-      Prefab.explosion(entity_manager: entity_manager, x: tx*tile_size, y: ty*tile_size)
+      Prefab.explosion(entity_manager: entity_manager, x: tx*tile_size, y: ty*tile_size) if shooter
+      Prefab.melee(entity_manager: entity_manager, x: tx*tile_size, y: ty*tile_size) if melee
 
       tile_units = MapInfoHelper.units_at(map_info, tx, ty)
       tile_units.each do |tu_id|

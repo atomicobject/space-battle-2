@@ -73,6 +73,8 @@ Speed = define_component(attrs: [:speed])
 Attack = define_component(attrs: [:damage,:range,:cooldown,:current_cooldown,:can_attack])
 AttackCommand = define_component(attrs: [:id,:dx,:dy])
 Shooter = define_component
+Melee = define_component
+MeleeEffect = define_component
 Explosion = define_component
 
 class Position

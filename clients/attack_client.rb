@@ -121,6 +121,7 @@ loop do
           outstanding_unit_cmds.delete id
           next
         end
+
         units[id] =  uu
         if uu['status'] == 'moving'
           outstanding_unit_cmds.delete(id) if outstanding_unit_cmds[id] == :move
@@ -136,14 +137,16 @@ loop do
           cmds << move_command(outstanding_unit_cmds, id)
         end
 
-        if uu['type'] == 'tank' && uu['can_attack']
+        # if uu['type'] == 'tank' && uu['can_attack']
+        if uu['can_attack']
           x = uu['x']
           y = uu['y']
+          r = uu['type'] == 'tank' ? 2 : 1
           catch :found_target do
-            ((x-2)..(x+2)).each do |tx|
-              ((y-2)..(y+2)).each do |ty|
+            ((x-r)..(x+r)).each do |tx|
+              ((y-r)..(y+r)).each do |ty|
 
-                next if tx == x || ty == y # don't shoot self
+                next if (uu['type'] == :tank) && (tx == x && ty == y) # don't shoot self
                 tile = map.at(tx,ty)
                 unless tile.nil? || tile['units'].nil? || tile['units'].empty?
                   # TODO search for biggest bang-for-buck target

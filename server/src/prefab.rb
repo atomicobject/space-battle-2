@@ -5,7 +5,15 @@
     entity_manager.add_entity(
       Explosion.new,
       Position.new(x:x, y:y, z:10),
-      Label.new(size: 64, text: '#')
+      Label.new(size: 70, text: '#')
+    )
+  end
+
+  def self.melee(entity_manager:,x:,y:)
+    entity_manager.add_entity(
+      MeleeEffect.new,
+      Position.new(x:x, y:y, z:10),
+      Label.new(size: 70, text: '/')
     )
   end
 
@@ -61,6 +69,7 @@
     puts "#{player_id}: #{type.to_s.upcase}: #{id}"
     entity_manager.add_component component: ResourceCarrier.new, id: id if unit_def[:can_carry]
     entity_manager.add_component component: Shooter.new, id: id if unit_def[:attack_type] == :ranged
+    entity_manager.add_component component: Melee.new, id: id if unit_def[:attack_type] == :melee
 
     tile_size = RtsGame::TILE_SIZE
     tile_x = (x/tile_size).floor

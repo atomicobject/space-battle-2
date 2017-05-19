@@ -60,7 +60,7 @@ class RtsGame
   TILE_SIZE = 64
   SIMULATION_STEP = 20
   STEPS_PER_TURN = TURN_DURATION / SIMULATION_STEP
-  STARTING_WORKERS = 10
+  STARTING_WORKERS = 1
   GAME_LENGTH_IN_MS = 300_000
   UNITS = {
     base: {
@@ -96,7 +96,7 @@ class RtsGame
       attack_cooldown: 5 * STEPS_PER_TURN,
     },
   }
-  PLAYER_START_RESOURCE = UNITS[:tank][:cost]
+  PLAYER_START_RESOURCE = 0#UNITS[:tank][:cost]
 
   DIR_VECS = {
     'N' => vec(0,-1),
