@@ -22,6 +22,7 @@ class RenderSystem
       map = res[:map]
       images = res[:images]
       tile_size = RtsGame::TILE_SIZE
+      sorted_by_y_x = Hash.new{|h,k|h[k]=Hash.new{|hh,kk|hh[kk]=[]}}
       map.width.times do |x|
         map.height.times do |y|
           t = map.at(x,y)
@@ -32,14 +33,24 @@ class RenderSystem
           img.draw base_x, base_y, ZOrder::Terrain
 
           t.objects.each do |obj|
-            images[obj.image].draw base_x, base_y, ZOrder::Env
+            # images[obj.image].draw base_x, base_y, ZOrder::Env
+            sorted_by_y_x[base_y][base_x] << [images[obj.image],ZOrder::Env]
           end
         end
       end
 
       entity_manager.each_entity Sprited, Position do |rec|
         sprited, pos = rec.components
-        images[sprited.image].draw pos.x, pos.y, pos.z
+        # images[sprited.image].draw pos.x, pos.y, pos.z
+        sorted_by_y_x[pos.y][pos.x] << [images[sprited.image],pos.z]
+      end
+
+      sorted_by_y_x.keys.sort.each do |y|
+        sorted_by_y_x[y].keys.sort.reverse.each do |x|
+          sorted_by_y_x[y][x].each do |(img,z)|
+            img.draw x, y, z
+          end
+        end
       end
 
       entity_manager.each_entity Label, Position do |rec|

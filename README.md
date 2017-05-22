@@ -3,11 +3,12 @@ AO RTS
 
 
 
-### Goal
+## Goal
 
 Write an AI to command your troops to gather the most resources in the time allotted.
+***
 
-### API
+## API
 
 The server will connect to your client. You will start receiving messages in the format:
 
@@ -15,7 +16,7 @@ The server will connect to your client. You will start receiving messages in the
       player: 0,
       turn: 12,
       time: 300000, // time remaining in game
-      'unit-updates': [{ // your unit's updates
+      'unit_updates': [{ // your unit's updates
         id:16,
         player_id: 0,
         x: 0, y: 0,
@@ -25,7 +26,7 @@ The server will connect to your client. You will start receiving messages in the
         health:5,
         can_attack:true // cooldown is ready
       }],
-      'tile-updates': [{
+      'tile_updates': [{
         // relative to your base
         x: 7, y: -9,
         visible: true,
@@ -60,28 +61,47 @@ To command your units:
     The protocol is newline delimited. Make sure your JSON has its newlines stripped!
 
 
-##### unit-updates
+##### unit_updates
 Any time something about a unit changes, (position, status, etc), you will receive an update.
 
-##### tile-updates
+##### tile_updates
 Any time something about a tile changes, (occupants, visibility, etc), you will receive an update.
 
 ##### time
 This is the amount of time remaining in the game (in milliseconds). 
+***
 
+## Commands
 
-### Commands
+Commands are your AIs way of telling the server what you want your units to do. Some commands take many turns to complete. When finished executing a command, a unit's status will be set to `idle`.
 
-__MOVE__: `unit`,`dir` Move a unit by id in a given direction `N,S,E,W`. Command will be ignored if the unit cannot move in the specified direction.
+__MOVE__: `unit`,`dir` Move a unit by id in a given direction `N,S,E,W`. Command will be ignored if the unit cannot move in the specified direction or is currently executing a previous `MOVE` command.
 
 __GATHER__: `unit`,`dir` Tell a unit to collect from a resource in the specified direction `N,S,E,W`. Command will be ignored if the unit cannot gather in the specified direction. Resources are automatically deposited by walking over the players base.
 
 __CREATE__: `type` Create a new unit by type: `worker,scout,tank`. Command is ignored if the player's base does not have enough resources.
 
-__ATTACK__: `unit`,`dx`,`dy` Tell the unit to attack a location relative to the attacker. All units at the location will be damaged (including your own). Command is ignored if the location is out of the attacker's range.
+__ATTACK__: `unit`,`dx`,`dy` Tell the unit to attack a location relative to the attacker. All units at the location will be damaged (including your own). Command is ignored if the location is out of the attacker's range (1 for melee, within vision for ranged attacks). Each unit has an attack cooldown. `can_attack` will be sent down as `true` when they can attack again.
+
+####Note:
+    When a unit has died, its status will be set to "dead".
+    Dead units will no longer respond to your commands.
+***
 
 
-### Running the game
+## Units
+
+__BASE__: When joining the game, your base will be placed at a random location on the map. Any map location will be sent from the server relative to your base's location.
+
+__WORKER__: You will start the game with 6 workers. Workers are the only unit that can carry resources. They have average vision, speed, health, and a weak melee attack. Cost: 100.
+
+__SCOUT__: Scouts have longer vision, faster speed, lower health, and a weak melee attack. Cost 130.
+
+__TANK__: Tanks have average vision, slower speed, higher health, and a ranged attack. Cost 150.
+
+***
+    
+## Running the game
 
 	$ruby src/app.rb --help
 	usage: src/app.rb [options]

@@ -326,15 +326,16 @@ class RtsGame
           attack_res = entity_manager.find_by_id(ent.id, Attack)
           can_attack = attack_res&.get(Attack)&.can_attack
 
-          units << { id: ent.id, player_id: player.id, 
+          unit_info = { id: ent.id, player_id: player.id, 
             x: (pos.tile_x-base_pos.tile_x),
             y: (pos.tile_y-base_pos.tile_y),
             status: u.status,
             type: u.type,
-            resource: res,
             health: health.points, 
             can_attack: can_attack,
           }
+          unit_info[:resource] = res if res
+          units << unit_info
           u.dirty = false
         end
       end

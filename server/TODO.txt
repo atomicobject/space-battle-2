@@ -1,11 +1,13 @@
 DOCS
-  about status / idle-ness
-  multi-turn commands
-  total resource
-  how to turn-in resources
-  only workers can carry resources
+  ** unit-updates and tile-updates vs unit_updates and tile_updates
+  ** about status / idle-ness
+  ** multi-turn commands
+  ** total resource
+  ** how to turn-in resources
+  ** only workers can carry resources
+  Gosu or ruby install / binary install for mac / windows?
 
-remove resource from non-carrying units
+** remove resource from non-carrying units
 
 TODO
   verify melee attacking
