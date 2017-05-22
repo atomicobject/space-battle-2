@@ -167,7 +167,7 @@ class Tile
   end
 
   def blocked?
-    !@blocked.nil? || !@resource.nil?
+    !!@blocked || !!@resource
   end
 
   def image
