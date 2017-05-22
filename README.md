@@ -30,8 +30,13 @@ The server will connect to your client. You will start receiving messages in the
         // relative to your base
         x: 7, y: -9,
         visible: true,
-        blocked: null,
-        resources: null,
+        blocked: false,
+        resources: {
+          id: 12,
+          type: "small",
+          total:200,
+			value:10
+        },
         units: [{
           id:60,
           x: 7, y: -9
