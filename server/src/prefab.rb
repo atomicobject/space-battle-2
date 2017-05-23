@@ -48,7 +48,6 @@
   def self.unit(type:,entity_manager:,x:,y:,player_id:,map_info:)
     unit_def = RtsGame::UNITS[type.to_sym]
     health = Health.new(points: unit_def[:hp], max: unit_def[:hp])
-    health.points -= 2 if type.to_sym == :scout
     tile_size = RtsGame::TILE_SIZE
     id = entity_manager.add_entity(
       Unit.new(type: type.to_sym),
