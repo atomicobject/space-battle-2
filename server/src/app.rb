@@ -99,6 +99,8 @@ end
 	end
 
   Thread.abort_on_exception = true
+  trap("SIGINT") { exit! }
+
   clients = [
     {host: opts[:p1_host], port: opts[:p1_port]},
   ]
