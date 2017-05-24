@@ -107,7 +107,7 @@ class RtsGame
 
   attr_accessor :entity_manager, :render_system, :resources
 
-  def start_sim_thread(initial_state, output_queue)
+  def start_sim_thread(initial_state, input_queue, output_queue)
     t = Thread.new do
       ents = initial_state
       turn_count = 0
@@ -144,7 +144,7 @@ class RtsGame
         output_queue << [ents.deep_clone, msgs]
 
         turn_count += 1
-        msgs = @network_manager.pop_messages_with_timeout!(RtsGame::TURN_DURATION.to_f / 1000.0)
+        msgs = input_queue.pop
       end
     end
     return t
@@ -180,13 +180,14 @@ class RtsGame
     build_world clients, map
     @fast_mode = fast
     @time = time
+    @input_queue = Queue.new
     @next_turn_queue = Queue.new
   end
 
   def start!
     @start = true
     Prefab.timer(entity_manager: @entity_manager, time: @time)
-    start_sim_thread(@entity_manager.deep_clone, @next_turn_queue)
+    start_sim_thread(@entity_manager.deep_clone, @input_queue, @next_turn_queue)
   end
 
   def started?
@@ -197,6 +198,7 @@ class RtsGame
     begin
       if @start && !@game_over
         if @fast_mode
+          @input_queue << @network_manager.pop_messages_with_timeout!(RtsGame::TURN_DURATION.to_f / 1000.0)
           @entity_manager, _ = @next_turn_queue.pop
         else
           @turn_time ||= 0
@@ -205,6 +207,7 @@ class RtsGame
 
           if @sim_steps >= STEPS_PER_TURN
             @sim_steps = 0
+            @input_queue << @network_manager.pop_messages_with_timeout!(0.0)
             # if everything goes well, the following line should have no effect.
             @entity_manager = @next_entity_manager if @next_entity_manager
             @next_entity_manager, msgs = @next_turn_queue.pop
