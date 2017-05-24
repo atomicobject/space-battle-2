@@ -149,15 +149,12 @@ class NetworkManager
   end
   
   def pop_messages!
+    raise "mutex must be locked" unless @mutex.locked?
     @connections.flat_map do |id, conn|
       conn.pop_messages!.map do |msg|
         Message.from_json(id, "#{msg}".strip)
       end
     end
-  end
-
-  def pop
-    pop_messages_with_timeout!(RtsGame::TURN_DURATION.to_f / 1000.0)
   end
 
   def pop_messages_with_timeout!(timeout = nil)

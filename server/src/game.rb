@@ -107,7 +107,7 @@ class RtsGame
 
   attr_accessor :entity_manager, :render_system, :resources
 
-  def start_sim_thread(initial_state, input_queue, output_queue)
+  def start_sim_thread(initial_state, output_queue)
     t = Thread.new do
       ents = initial_state
       turn_count = 0
@@ -144,7 +144,7 @@ class RtsGame
         output_queue << [ents.deep_clone, msgs]
 
         turn_count += 1
-        msgs = input_queue.pop
+        msgs = @network_manager.pop_messages_with_timeout!(RtsGame::TURN_DURATION.to_f / 1000.0)
       end
     end
     return t
@@ -181,13 +181,12 @@ class RtsGame
     @fast_mode = fast
     @time = time
     @next_turn_queue = Queue.new
-    @input_queue = @fast_mode ? @network_manager : Queue.new
   end
 
   def start!
     @start = true
     Prefab.timer(entity_manager: @entity_manager, time: @time)
-    start_sim_thread(@entity_manager.deep_clone, @input_queue, @next_turn_queue)
+    start_sim_thread(@entity_manager.deep_clone, @next_turn_queue)
   end
 
   def started?
@@ -197,25 +196,22 @@ class RtsGame
   def update(delta:, input:)
     begin
       if @start && !@game_over
-        @input_msgs ||= []
-        @turn_time ||= 0
-        @turn_time += delta
-        @sim_steps ||= 0
-        can_skip = @fast_mode
-        if @sim_steps >= STEPS_PER_TURN || can_skip
-          @sim_steps =0
-          if can_skip
-            @entity_manager, msgs = @next_turn_queue.pop
-          else
-            @entity_manager = @next_entity_manager if @next_entity_manager
-            @input_queue << @network_manager.pop_messages_with_timeout!(0.0)
-            @next_entity_manager, msgs = @next_turn_queue.pop
-          end
-          @input_msgs = msgs
-          @turn_time -= TURN_DURATION
-        end
+        if @fast_mode
+          @entity_manager, _ = @next_turn_queue.pop
+        else
+          @turn_time ||= 0
+          @turn_time += delta
+          @sim_steps ||= 0
 
-        unless can_skip
+          if @sim_steps >= STEPS_PER_TURN
+            @sim_steps = 0
+            # if everything goes well, the following line should have no effect.
+            @entity_manager = @next_entity_manager if @next_entity_manager
+            @next_entity_manager, msgs = @next_turn_queue.pop
+            @input_msgs = msgs
+            @turn_time -= TURN_DURATION
+          end
+
           while (@sim_steps * SIMULATION_STEP <= @turn_time) && (@sim_steps < STEPS_PER_TURN)
             input[:messages] = @input_msgs if @input_msgs
             @world.update @entity_manager, SIMULATION_STEP, input, @resources
