@@ -25,7 +25,7 @@ class RtsWindow < Gosu::Window
       input = take_input_snapshot
       @game.update delta: delta, input: input
 
-    rescue Exception => ex
+    rescue StandardError => ex
       puts ex.inspect
       puts ex.backtrace.inspect
       raise ex

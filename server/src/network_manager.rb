@@ -157,7 +157,7 @@ class NetworkManager
   end
 
   def pop
-    pop_messages_with_timeout!(0.5)
+    pop_messages_with_timeout!(RtsGame::TURN_DURATION.to_f / 1000.0)
   end
 
   def pop_messages_with_timeout!(timeout = nil)

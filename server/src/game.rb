@@ -197,40 +197,33 @@ class RtsGame
   def update(delta:, input:)
     begin
       if @start && !@game_over
-
+        @input_msgs ||= []
         @turn_time ||= 0
         @turn_time += delta
         @sim_steps ||= 0
         can_skip = @fast_mode
         if @sim_steps >= STEPS_PER_TURN || can_skip
           @sim_steps =0
-
           if can_skip
             @entity_manager, msgs = @next_turn_queue.pop
           else
+            @entity_manager = @next_entity_manager if @next_entity_manager
             @input_queue << @network_manager.pop_messages_with_timeout!(0.0)
-            _, msgs = @next_turn_queue.pop
+            @next_entity_manager, msgs = @next_turn_queue.pop
           end
-          input[:messages] = msgs
-
+          @input_msgs = msgs
           @turn_time -= TURN_DURATION
-        else
-          input[:messages] = []
         end
 
         unless can_skip
           while (@sim_steps * SIMULATION_STEP <= @turn_time) && (@sim_steps < STEPS_PER_TURN)
+            input[:messages] = @input_msgs if @input_msgs
             @world.update @entity_manager, SIMULATION_STEP, input, @resources
             input.delete(:messages)
+            @input_msgs = nil
             @sim_steps+=1
           end
         end
-
-        # time_remaining = @entity_manager.first(Timer).get(Timer).ttl
-        # if time_remaining <= 0
-        #   puts "GAME OVER!"
-        #   @game_over = true 
-        # end
       end
     rescue StandardError => ex
       puts ex.inspect
