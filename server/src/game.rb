@@ -111,17 +111,27 @@ class RtsGame
     t = Thread.new do
       ents = initial_state
       turn_count = 0
+      step_count = 0
       msgs = []
       loop do
-        input = InputSnapshot.new
-        input[:messages] = msgs
-        input[:messages] && input[:messages].each do |msg|
+        
+        msgs.each do |msg|
           GameLogger.log("\nreceived msg from #{msg.connection_id}: #{msg.data}")
         end
-        STEPS_PER_TURN.times do
+        STEPS_PER_TURN.times do |i|
+          total_time = step_count * RtsGame::SIMULATION_STEP
+          input = InputSnapshot.new(nil, total_time)
+          input[:messages] = msgs if i == 0 
           @world.update ents, SIMULATION_STEP, input, nil
-          input.delete(:messages)
+          step_count += 1
         end
+
+        time_remaining = ents.first(Timer).get(Timer).ttl
+        if time_remaining <= 0
+          puts "GAME OVER!"
+          @game_over = true 
+        end
+
         @network_manager.clients.each do |player_id|
           msg = generate_message_for(ents, player_id, turn_count)
           if msg
@@ -134,8 +144,6 @@ class RtsGame
         output_queue << [ents.deep_clone, msgs]
 
         turn_count += 1
-        # puts "DONE."
-        # puts "#{turn_count}"
         msgs = input_queue.pop
       end
     end
@@ -173,7 +181,7 @@ class RtsGame
     @fast_mode = fast
     @time = time
     @next_turn_queue = Queue.new
-    @input_queue = @fast_mode ? @network_manager.messages_queue : Queue.new
+    @input_queue = @fast_mode ? @network_manager : Queue.new
   end
 
   def start!
@@ -200,7 +208,7 @@ class RtsGame
           if can_skip
             @entity_manager, msgs = @next_turn_queue.pop
           else
-            @input_queue << @network_manager.messages_queue.pop
+            @input_queue << @network_manager.pop_messages_with_timeout!(0.0)
             _, msgs = @next_turn_queue.pop
           end
           input[:messages] = msgs
@@ -218,13 +226,13 @@ class RtsGame
           end
         end
 
-        time_remaining = @entity_manager.first(Timer).get(Timer).ttl
-        if time_remaining <= 0
-          puts "GAME OVER!"
-          @game_over = true 
-        end
+        # time_remaining = @entity_manager.first(Timer).get(Timer).ttl
+        # if time_remaining <= 0
+        #   puts "GAME OVER!"
+        #   @game_over = true 
+        # end
       end
-    rescue Exception => ex
+    rescue StandardError => ex
       puts ex.inspect
       puts ex.backtrace.inspect
       raise ex

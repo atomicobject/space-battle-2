@@ -28,6 +28,7 @@ class RtsWindow < Gosu::Window
     rescue Exception => ex
       puts ex.inspect
       puts ex.backtrace.inspect
+      raise ex
     end
   end
 
@@ -112,10 +113,11 @@ end
     @game.start!
     total_time = 0
     until @game.game_over?
-      total_time += RtsGame::SIMULATION_STEP
-      input = FakeInput.new
-      input.total_time = total_time
-      @game.update delta: RtsGame::SIMULATION_STEP , input: input 
+      sleep 1
+      # total_time += RtsGame::SIMULATION_STEP
+      # input = FakeInput.new
+      # input.total_time = total_time
+      # @game.update delta: RtsGame::SIMULATION_STEP , input: input 
     end
 
     @game.scores.each do |id, score|

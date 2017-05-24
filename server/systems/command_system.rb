@@ -24,10 +24,9 @@ class CommandSystem
               target = vec(target_tile_x, target_tile_y)*RtsGame::TILE_SIZE
 
               unless MapInfoHelper.blocked?(map_info, target_tile_x, target_tile_y) || 
-                u.status == :moving || u.status == :dead
-                u.status
-                  entity_manager.add_component(id: uid, 
-                    component: MovementCommand.new(target_vec: target) )
+                u.status == :moving || u.status == :dead || entity_manager.find_by_id(uid, MovementCommand)
+                entity_manager.add_component(id: uid, 
+                  component: MovementCommand.new(target_vec: target) )
               end
             end
 

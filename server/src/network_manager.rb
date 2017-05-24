@@ -1,6 +1,5 @@
 require 'socket'
 class Connection
-
   def self.open(network_manager, host, port)
     new(network_manager, host, port)
   end
@@ -13,7 +12,6 @@ class Connection
     @port = port
     @messages = []
     @outgoing = []
-    @mutex = Mutex.new
     @network_manager = network_manager
   end
 
@@ -26,12 +24,10 @@ class Connection
   end
 
   def pop_messages!
-    msgs = nil
-    @mutex.synchronize do
-      msgs = @messages
-      @messages = []
-      @pending = false
-    end
+    raise "mutex must be locked" unless @network_manager.mutex.locked?
+    msgs = @messages
+    @messages = []
+    @pending = false
     msgs
   end
 
@@ -40,13 +36,14 @@ class Connection
       begin
         loop do
           msg = @socket.gets
-          @mutex.synchronize do
+          @network_manager.mutex.synchronize do
             @messages << msg
             @pending = true
+            @network_manager.new_message_recieved
           end
-          @network_manager.new_message_recieved
         end
-      rescue
+      rescue StandardError => ex
+        puts ex.inspect
         puts "Client at #{@host}:#{@port} died"
         @alive = false
       end
@@ -56,7 +53,7 @@ class Connection
   def write(json)
     return unless @alive
     # puts "queueing writing #{json}"
-    @mutex.synchronize do
+    @network_manager.mutex.synchronize do
       @outgoing << json
     end
   end
@@ -64,7 +61,7 @@ class Connection
   def flush!
     return unless @alive
     # puts "flushing conn"
-    @mutex.synchronize do
+    @network_manager.mutex.synchronize do
       @outgoing.each do |msg|
         # puts "writing #{msg}"
         @socket.puts msg
@@ -96,7 +93,8 @@ class Message
     begin
       Oj.load(@json)
       # JSON.parse(@json)
-    rescue
+    rescue StandardError => ex
+      puts ex.inspect
     end
   end
 
@@ -106,7 +104,7 @@ class Message
 end
 
 class NetworkManager
-  attr_reader :messages_queue
+  attr_reader :mutex
 
   def clients
     @connections.keys
@@ -115,17 +113,18 @@ class NetworkManager
   def initialize
     @connection_count = 0
     @connections = {}
-    @messages_queue = Queue.new
+    @mutex = Mutex.new
+    @cv = ConditionVariable.new
   end
 
   def message_received_for_all_clients?
-    # TODO need a mutex here?
     @connections.values.all?(&:has_message_pending?)
   end
 
   def new_message_recieved
+    raise "mutex must be locked" unless @mutex.locked?
     if message_received_for_all_clients?
-      @messages_queue << pop_messages!
+      @cv.signal
     end
   end
 
@@ -153,6 +152,35 @@ class NetworkManager
     @connections.flat_map do |id, conn|
       conn.pop_messages!.map do |msg|
         Message.from_json(id, "#{msg}".strip)
+      end
+    end
+  end
+
+  def pop
+    pop_messages_with_timeout!(0.5)
+  end
+
+  def pop_messages_with_timeout!(timeout = nil)
+    @mutex.synchronize do 
+      if timeout.nil?
+        # wait forever. We have to have a while loop because the posix spec allows for
+        # spurious wakeups, we also have to check to see if the condition has been fulfilled already 
+        #  otherwise we'll be waiting for a signal that already happened. 
+        while !message_received_for_all_clients?
+          @cv.wait(@mutex)
+        end
+        return pop_messages!
+      elsif timeout == 0.0 || message_received_for_all_clients?
+        # if zero timeout or we already have all the messages, just pop them
+        return pop_messages!
+      else
+        # wait for the timeout. Again, we have to have a while loop because the posix spec allows for
+        # spurious wakeups.
+        starting_time = Time.now.to_f
+        while !message_received_for_all_clients? && (remaining_time = starting_time + timeout - Time.now.to_f) > 0
+          @cv.wait(@mutex, remaining_time)
+        end
+        return pop_messages!
       end
     end
   end
