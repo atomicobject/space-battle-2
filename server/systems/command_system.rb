@@ -5,7 +5,7 @@ class CommandSystem
       msgs.each do |msg|
         msg_data = msg.data
         next unless msg_data
-        cmds = msg_data['commands']
+        cmds = msg_data['commands'] || []
         map_info = entity_manager.first(MapInfo).get(MapInfo)
         cmds.each do |cmd|
           c = cmd['command']
@@ -19,15 +19,16 @@ class CommandSystem
 
             if owner.id == msg.connection_id
               dir = RtsGame::DIR_VECS[cmd['dir']]
+              next unless dir
+
               target_tile_x = pos.tile_x + dir.x
               target_tile_y = pos.tile_y + dir.y
               target = vec(target_tile_x, target_tile_y)*RtsGame::TILE_SIZE
 
               unless MapInfoHelper.blocked?(map_info, target_tile_x, target_tile_y) || 
-                u.status == :moving || u.status == :dead
-                u.status
-                  entity_manager.add_component(id: uid, 
-                    component: MovementCommand.new(target_vec: target) )
+                u.status == :moving || u.status == :dead || entity_manager.find_by_id(uid, MovementCommand)
+                entity_manager.add_component(id: uid, 
+                  component: MovementCommand.new(target_vec: target) )
               end
             end
 
@@ -66,9 +67,11 @@ class CommandSystem
             next unless ent
 
             u, pos, res_car, owner = ent.components
+            next unless res_car.resource = 0
 
             if owner.id == msg.connection_id
               dir = RtsGame::DIR_VECS[cmd['dir']]
+              next unless dir
               target_tile_x = pos.tile_x + dir.x
               target_tile_y = pos.tile_y + dir.y
 
