@@ -28,6 +28,7 @@ class RtsWindow < Gosu::Window
     rescue Exception => ex
       puts ex.inspect
       puts ex.backtrace.inspect
+      raise ex
     end
   end
 
