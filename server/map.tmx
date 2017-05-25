@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="32" height="32" tilewidth="64" tileheight="64" nextobjectid="62">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="32" height="32" tilewidth="64" tileheight="64" nextobjectid="79">
  <tileset firstgid="1" name="scifi_tilesheet" tilewidth="64" tileheight="64" tilecount="126" columns="18">
   <image source="assets/Tilesheet/scifi_tilesheet.png" width="1152" height="448"/>
  </tileset>
@@ -10,12 +10,12 @@
  </layer>
  <layer name="environment" width="32" height="32">
   <data encoding="base64" compression="zlib">
-   eJztlW0KgDAIhr2EO0J5/xP2a2BDp5NJUT4wNvDjXfFaAHMOI57N3/Xbw/peUDlb0ELfWQ4K5x2czrw27F/Rl/o1ZUX0yajR9CW/4Sb97qEmxLQ7eWJavjUDUs3ocWSxFSigPyPy/JEaDk5iHroHvLXc69ocRO7Ql9Ujc9aJ7Zo3svQB7u9A0s781nuI/ueKoiiK4k1cRvoJLA==
+   eJzFllESwyAIRL1EPEL0/ids88EMs90VMGm7M0ySGn1AFdJaa2fTWo1VNd/WyfrGwLH+MJ8xcAztDMazluUzf0wHGEqNK19+KcWewTwW56Vxz520GMfnOOvHrr+jfebgeu4F/nBWlXGQr/ag4k/BZzUB+Rkd4t74Kn7Gt9iy58XnAvMS5b03fgYq+bV1/NXzV5qCX1WFz2pqlaVqbLQW6ye2B7J+4Jnw/32G73ue98FstcZZ8FOti3x77u49Pw/FaoIf8/e4Huvpp7tOmFOV+mZAH5CP+YgYXthro7ksr2xPRPzoW2OlaJ+Z2PnNnrVLqo6t+FF/yfItz2wttbet36o9vqr1jB/5hmzjqxys+hy+90Rd31W1f33Lh39qN/9P9eQ7bO/DaPwbCn/HWsHiiOKacL9jq3gq/Cek4lf1/lf/vbFfhNwg2w==
   </data>
  </layer>
  <objectgroup name="objects">
-  <object id="5" type="base" gid="35" x="384" y="448" width="64" height="64"/>
-  <object id="7" type="base" gid="35" x="1536" y="1408" width="64" height="64"/>
+  <object id="5" type="base" gid="35" x="384" y="512" width="64" height="64"/>
+  <object id="7" type="base" gid="35" x="1600" y="1600" width="64" height="64"/>
   <object id="9" type="small_resource" gid="113" x="384" y="320" width="64" height="64"/>
   <object id="10" type="small_resource" gid="113" x="256" y="320" width="64" height="64"/>
   <object id="12" type="small_resource" gid="113" x="448" y="320" width="64" height="64"/>
@@ -25,30 +25,43 @@
   <object id="24" type="small_resource" gid="113" x="0" y="64" width="64" height="64"/>
   <object id="27" type="small_resource" gid="113" x="192" y="384" width="64" height="64"/>
   <object id="28" type="small_resource" gid="113" x="192" y="640" width="64" height="64"/>
-  <object id="33" type="small_resource" gid="113" x="1472" y="1280" width="64" height="64"/>
-  <object id="34" type="small_resource" gid="113" x="1536" y="1280" width="64" height="64"/>
-  <object id="35" type="small_resource" gid="113" x="1600" y="1280" width="64" height="64"/>
-  <object id="36" type="small_resource" gid="113" x="1664" y="1344" width="64" height="64"/>
-  <object id="37" type="small_resource" gid="113" x="1664" y="1408" width="64" height="64"/>
-  <object id="38" type="small_resource" gid="113" x="1408" y="1408" width="64" height="64"/>
-  <object id="39" type="small_resource" gid="113" x="1408" y="1472" width="64" height="64"/>
-  <object id="40" type="small_resource" gid="113" x="1472" y="1536" width="64" height="64"/>
-  <object id="41" type="small_resource" gid="113" x="1536" y="1536" width="64" height="64"/>
-  <object id="42" type="small_resource" gid="113" x="1600" y="1536" width="64" height="64"/>
-  <object id="51" type="large_resource" gid="114" x="960" y="768" width="64" height="64"/>
-  <object id="52" type="large_resource" gid="114" x="960" y="704" width="64" height="64"/>
-  <object id="53" type="large_resource" gid="114" x="1024" y="704" width="64" height="64"/>
-  <object id="54" type="large_resource" gid="114" x="1024" y="768" width="64" height="64"/>
-  <object id="55" type="large_resource" gid="114" x="1088" y="704" width="64" height="64"/>
-  <object id="56" type="large_resource" gid="114" x="960" y="832" width="64" height="64"/>
-  <object id="57" type="large_resource" gid="114" x="1088" y="832" width="64" height="64"/>
-  <object id="58" type="large_resource" gid="114" x="1024" y="832" width="64" height="64"/>
-  <object id="59" type="large_resource" gid="114" x="1088" y="768" width="64" height="64"/>
-  <object id="61" type="small_resource" gid="113" x="832" y="832" width="64" height="64"/>
+  <object id="33" type="small_resource" gid="113" x="1792" y="1536" width="64" height="64"/>
+  <object id="34" type="small_resource" gid="113" x="1792" y="1664" width="64" height="64"/>
+  <object id="35" type="small_resource" gid="113" x="1792" y="1472" width="64" height="64"/>
+  <object id="36" type="small_resource" gid="113" x="1344" y="1216" width="64" height="64"/>
+  <object id="37" type="small_resource" gid="113" x="1536" y="1792" width="64" height="64"/>
+  <object id="38" type="small_resource" gid="113" x="768" y="960" width="64" height="64"/>
+  <object id="39" type="small_resource" gid="113" x="1600" y="1792" width="64" height="64"/>
+  <object id="40" type="small_resource" gid="113" x="1728" y="1792" width="64" height="64"/>
+  <object id="41" type="small_resource" gid="113" x="1984" y="2048" width="64" height="64"/>
+  <object id="42" type="small_resource" gid="113" x="1792" y="1728" width="64" height="64"/>
+  <object id="51" type="large_resource" gid="114" x="960" y="1088" width="64" height="64"/>
+  <object id="52" type="large_resource" gid="114" x="960" y="1024" width="64" height="64"/>
+  <object id="53" type="large_resource" gid="114" x="1024" y="1024" width="64" height="64"/>
+  <object id="54" type="large_resource" gid="114" x="1024" y="1088" width="64" height="64"/>
+  <object id="55" type="large_resource" gid="114" x="1088" y="1024" width="64" height="64"/>
+  <object id="56" type="large_resource" gid="114" x="960" y="1152" width="64" height="64"/>
+  <object id="57" type="large_resource" gid="114" x="1088" y="1152" width="64" height="64"/>
+  <object id="58" type="large_resource" gid="114" x="1024" y="1152" width="64" height="64"/>
+  <object id="59" type="large_resource" gid="114" x="1088" y="1088" width="64" height="64"/>
+  <object id="61" type="small_resource" gid="113" x="832" y="1152" width="64" height="64"/>
+  <object id="63" type="large_resource" gid="114" x="320" y="128" width="64" height="64"/>
+  <object id="65" type="large_resource" gid="114" x="1152" y="1024" width="64" height="64"/>
+  <object id="66" type="large_resource" gid="114" x="1152" y="1088" width="64" height="64"/>
+  <object id="67" type="large_resource" gid="114" x="1152" y="1152" width="64" height="64"/>
+  <object id="68" type="small_resource" gid="113" x="1280" y="1024" width="64" height="64"/>
+  <object id="70" type="large_resource" gid="114" x="320" y="1920" width="64" height="64"/>
+  <object id="71" type="large_resource" gid="114" x="384" y="1920" width="64" height="64"/>
+  <object id="72" type="large_resource" gid="114" x="384" y="1984" width="64" height="64"/>
+  <object id="73" type="large_resource" gid="114" x="320" y="1984" width="64" height="64"/>
+  <object id="75" type="large_resource" gid="114" x="1664" y="192" width="64" height="64"/>
+  <object id="76" type="large_resource" gid="114" x="1728" y="192" width="64" height="64"/>
+  <object id="77" type="large_resource" gid="114" x="1728" y="128" width="64" height="64"/>
+  <object id="78" type="large_resource" gid="114" x="1664" y="128" width="64" height="64"/>
  </objectgroup>
  <layer name="blocked" width="32" height="32" opacity="0.35">
   <data encoding="base64" compression="zlib">
-   eJztlEEOABAMBP2h/v9WF4dGFK1UkZ2kcRGzFZUSuBmKDuDMrL9X+qdm/cXfO4+EsvhzLa1fs9/q531F+C2OE/4Rr/XPM6zm4G9dmoOdDLMcXrPeZpCyeP51mnsAAAAAgI0CCgcE7w==
+   eJztV1sKwDAI6x3a+591P/0YUt82LWMBGUMwUTdtW8OhT5P80nuVBslHTfNbzcq/4stCygkFjlvTc0rv7UDVpYqHizOm7ebnIPEj/hctfys6eX6ZX5qxkX6N5tPhmeERDZoOD4dn9lMNnBZr/toutGjwgotfuQMz/a/Q8P7WvfWlOrL8USD4M7O9Yu5rew2xW36cQ7T+N5zTKzSMRQzPeT971+JiWPkrEMkf2fsHbRUMYQ==
   </data>
  </layer>
 </map>

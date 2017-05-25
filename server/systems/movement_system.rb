@@ -45,8 +45,8 @@ class MovementSystem
         pos.x = movement.target_vec.x.round
         pos.y = movement.target_vec.y.round
 
-        tile_x = (pos.x/tile_size).floor
-        tile_y = (pos.y/tile_size).floor
+        tile_x = (pos.x.to_f/tile_size).floor
+        tile_y = (pos.y.to_f/tile_size).floor
         pos.tile_x = tile_x
         pos.tile_y = tile_y
         MapInfoHelper.add_unit_at(map_info,tile_x,tile_y,ent_id)

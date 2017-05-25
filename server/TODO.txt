@@ -5,12 +5,18 @@ DOCS
   ** total resource
   ** how to turn-in resources
   ** only workers can carry resources
+  ** resources key in tile updates 
+  Document -Y is N and -X is W
   Gosu or ruby install / binary install for mac / windows?
 
 ** remove resource from non-carrying units
 
+Can harvest even if you are carrying resources!!!
+
 TODO
+  remove player_id when sending commands (in sample clients)
   verify melee attacking
+  flip images based on last X direction
 
   Invalid commands should print an error in the server
 
@@ -22,17 +28,20 @@ TODO
   Add winner declaration w/ game pause?
 
   additional env tiles
-
   do not block server for client comm
     timeouts?
-  handle disconnects
 
+POLISH:
+  sound effects
+  music?
+  screen shake on death?
+  directional units? (get images from Kim)
+  shells & explosions for tanks
+  melee animation
   make units "bounce" while moving
 
   Compile to exe for windows
   Cap number of units?
-
-  flip images based on last X direction
 
   attempt to make logical client(s) with different strategies:
     scout early

@@ -96,7 +96,7 @@ class RtsGame
       attack_cooldown: 5 * STEPS_PER_TURN,
     },
   }
-  PLAYER_START_RESOURCE = UNITS[:tank][:cost]
+  PLAYER_START_RESOURCE = UNITS[:tank][:cost] * 5
 
   DIR_VECS = {
     'N' => vec(0,-1),

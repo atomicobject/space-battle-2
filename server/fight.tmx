@@ -16,9 +16,9 @@
  <objectgroup name="objects">
   <object id="5" type="base" gid="35" x="384" y="448" width="64" height="64"/>
   <object id="7" type="base" gid="35" x="384" y="640" width="64" height="64"/>
-  <object id="9" type="small_resource" gid="113" x="384" y="320" width="64" height="64"/>
+  <object id="9" type="small_resource" gid="113" x="384" y="256" width="64" height="64"/>
   <object id="10" type="small_resource" gid="113" x="256" y="320" width="64" height="64"/>
-  <object id="12" type="small_resource" gid="113" x="448" y="320" width="64" height="64"/>
+  <object id="12" type="small_resource" gid="113" x="448" y="256" width="64" height="64"/>
   <object id="13" type="small_resource" gid="113" x="192" y="448" width="64" height="64"/>
   <object id="15" type="small_resource" gid="113" x="192" y="576" width="64" height="64"/>
   <object id="23" gid="113" x="0" y="64" width="64" height="64"/>
