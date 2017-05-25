@@ -111,17 +111,27 @@ class RtsGame
     t = Thread.new do
       ents = initial_state
       turn_count = 0
+      step_count = 0
       msgs = []
       loop do
-        input = InputSnapshot.new
-        input[:messages] = msgs
-        input[:messages] && input[:messages].each do |msg|
+        
+        msgs.each do |msg|
           GameLogger.log("\nreceived msg from #{msg.connection_id}: #{msg.data}")
         end
-        STEPS_PER_TURN.times do
+        STEPS_PER_TURN.times do |i|
+          total_time = step_count * RtsGame::SIMULATION_STEP
+          input = InputSnapshot.new(nil, total_time)
+          input[:messages] = msgs if i == 0 
           @world.update ents, SIMULATION_STEP, input, nil
-          input.delete(:messages)
+          step_count += 1
         end
+
+        time_remaining = ents.first(Timer).get(Timer).ttl
+        if time_remaining <= 0
+          puts "GAME OVER!"
+          @game_over = true 
+        end
+
         @network_manager.clients.each do |player_id|
           msg = generate_message_for(ents, player_id, turn_count)
           if msg
@@ -134,8 +144,6 @@ class RtsGame
         output_queue << [ents.deep_clone, msgs]
 
         turn_count += 1
-        # puts "DONE."
-        # puts "#{turn_count}"
         msgs = input_queue.pop
       end
     end
@@ -172,8 +180,8 @@ class RtsGame
     build_world clients, map
     @fast_mode = fast
     @time = time
+    @input_queue = Queue.new
     @next_turn_queue = Queue.new
-    @input_queue = @fast_mode ? @network_manager.messages_queue : Queue.new
   end
 
   def start!
@@ -189,42 +197,34 @@ class RtsGame
   def update(delta:, input:)
     begin
       if @start && !@game_over
-
-        @turn_time ||= 0
-        @turn_time += delta
-        @sim_steps ||= 0
-        can_skip = @fast_mode
-        if @sim_steps >= STEPS_PER_TURN || can_skip
-          @sim_steps =0
-
-          if can_skip
-            @entity_manager, msgs = @next_turn_queue.pop
-          else
-            @input_queue << @network_manager.messages_queue.pop
-            _, msgs = @next_turn_queue.pop
-          end
-          input[:messages] = msgs
-
-          @turn_time -= TURN_DURATION
+        if @fast_mode
+          @input_queue << @network_manager.pop_messages_with_timeout!(RtsGame::TURN_DURATION.to_f / 1000.0)
+          @entity_manager, _ = @next_turn_queue.pop
         else
-          input[:messages] = []
-        end
+          @turn_time ||= 0
+          @turn_time += delta
+          @sim_steps ||= 0
 
-        unless can_skip
+          if @sim_steps >= STEPS_PER_TURN
+            @sim_steps = 0
+            @input_queue << @network_manager.pop_messages_with_timeout!(0.0)
+            # if everything goes well, the following line should have no effect.
+            @entity_manager = @next_entity_manager if @next_entity_manager
+            @next_entity_manager, msgs = @next_turn_queue.pop
+            @input_msgs = msgs
+            @turn_time -= TURN_DURATION
+          end
+
           while (@sim_steps * SIMULATION_STEP <= @turn_time) && (@sim_steps < STEPS_PER_TURN)
+            input[:messages] = @input_msgs if @input_msgs
             @world.update @entity_manager, SIMULATION_STEP, input, @resources
             input.delete(:messages)
+            @input_msgs = nil
             @sim_steps+=1
           end
         end
-
-        time_remaining = @entity_manager.first(Timer).get(Timer).ttl
-        if time_remaining <= 0
-          puts "GAME OVER!"
-          @game_over = true 
-        end
       end
-    rescue Exception => ex
+    rescue StandardError => ex
       puts ex.inspect
       puts ex.backtrace.inspect
       raise ex

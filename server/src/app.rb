@@ -25,7 +25,7 @@ class RtsWindow < Gosu::Window
       input = take_input_snapshot
       @game.update delta: delta, input: input
 
-    rescue Exception => ex
+    rescue StandardError => ex
       puts ex.inspect
       puts ex.backtrace.inspect
       raise ex
@@ -113,12 +113,8 @@ end
     end
     @game = RtsGame.new map: opts[:map], clients: clients, fast: opts[:fast], time: opts[:time]
     @game.start!
-    total_time = 0
     until @game.game_over?
-      total_time += RtsGame::SIMULATION_STEP
-      input = FakeInput.new
-      input.total_time = total_time
-      @game.update delta: RtsGame::SIMULATION_STEP , input: input 
+      @game.update delta: nil , input: nil
     end
 
     @game.scores.each do |id, score|
