@@ -27,7 +27,7 @@
     health = Health.new(points: hp, max: hp)
     tile_size = RtsGame::TILE_SIZE
     id = entity_manager.add_entity(
-      Unit.new(status: :base, type: :base), 
+      Unit.new(status: :idle, type: :base), 
       b,
       Position.new(x:x, y:y, tile_x: (x/tile_size).floor, tile_y: (y/tile_size).floor, z:10),
       PlayerOwned.new(id: player_id),

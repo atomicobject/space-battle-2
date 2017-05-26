@@ -1,5 +1,6 @@
 require_relative 'command_system'
 require_relative 'movement_system'
+require_relative 'create_system'
 require_relative 'attack_system'
 
 class TimedLevelSystem

@@ -64,36 +64,39 @@ class RtsGame
   GAME_LENGTH_IN_MS = 300_000
   UNITS = {
     base: {
-      range: 2,
       hp: 50,
+      range: 2,
     },
     worker: {
       cost: 100,
+      hp: 5,
       range: 2,
       speed: 1,
       attack: 3,
       attack_type: :melee,
       attack_cooldown: 2 * STEPS_PER_TURN,
-      hp: 5,
       can_carry: true,
+      create_time: 5 * STEPS_PER_TURN,
     },
     scout: {
       cost: 130,
+      hp: 3,
       range: 5,
       speed: 2,
       attack: 1,
       attack_type: :melee,
       attack_cooldown: 2 * STEPS_PER_TURN,
-      hp: 3,
+      create_time: 10 * STEPS_PER_TURN,
     },
     tank: {
       cost: 150,
+      hp: 10,
       range: 2,
       speed: 0.5,
       attack: 4,
-      hp: 10,
       attack_type: :ranged,
       attack_cooldown: 5 * STEPS_PER_TURN,
+      create_time: 15 * STEPS_PER_TURN,
     },
   }
   PLAYER_START_RESOURCE = UNITS[:tank][:cost] * 5
@@ -381,6 +384,7 @@ class RtsGame
       CommandSystem.new,
       AttackSystem.new,
       MovementSystem.new,
+      CreateSystem.new,
       TimerSystem.new,
       TimedSystem.new,
       TimedLevelSystem.new,

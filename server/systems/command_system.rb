@@ -33,24 +33,16 @@ class CommandSystem
             end
 
           elsif c == 'CREATE'
-            base_ent = entity_manager.find(Base, Unit, PlayerOwned, Position, Label).
-              select{|ent| ent.get(PlayerOwned).id == msg.connection_id}.first
-            base = base_ent.get(Base)
-            base_pos = base_ent.get(Position)
             type = cmd['type']
-            next unless type && RtsGame::UNITS.has_key?(type.to_sym)
+            next unless type && info = RtsGame::UNITS[type.to_sym]
 
-            # TODO move to UnitCreationSystem
-            cost = RtsGame::UNITS[type.to_sym][:cost]
-            if base.resource >= cost
-              base.resource -= cost
-              base_ent.get(Label).text = base.resource
-              Prefab.unit(type: type.to_sym, entity_manager: entity_manager, map_info: map_info,
-                          x: base_pos.x, y: base_pos.y, 
-                          player_id: msg.connection_id)
-              base_ent.get(Unit).dirty = true
+            base_ent = entity_manager.find(Base, Unit, PlayerOwned).
+              select{|ent| ent.get(PlayerOwned).id == msg.connection_id}.first
+
+            unless base_ent.nil? || base_ent.get(Unit).status == :building || entity_manager.find_by_id(base_ent.id, CreateCommand)
+              entity_manager.add_component(id: base_ent.id, 
+                component: CreateCommand.new(type: type.to_sym, build_time: info[:create_time]) )
             end
-
 
           elsif c == 'ATTACK'
             dx, dy, uid = cmd.values_at('dx','dy','unit')

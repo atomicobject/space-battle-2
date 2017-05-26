@@ -36,13 +36,6 @@ class MapInfo
   end
 end
 
-class MovementCommand
-  attr_accessor :target_vec
-  def initialize(target_vec:)
-    @target_vec = target_vec
-  end
-end
-
 class Unit
   attr_accessor :status, :dirty, :type
   def initialize(status: :idle, type: :worker)
@@ -76,6 +69,8 @@ Shooter = define_component
 Melee = define_component
 MeleeEffect = define_component
 Explosion = define_component
+MovementCommand = define_component(attrs: [:target_vec])
+CreateCommand = define_component(attrs: [:type, :build_time])
 
 class Position
   attr_accessor :x, :y, :z, :tile_x, :tile_y
