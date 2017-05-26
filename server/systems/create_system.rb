@@ -16,7 +16,7 @@ class CreateSystem
                       x: base_pos.x, y: base_pos.y, player_id: owner.id)
           u.dirty = true
         else
-          puts "#{owner.id} tried to create #{type} without enough resources #{cost} required, but only has #{base.resource}"
+          puts "#{owner.id} tried to create #{cmd.type} without enough resources #{cost} required, but only has #{base.resource}"
         end
 
         u.status = :idle
