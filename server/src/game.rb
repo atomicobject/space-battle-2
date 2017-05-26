@@ -268,6 +268,17 @@ class RtsGame
 
     ((interesting_tiles & dirty_tiles) | newly_visible_tiles).each do |i,j|
       res = MapInfoHelper.resource_at(map,i,j)
+      resource_ent = entity_manager.find_by_id(res[:id], Resource, Label) if res
+      tile_res = nil
+      if resource_ent
+        tile_res = {
+          id: resource_ent.id,
+          type: res[:type],
+          total: resource_ent.get(Resource).total,
+          value: resource_ent.get(Resource).value,
+        }
+      end
+
       tile_units = MapInfoHelper.units_at(map,i,j)
       blocked = MapInfoHelper.blocked?(map,i,j)
       tiles << {
@@ -275,7 +286,7 @@ class RtsGame
         x: i-base_pos.tile_x,
         y: j-base_pos.tile_y,
         blocked: blocked,
-        resources: res,
+        resources: tile_res,
         units: tile_units.map do |tu|
           ent = entity_manager.find_by_id(tu, Position, PlayerOwned, Unit, Health)
           pid = ent.get(PlayerOwned).id
