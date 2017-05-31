@@ -90,6 +90,7 @@ class Message
   end
 
   def data
+    return {} if @json.nil? || @json.empty?
     begin
       Oj.load(@json)
       # JSON.parse(@json)
