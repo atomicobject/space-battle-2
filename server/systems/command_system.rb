@@ -44,14 +44,24 @@ class CommandSystem
                 component: CreateCommand.new(type: type.to_sym, build_time: info[:create_time]) )
             end
 
-          elsif c == 'ATTACK'
+          elsif c == 'SHOOT'
             dx, dy, uid = cmd.values_at('dx','dy','unit')
-            ent = entity_manager.find_by_id(uid, Unit, Position, PlayerOwned)
+            ent = entity_manager.find_by_id(uid, Unit, Position, PlayerOwned, Attack)
             next unless ent 
 
             u, pos, owner = ent.components
             if owner.id == msg.connection_id
-              entity_manager.add_component(id: uid, component: AttackCommand.new(id: uid, dx: dx, dy: dy))
+              entity_manager.add_component(id: uid, component: ShootCommand.new(id: uid, dx: dx, dy: dy))
+            end
+
+          elsif c == 'MELEE'
+            target, uid = cmd.values_at('target','unit')
+            ent = entity_manager.find_by_id(uid, Unit, Position, PlayerOwned, Attack)
+            next unless ent 
+
+            u, pos, owner = ent.components
+            if owner.id == msg.connection_id
+              entity_manager.add_component(id: uid, component: MeleeCommand.new(id: uid, target: target))
             end
 
           elsif c == 'GATHER'

@@ -56,11 +56,19 @@ def create_command(type)
     type: type
   }
 end
-def attack_command(dx,dy,id)
+def shoot_command(dx,dy,id)
   cmd = {
-    command: "ATTACK",
+    command: "SHOOT",
     dx: dx,
     dy: dy,
+    unit: id,
+  }
+end
+
+def melee_command(target,id)
+  cmd = {
+    command: "MELEE",
+    target: target,
     unit: id,
   }
 end
@@ -153,7 +161,11 @@ loop do
                   non_dead = tile['units'].select{|tu|tu['status'] != 'dead'}
                   unless non_dead.empty?
                     # p non_dead.inspect
-                    cmds << attack_command(tx-x,ty-y,id)
+                    if r > 1
+                      cmds << shoot_command(tx-x,ty-y,id)
+                    else
+                      cmds << melee_command(non_dead.sort_by{|nd|nd['health']}.first['id'], id)
+                    end
                     throw :found_target
                   end
                 end
