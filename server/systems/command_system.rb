@@ -63,7 +63,12 @@ class CommandSystem
 
             if owner.id == msg.connection_id
               dir = RtsGame::DIR_VECS[cmd['dir']]
-              next unless dir
+              if dir.nil?
+                u.status = :idle
+                u.dirty = true
+                puts "Invalid HARVEST DIR #{dir} for unit #{uid} from player #{msg.connection_id}"
+                next
+              end
               target_tile_x = pos.tile_x + dir.x
               target_tile_y = pos.tile_y + dir.y
 
