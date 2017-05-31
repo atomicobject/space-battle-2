@@ -297,8 +297,6 @@ class RtsGame
           pid != player_id ? 
           {
             id: tu,
-            x: ent.get(Position).tile_x,
-            y: ent.get(Position).tile_y,
             type: ent.get(Unit).type,
             status: status,
             player_id: pid,
