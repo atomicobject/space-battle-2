@@ -259,7 +259,7 @@ class RtsGame
     interesting_tiles = Set.new
     entity_manager.each_entity(Unit, PlayerOwned, Position, Ranged) do |ent|
       u, player, pos, rang = ent.components
-      if player.id == player_id
+      if player.id == player_id && u.status != 'dead'
         interesting_tiles.merge(TileInfoHelper.tiles_near_unit(tile_info, u, pos, rang))
       end
     end
