@@ -1,6 +1,11 @@
 class AttackSystem
   def update(entity_manager, dt, input, res)
     map_info = entity_manager.first(MapInfo).get(MapInfo)
+    tile_infos =  {} 
+    entity_manager.each_entity(PlayerOwned, TileInfo) do |ent|
+      player, tile_info = ent.components
+      tile_infos[player.id] = tile_info
+    end
 
     entity_manager.each_entity(MeleeEffect) do |ent|
       entity_manager.remove_entity(id: ent.id)
@@ -48,6 +53,10 @@ class AttackSystem
       target_unit = target_ent.get(Unit)
       target_unit.dirty = true
 
+      tile_infos.values.each do |tile_info|
+        TileInfoHelper.dirty_tile(tile_info, tx, ty)
+      end
+
       target_health.points = [target_health.points-attack.damage, 0].max
       target_health.points = 1 if target_health.points <= 0 && target_unit.type == :base
       if target_health.points <= 0
@@ -84,6 +93,9 @@ class AttackSystem
 
       Prefab.explosion(entity_manager: entity_manager, x: tx*tile_size, y: ty*tile_size)
 
+      tile_infos.values.each do |tile_info|
+        TileInfoHelper.dirty_tile(tile_info, tx, ty)
+      end
       tile_units = MapInfoHelper.units_at(map_info, tx, ty)
       tile_units.each do |tu_id|
         target_ent = entity_manager.find_by_id(tu_id, Unit, Health)
