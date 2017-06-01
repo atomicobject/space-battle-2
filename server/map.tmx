@@ -18,18 +18,12 @@
   <object id="7" type="base" gid="35" x="1600" y="1600" width="64" height="64"/>
   <object id="9" type="small_resource" gid="113" x="384" y="320" width="64" height="64"/>
   <object id="10" type="small_resource" gid="113" x="256" y="320" width="64" height="64"/>
-  <object id="12" type="small_resource" gid="113" x="448" y="320" width="64" height="64"/>
-  <object id="13" type="small_resource" gid="113" x="192" y="448" width="64" height="64"/>
+  <object id="13" type="small_resource" gid="113" x="192" y="384" width="64" height="64"/>
   <object id="15" type="small_resource" gid="113" x="192" y="576" width="64" height="64"/>
   <object id="23" gid="113" x="0" y="64" width="64" height="64"/>
   <object id="24" type="small_resource" gid="113" x="0" y="64" width="64" height="64"/>
-  <object id="27" type="small_resource" gid="113" x="192" y="384" width="64" height="64"/>
-  <object id="28" type="small_resource" gid="113" x="192" y="640" width="64" height="64"/>
   <object id="33" type="small_resource" gid="113" x="1792" y="1536" width="64" height="64"/>
-  <object id="34" type="small_resource" gid="113" x="1792" y="1664" width="64" height="64"/>
-  <object id="35" type="small_resource" gid="113" x="1792" y="1472" width="64" height="64"/>
   <object id="36" type="small_resource" gid="113" x="1280" y="1216" width="64" height="64"/>
-  <object id="37" type="small_resource" gid="113" x="1536" y="1792" width="64" height="64"/>
   <object id="38" type="small_resource" gid="113" x="704" y="960" width="64" height="64"/>
   <object id="39" type="small_resource" gid="113" x="1600" y="1792" width="64" height="64"/>
   <object id="40" type="small_resource" gid="113" x="1728" y="1792" width="64" height="64"/>
