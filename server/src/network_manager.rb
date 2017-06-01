@@ -61,12 +61,18 @@ class Connection
   def flush!
     return unless @alive
     # puts "flushing conn"
-    @network_manager.mutex.synchronize do
-      @outgoing.each do |msg|
-        # puts "writing #{msg}"
-        @socket.puts msg
+    begin
+      @network_manager.mutex.synchronize do
+        @outgoing.each do |msg|
+          # puts "writing #{msg}"
+          @socket.puts msg
+        end
+        @outgoing.clear
       end
-      @outgoing.clear
+    rescue StandardError => ex
+      puts ex.inspect
+      puts "Client at #{@host}:#{@port} died"
+      @alive = false
     end
   end
 
