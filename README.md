@@ -108,7 +108,7 @@ __WORKER__: You will start the game with 6 workers. Workers are the only unit th
 
 __SCOUT__: Scouts have longer vision, faster speed, lower health, and a weak melee attack. Cost 130.
 
-![tank](https://gitlab.atomicobject.com/shawn.anderson/ao-rts/raw/master/server/assets/PNG/Retina/Unit/scifiUnit_09.png "tank")
+![tank](https://gitlab.atomicobject.com/shawn.anderson/ao-rts/raw/master/server/assets/PNG/Retina/Unit/scifiUnit_08.png "tank")
 
 __TANK__: Tanks have average vision, slower speed, higher health, and a ranged attack. Cost 150.
 
