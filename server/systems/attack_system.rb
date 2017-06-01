@@ -26,6 +26,10 @@ class AttackSystem
       entity_manager.remove_component klass: MeleeCommand, id: ent.id
       next if u.status == :dead || !attack.can_attack 
       target_ent = entity_manager.find_by_id(cmd.target, Unit, Position, Health)
+      if target_ent.nil?
+        puts "MELEE on an unknown target: #{cmd.target}"
+        next
+      end
       t_pos = target_ent.get(Position)
       dx = (t_pos.tile_x - pos.tile_x).abs
       dy = (t_pos.tile_y - pos.tile_y).abs
