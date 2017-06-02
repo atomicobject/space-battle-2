@@ -5,6 +5,7 @@ AO RTS
 ## Goal
 
 Write an AI to command your troops to gather the most resources in the time allotted. The AI communicates over TCP via a JSON protocol.
+
 ***
 
 ## API
@@ -73,6 +74,10 @@ Any time something about a tile changes, (enemy units, visibility, etc), you wil
 
 ##### time
 This is the amount of time remaining in the game (in milliseconds). 
+
+##### turn
+This is the current turn of the game. Each turn is 200ms.
+
 ***
 
 ## Commands
@@ -96,7 +101,7 @@ __MELEE__: `unit`,`target` Tell the unit to melee a nearby unit. Command is igno
 
 
 ## Units
-![base](https://gitlab.atomicobject.com/shawn.anderson/ao-rts/raw/master/server/assets/PNG/Retina/Structure/scifiStructure_08.png "base")
+![base](https://gitlab.atomicobject.com/shawn.anderson/ao-rts/raw/master/server/assets/PNG/Retina/Structure/scifiStructure_11.png "base")
 
 __BASE__: When joining the game, your base will be placed at a random location on the map. Any map location will be sent from the server relative to your base's location.
 
@@ -112,31 +117,75 @@ __SCOUT__: Scouts have longer vision, faster speed, lower health, and a weak mel
 
 __TANK__: Tanks have average vision, slower speed, higher health, and a ranged attack. Cost 150.
 
-| type   | cost | range | speed | health | attack cooldown |
-|--------|------|-------|-------|--------|-----------------|
-| worker | 100  | 2     | 5     | 5      | 2 |
-| scout  | 130  | 2     | 5     | ?      | ? |
-| tank   | 150  | 2     | 5     | ?      | ? |
+| type   | cost | range (+/-) | speed (tpt<sup>*</sup>) | health | attack cooldown (turns) | build time (turns) |
+|--------|------|-------|-------|--------|-----------------|---|
+| worker | 100  | 2     | 5     | 5      | 3 | 5  |
+| scout  | 130  | 2     | 5     | ?      | 3 | 10 |
+| tank   | 150  | 2     | 5     | ?      | 5 | 15 |
 
-| field  | definition|
-|--------|-----------|
-| speed  | turns to move |
-| range  | +/- from current location|
-|cooldown| turns |
+<sup>*</sup>__turns per tile (tpt):__ Number of turns required to move from one grid location to the next. smaller is faster.
 
 ***
 
+## Communication Overview
 
-## JSON Schema (WIP)
+WIP
+
+## JSON Schema
 
 ###Message from Server
-You will recieve one message per turn...
 
 | property | type | notes |
 |----------|------|-------|
-| `time` | `integer` | milliseconds left in the game |
-| `player_id` | `integer` | your player id |
-| `tile_updates` | `array of objects` | .... |
+| `time` | `int` | Milliseconds left in the game |
+| `turn` | `int` | Current turn of the game |
+| `player_id` | `int` | Your player id |
+| `tile_updates` | `array of Tiles` | Tiles that changed last turn |
+| `unit_updates` | `array of Units` | Your units that changed last turn |
+
+#### Unit
+| property | type | notes |
+|----------|------|-------|
+| `id` | `int` | Unique identifier for the unit. |
+| `player_id` | `int` | Your player identifier. |
+| `x` | `int` | Tile coord (positive to the right "E") |
+| `y` | `int` | Tile coord (positive is down "S") |
+| `type` | `string` | Type of unit (base, worker, scout, tank) |
+| `status` | `string` | current status (idle,moving,building,dead) |
+| `health` | `int` | Current health of unit |
+| `resource`__*__ | `int` | Value of resources currently being carried. |
+| `can_attack`__*__ | `bool` | Can attack next turn (based on cooldown) |
+
+__* Optional:__ may or may not be present depending on the unit type.
+
+#### Tile
+| property | type | notes |
+|----------|------|-------|
+| `visible` | `bool` | Can currently be seen by one of your units |
+| `x` | `int` | Tile coord (positive to the right "E") |
+| `y` | `int` | Tile coord (positive is down "S") |
+| `blocked` | `bool` | Tile can be walked on by units. |
+| `resources` | `null` or `Tile Resource` | Description of the resource (if any) on this tile. |
+| `units` | `array of Enemy Units` | Enemies found on this tile. |
+
+#### Tile Resource
+| property | type | notes |
+|----------|------|-------|
+| `id` | `int` | Unique identifier for this resource. |
+| `type` | `string` | Time of resource (small or large) |
+| `total` | `int` | Total amount of value left in this resource. |
+| `value` | `int` | Value of a single harvested load. |
+          
+#### Enemy Units
+
+| property | type | notes |
+|----------|------|-------|
+| `id` | `int` | Unique identifier for the unit. |
+| `type` | `string` | Type of unit (base, worker, scout, tank) |
+| `status` | `string` | limited current status (dead or unknown) |
+| `player_id` | `int` | Identifier of the player that owns the unit |
+| `health` | `int` | Current health of unit |
+
 
 
 ## Setting Up the game
