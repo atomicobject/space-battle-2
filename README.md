@@ -101,7 +101,7 @@ __MELEE__: `unit`,`target` Tell the unit to melee a nearby unit. Command is igno
 
 
 ## Units
-![base](https://gitlab.atomicobject.com/shawn.anderson/ao-rts/raw/master/server/assets/PNG/Retina/Structure/scifiStructure_11.png "base")
+![base](server/assets/PNG/Retina/Structure/scifiStructure_11.png "base")
 
 __BASE__: When joining the game, your base will be placed at a random location on the map. Any map location will be sent from the server relative to your base's location.
 
