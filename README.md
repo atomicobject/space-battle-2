@@ -101,19 +101,19 @@ __MELEE__: `unit`,`target` Tell the unit to melee a nearby unit. Command is igno
 
 
 ## Units
-![base](https://gitlab.atomicobject.com/shawn.anderson/ao-rts/raw/master/server/assets/PNG/Retina/Structure/scifiStructure_11.png "base")
+![base](server/assets/PNG/Retina/Structure/scifiStructure_11.png "base")
 
 __BASE__: When joining the game, your base will be placed at a random location on the map. Any map location will be sent from the server relative to your base's location.
 
-![worker](https://gitlab.atomicobject.com/shawn.anderson/ao-rts/raw/master/server/assets/PNG/Retina/Unit/scifiUnit_02.png "worker")
+![worker](server/assets/PNG/Retina/Unit/scifiUnit_02.png "worker")
 
 __WORKER__: You will start the game with 6 workers. Workers are the only unit that can carry resources. They have average vision, speed, health, and a weak melee attack. Cost: 100.
 
-![scout](https://gitlab.atomicobject.com/shawn.anderson/ao-rts/raw/master/server/assets/PNG/Retina/Unit/scifiUnit_06.png "scout")
+![scout](server/assets/PNG/Retina/Unit/scifiUnit_06.png "scout")
 
 __SCOUT__: Scouts have longer vision, faster speed, lower health, and a weak melee attack. Cost 130.
 
-![tank](https://gitlab.atomicobject.com/shawn.anderson/ao-rts/raw/master/server/assets/PNG/Retina/Unit/scifiUnit_08.png "tank")
+![tank](server/assets/PNG/Retina/Unit/scifiUnit_08.png "tank")
 
 __TANK__: Tanks have average vision, slower speed, higher health, and a ranged attack. Cost 150.
 

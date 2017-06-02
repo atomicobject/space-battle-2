@@ -45,10 +45,12 @@ class RenderSystem
         sorted_by_y_x[pos.y][pos.x] << [images[sprited.image],pos.z]
       end
 
+      sprite_scale = 0.75
+
       sorted_by_y_x.keys.sort.each do |y|
         sorted_by_y_x[y].keys.sort.reverse.each do |x|
           sorted_by_y_x[y][x].each do |(img,z)|
-            img.draw x, y, z
+            img.draw_rot x+RtsGame::TILE_SIZE/2,y+RtsGame::TILE_SIZE/2,z,0,0.5,0.5,sprite_scale,sprite_scale
           end
         end
       end
