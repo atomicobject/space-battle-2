@@ -59,17 +59,8 @@ class AttackSystem
 
       target_health.points = [target_health.points-attack.damage, 0].max
       target_health.points = 1 if target_health.points <= 0 && target_unit.type == :base
-      if target_health.points <= 0
-        target_unit.status = :dead
 
-        # TODO drop their resources?
-        # TODO possibly change sprite to splat on death?
-        tu_id = target_ent.id
-        entity_manager.remove_component(klass: Sprited, id: tu_id)
-        entity_manager.remove_component(klass: ResourceCarrier, id: tu_id)
-        entity_manager.remove_component(klass: Label, id: tu_id)
-      end
-
+      kill_unit!(entity_manager, target_ent.id, target_unit, ent.id, u) if target_health.points <= 0
     end
 
     entity_manager.each_entity(Unit, ShootCommand, Shooter, Attack, Position) do |ent|
@@ -105,16 +96,8 @@ class AttackSystem
 
         target_health.points = [target_health.points-attack.damage, 0].max
         target_health.points = 1 if target_health.points <= 0 && target_unit.type == :base
-        if target_health.points <= 0
-          target_unit.status = :dead
 
-          # TODO drop their resources?
-          # TODO possibly change sprite to splat on death?
-          entity_manager.remove_component(klass: Sprited, id: tu_id)
-          entity_manager.remove_component(klass: ResourceCarrier, id: tu_id)
-          entity_manager.remove_component(klass: Label, id: tu_id)
-        end
-
+        kill_unit!(entity_manager, target_ent.id, target_unit, ent.id, u) if target_health.points <= 0
       end
     end
 
@@ -125,6 +108,18 @@ class AttackSystem
       entity_manager.remove_component klass: ShootCommand, id: ent.id
     end
 
+  end
+
+  private
+  def kill_unit!(entity_manager, id, target_unit, killer_id, killer_unit)
+    puts "#{killer_unit.type}[#{killer_id}] killed #{target_unit.type}[#{id}]"
+    target_unit.status = :dead
+
+    # TODO drop their resources?
+    # TODO possibly change sprite to splat on death?
+    entity_manager.remove_component(klass: Sprited, id: id)
+    entity_manager.remove_component(klass: ResourceCarrier, id: id)
+    entity_manager.remove_component(klass: Label, id: id)
   end
 end
 
