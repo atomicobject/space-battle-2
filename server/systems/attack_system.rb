@@ -26,11 +26,11 @@ class AttackSystem
       end
     end
 
-    entity_manager.each_entity(Unit, MeleeCommand, Melee, Attack, Position) do |ent|
-      u, cmd, melee, attack, pos = ent.components
+    entity_manager.each_entity(Unit, MeleeCommand, Melee, Attack, Position, PlayerOwned) do |ent|
+      u, cmd, melee, attack, pos, player = ent.components
       entity_manager.remove_component klass: MeleeCommand, id: ent.id
       next if u.status == :dead || !attack.can_attack 
-      target_ent = entity_manager.find_by_id(cmd.target, Unit, Position, Health)
+      target_ent = entity_manager.find_by_id(cmd.target, Unit, Position, Health, PlayerOwned)
       if target_ent.nil?
         puts "MELEE on an unknown target: #{cmd.target}"
         next
@@ -51,6 +51,9 @@ class AttackSystem
 
       target_health = target_ent.get(Health)
       target_unit = target_ent.get(Unit)
+
+      next if target_unit.status == :dead
+
       target_unit.dirty = true
 
       tile_infos.values.each do |tile_info|
@@ -60,11 +63,13 @@ class AttackSystem
       target_health.points = [target_health.points-attack.damage, 0].max
       target_health.points = 1 if target_health.points <= 0 && target_unit.type == :base
 
-      kill_unit!(entity_manager, target_ent.id, target_unit, ent.id, u) if target_health.points <= 0
+      target_player = target_ent.get(PlayerOwned)
+
+      kill_unit!(entity_manager, target_ent.id, target_unit, target_player.id, ent.id, u, player.id) if target_health.points <= 0
     end
 
-    entity_manager.each_entity(Unit, ShootCommand, Shooter, Attack, Position) do |ent|
-      u, cmd, shooter, attack, pos = ent.components
+    entity_manager.each_entity(Unit, ShootCommand, Shooter, Attack, Position, PlayerOwned) do |ent|
+      u, cmd, shooter, attack, pos, player = ent.components
       entity_manager.remove_component klass: ShootCommand, id: ent.id
       next if u.status == :dead || !attack.can_attack
 
@@ -89,15 +94,17 @@ class AttackSystem
       end
       tile_units = MapInfoHelper.units_at(map_info, tx, ty)
       tile_units.each do |tu_id|
-        target_ent = entity_manager.find_by_id(tu_id, Unit, Health)
+        target_ent = entity_manager.find_by_id(tu_id, Unit, Health, PlayerOwned)
         target_health = target_ent.get(Health)
         target_unit = target_ent.get(Unit)
+        next if target_unit.status == :dead
         target_unit.dirty = true
 
         target_health.points = [target_health.points-attack.damage, 0].max
         target_health.points = 1 if target_health.points <= 0 && target_unit.type == :base
 
-        kill_unit!(entity_manager, target_ent.id, target_unit, ent.id, u) if target_health.points <= 0
+        target_player = target_ent.get(PlayerOwned)
+        kill_unit!(entity_manager, target_ent.id, target_unit, target_player.id, ent.id, u, player.id) if target_health.points <= 0
       end
     end
 
@@ -111,8 +118,8 @@ class AttackSystem
   end
 
   private
-  def kill_unit!(entity_manager, id, target_unit, killer_id, killer_unit)
-    puts "#{killer_unit.type}[#{killer_id}] killed #{target_unit.type}[#{id}]"
+  def kill_unit!(entity_manager, id, target_unit, target_player_id, killer_id, killer_unit, killer_player_id)
+    puts "Player #{killer_player_id} #{killer_unit.type}[#{killer_id}] killed  player #{target_player_id} #{target_unit.type}[#{id}]"
     target_unit.status = :dead
 
     # TODO drop their resources?
