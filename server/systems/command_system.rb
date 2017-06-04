@@ -8,7 +8,7 @@ class CommandSystem
         cmds = msg_data['commands'] || []
         map_info = entity_manager.first(MapInfo).get(MapInfo)
         cmds.each do |cmd|
-          c = cmd['command']
+          c = cmd['command'].upcase
           uid = cmd['unit']
 
           if c == 'MOVE'
