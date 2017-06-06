@@ -6,7 +6,7 @@ class Connection
 
   def initialize(network_manager, host, port)
     @socket = TCPSocket.open host, port
-    GameLogger.log("Connected to #{host}:#{port}")
+    # GameLogger.log("Connected to #{host}:#{port}")
     @alive = true
     @host = host
     @port = port
@@ -139,6 +139,7 @@ class NetworkManager
     puts "connecting..."
     conn = _connect(host, port)
     @connections[@connection_count] = conn
+    GameLogger.log_connection(@connection_count, host, port)
     @connection_count += 1
     conn.start
   end

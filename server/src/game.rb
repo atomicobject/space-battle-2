@@ -21,15 +21,24 @@ class GameLogger
   require 'singleton'
   include Singleton
   def initialize
+    
     @log_file = File.open('game-log.txt', 'w+')
   end
   def log(msg)
-    @log_file.puts("#{Time.now.to_ms}: #{msg}")
+    @log_file.puts msg
     @log_file.flush
   end
 
-  def self.log(msg)
-    self.instance.log(msg)
+  def self.log_connection(pid, host, port)
+    instance.log({time: Time.now.to_ms, type: :connection, id: pid, host: host, port: port}.to_json)
+  end
+
+  def self.log_sent(pid, data)
+    instance.log({time: Time.now.to_ms, type: :to_player, id: pid, msg: data}.to_json)
+  end
+
+  def self.log_received(pid, data)
+    instance.log({time: Time.now.to_ms, type: :from_player, id: pid, msg: data}.to_json)
   end
 end
 
@@ -120,7 +129,7 @@ class RtsGame
       loop do
         
         msgs.each do |msg|
-          GameLogger.log("\nreceived msg from #{msg.connection_id}: #{msg.data}")
+          GameLogger.log_received(msg.connection_id, msg.data)
         end
         STEPS_PER_TURN.times do |i|
           total_time = step_count * RtsGame::SIMULATION_STEP
@@ -139,7 +148,7 @@ class RtsGame
         @network_manager.clients.each do |player_id|
           msg = generate_message_for(ents, player_id, turn_count)
           if msg
-            GameLogger.log("\nsent msg to #{player_id}: #{msg}")
+            GameLogger.log_sent(player_id, msg)
             @network_manager.write(player_id, msg)
           end
         end
