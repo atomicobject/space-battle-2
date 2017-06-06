@@ -3,6 +3,7 @@ require 'json'
 require 'oj'
 require 'thread'
 require 'set'
+require 'drb/drb'
 
 require_relative '../lib/core_ext'
 require_relative '../lib/vec'
@@ -179,18 +180,27 @@ class RtsGame
     player_scores
   end
 
-  def initialize(map:,clients:,fast:false,time:)
+  include DRb::DRbUndumped
+  attr_reader :input_queue, :next_turn_queue
+  def initialize(map:,clients:,fast:false,time:,drb_port:nil)
     build_world clients, map
     @fast_mode = fast
     @time = time
     @input_queue = Queue.new
     @next_turn_queue = Queue.new
+    if drb_port
+      @drb = DRb.start_service("druby://localhost:#{drb_port}", self)
+      puts 'DRB STARTED!!!'
+    end
   end
 
   def start!
     @start = true
     Prefab.timer(entity_manager: @entity_manager, time: @time)
-    start_sim_thread(@entity_manager.deep_clone, @input_queue, @next_turn_queue)
+    # unless @drb
+      start_sim_thread(@entity_manager.deep_clone, @input_queue, @next_turn_queue)
+    # end
+    nil
   end
 
   def started?
@@ -208,6 +218,14 @@ class RtsGame
           @turn_time += delta
           @sim_steps ||= 0
 
+          while (@sim_steps * SIMULATION_STEP <= @turn_time) && (@sim_steps < STEPS_PER_TURN)
+            input[:messages] = @input_msgs if @input_msgs
+            @world.update @entity_manager, SIMULATION_STEP, input, @resources
+            input.delete(:messages)
+            @input_msgs = nil
+            @sim_steps+=1
+          end
+
           if @sim_steps >= STEPS_PER_TURN
             @sim_steps = 0
             @input_queue << @network_manager.pop_messages_with_timeout!(0.0)
@@ -216,14 +234,6 @@ class RtsGame
             @next_entity_manager, msgs = @next_turn_queue.pop
             @input_msgs = msgs
             @turn_time -= TURN_DURATION
-          end
-
-          while (@sim_steps * SIMULATION_STEP <= @turn_time) && (@sim_steps < STEPS_PER_TURN)
-            input[:messages] = @input_msgs if @input_msgs
-            @world.update @entity_manager, SIMULATION_STEP, input, @resources
-            input.delete(:messages)
-            @input_msgs = nil
-            @sim_steps+=1
           end
         end
       end

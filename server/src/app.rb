@@ -93,6 +93,7 @@ end
 		o.bool '-f', '--fast', 'advance to the next turn as soon as all clients have sent a message'
 		o.bool '-nu', '--no_ui', 'No GUI; exit code is winning player'
 		o.integer '-t', '--time', 'length of game in ms', default: RtsGame::GAME_LENGTH_IN_MS
+		o.integer '-drb', '--drb_port', 'debugging port for tests'
     o.on '--help', 'print this help' do
       puts o
       exit
@@ -108,13 +109,19 @@ end
   clients << {host: opts[:p2_host], port: opts[:p2_port]} if opts[:p2_host]
 
   if opts[:no_ui]
-    class FakeInput < Hash
-      attr_accessor :total_time
-    end
-    @game = RtsGame.new map: opts[:map], clients: clients, fast: opts[:fast], time: opts[:time]
-    @game.start!
-    until @game.game_over?
-      @game.update delta: nil , input: nil
+    total_time = 0
+    input = InputSnapshot.new nil, total_time
+
+    @game = RtsGame.new map: opts[:map], clients: clients, fast: opts[:fast], time: opts[:time], drb_port: opts[:drb_port]
+    if opts[:drb_port]
+      until @game.game_over?
+        sleep 1
+      end
+    else
+      @game.start!
+      until @game.game_over?
+        @game.update delta: nil , input: nil
+      end
     end
 
     @game.scores.each do |id, score|
@@ -129,7 +136,7 @@ end
     # puts "YAY"
 
   else
-    $window = RtsWindow.new map: opts[:map], clients: clients, fast: opts[:fast], time: opts[:time]
+    $window = RtsWindow.new map: opts[:map], clients: clients, fast: opts[:fast], time: opts[:time], drb_port: opts[:drb_port]
     $window.show
   end
 # end

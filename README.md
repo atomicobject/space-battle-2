@@ -119,9 +119,9 @@ __TANK__: Tanks have average vision, slower speed, higher health, and a ranged a
 
 | type   | cost | range (+/-) | speed (tpt<sup>*</sup>) | health | attack cooldown (turns) | build time (turns) |
 |--------|------|-------|-------|--------|-----------------|---|
-| worker | 100  | 2     | 5     | 5      | 3 | 5  |
-| scout  | 130  | 2     | 5     | ?      | 3 | 10 |
-| tank   | 150  | 2     | 5     | ?      | 5 | 15 |
+| worker | 100  | 2     | 5     | 10     | 3 | 5  |
+| scout  | 130  | 2     | 5     | 5      | 3 | 10 |
+| tank   | 150  | 2     | 5     | 20     | 5 | 15 |
 
 <sup>*</sup>__turns per tile (tpt):__ Number of turns required to move from one grid location to the next. smaller is faster.
 

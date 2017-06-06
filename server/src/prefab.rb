@@ -1,6 +1,4 @@
  module Prefab
-  include Gosu
-
   def self.explosion(entity_manager:,x:,y:)
     entity_manager.add_entity(
       Explosion.new,
