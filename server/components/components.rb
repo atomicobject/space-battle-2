@@ -1,6 +1,19 @@
+module JsonIvars
+  def to_json(*opts)
+    {}.tap do |json|
+      # json[:klass] = self.class
+      instance_variables.each do |var|
+        v = instance_variable_get(var)
+        json[var[1..-1]] = v unless v.nil?
+      end
+    end.to_json(*opts)
+  end
+end
+
 def define_component(opts={})
   attrs = opts[:attrs]
   Class.new do
+    include JsonIvars
     if attrs
       attr_accessor *attrs
     end
@@ -14,29 +27,50 @@ def define_component(opts={})
 end
 
 class TileInfo
+  include JsonIvars
   attr_accessor :dirty_tiles, :interesting_tiles#, :tiles 
   def initialize
     @dirty_tiles = Set.new
     @interesting_tiles = Set.new
-    # @tiles = Hash.new do |h, k| 
-    #   h[k] = {}
-    # end
+  end
+
+  def to_json(*opts)
+    json = {}
+    json["dirty_tiles"] = @dirty_tiles.to_a unless @dirty_tiles.empty?
+    json["interesting_tiles"] = @interesting_tiles.to_a unless @interesting_tiles.empty?
+    json.to_json(*opts)
   end
 end
 
 class MapInfo
+  include JsonIvars
   attr_accessor :tiles, :width, :height
   def initialize(width, height)
     @width = width
     @height = height
     @tiles = {}
-    # @tiles = Hash.new do |h, k| 
-    #   h[k] = {}
-    # end
+  end
+
+  def to_json(*opts)
+    non_empty_tiles = {}
+    @tiles.each do |y, col|
+      col.each do |x, t|
+        if t.blocked || t.units.size > 0 || t.resource || t.objects.size > 0
+          non_empty_tiles[y] ||= {}
+          non_empty_tiles[y][x] = t
+        end
+      end
+    end
+    {
+      "width" => @width,
+      "height" => @height,
+      "tiles" => non_empty_tiles
+    }.to_json(*opts)
   end
 end
 
 class Unit
+  include JsonIvars
   attr_accessor :status, :dirty, :type
   def initialize(status: :idle, type: :worker)
     @status = status
@@ -49,6 +83,7 @@ class Unit
   end
 end
 class ResourceCarrier
+  include JsonIvars
   attr_accessor :resource
   def initialize
     @resource = 0
@@ -74,6 +109,7 @@ MovementCommand = define_component(attrs: [:target_vec])
 CreateCommand = define_component(attrs: [:type, :build_time])
 
 class Position
+  include JsonIvars
   attr_accessor :x, :y, :z, :tile_x, :tile_y
   def initialize(x:,y:,tile_x:nil,tile_y:nil,z:2)
     @x = x
@@ -87,12 +123,16 @@ class Position
     vec(@x, @y)
   end
 end
-class TilePosition < Position; end
+class TilePosition < Position
+  include JsonIvars
+end
 
 class Velocity < Vec
+  include JsonIvars
 end
 
 class Label
+  include JsonIvars
   attr_accessor :text, :size, :font
   def initialize(size:,text:"",font:nil)
     @size = size
@@ -101,8 +141,11 @@ class Label
   end
 end
 
-class LevelTimer; end
+class LevelTimer
+  include JsonIvars
+end
 class Timer
+  include JsonIvars
   attr_accessor :ttl, :repeat, :total, :event, :name, :expires_at, :keep
   def initialize(name, ttl, repeat=false, event = nil)
     @name = name
@@ -114,6 +157,7 @@ class Timer
 end
 
 class SoundEffectEvent
+  include JsonIvars
   attr_accessor :sound_to_play
   def initialize(sound_to_play)
     @sound_to_play = sound_to_play

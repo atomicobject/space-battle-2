@@ -177,4 +177,13 @@ class Tile
   def walkable?
     WALKABLE_TYPES.include? @type && @objects.empty? # assume all objects block for now
   end
+
+  def to_json(*opts)
+    json = {}
+    json['blocked'] = blocked? if blocked?
+    json['units'] = @units unless @units.empty?
+    json['objects'] = @objects unless @objects.empty?
+    json['resource'] = resource if resource
+    json.to_json(*opts)
+  end
 end

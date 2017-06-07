@@ -21,12 +21,15 @@ class GameLogger
   require 'singleton'
   include Singleton
   def initialize
-    
     @log_file = File.open('game-log.txt', 'w+')
   end
   def log(msg)
     @log_file.puts msg
     @log_file.flush
+  end
+
+  def self.log_game_state(em)
+    instance.log({time: Time.now.to_ms, type: :game_state, state: em.id_to_comp}.to_json)
   end
 
   def self.log_connection(pid, host, port)
@@ -138,6 +141,8 @@ class RtsGame
           @world.update ents, SIMULATION_STEP, input, nil
           step_count += 1
         end
+
+        GameLogger.log_game_state(entity_manager)
 
         time_remaining = ents.first(Timer).get(Timer).ttl
         if time_remaining <= 0

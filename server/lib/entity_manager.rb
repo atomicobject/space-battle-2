@@ -1,5 +1,7 @@
+require 'json'
+
 class EntityManager
-  attr_reader :num_entities
+  attr_reader :num_entities, :id_to_comp
   def initialize
     clear!
   end
