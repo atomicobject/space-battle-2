@@ -39,12 +39,15 @@ class RtsWindow < Gosu::Window
   end
 
   def button_down(id)
-    close if id == Gosu::KbEscape
-    if @game.started?
-      # @input_cacher.button_down id
-      @game.pause!
+    if id == Gosu::KbEscape
+      close 
     else
-      @game.start! 
+      if @game.started? and id == Gosu::KbP
+        # @input_cacher.button_down id
+        @game.pause!
+      else
+        @game.start! 
+      end
     end
   end
 
