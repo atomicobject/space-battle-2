@@ -33,13 +33,16 @@ class RtsWindow < Gosu::Window
   end
 
   def draw
-    @game.render_system.draw self, @game.entity_manager, @game.resources
+    # @game.render_mutex.synchronize do
+      @game.render_system.draw self, @game.entity_manager, @game.resources
+    # end
   end
 
   def button_down(id)
     close if id == Gosu::KbEscape
     if @game.started?
-      @input_cacher.button_down id
+      # @input_cacher.button_down id
+      @game.pause!
     else
       @game.start! 
     end

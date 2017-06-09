@@ -6,6 +6,17 @@ class EntityManager
     clear!
   end
 
+  def deep_clone
+    # does not work for Hashes with default procs
+    if _iterating?
+      raise "AHH! EM is still iterating!!"
+    else
+      em = Marshal.load( Marshal.dump(self) )
+      em.clear_cache!
+      em
+    end
+  end
+
   def warn(msg)
     puts "WARNING: #{Time.now} #{msg}"
   end

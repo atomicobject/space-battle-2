@@ -10,6 +10,14 @@ end
 
 TILE_SIZE = 64
 
+def verify_turn_duration(old_state, new_state)
+  return unless old_state
+  turn_duration = new_state['time'] - old_state['time']
+  if turn_duration > 200
+    puts "Server took #{turn_duration}"
+  end
+end
+
 def verify_all_resources_turn_in(game_state)
   map_info = game_state['state'].find{|eid, ent|ent.keys.first == "MapInfo"}[1]
   bases = game_state['state'].select{|eid, ent| ent && ent.keys.include?("Base")}
@@ -35,8 +43,7 @@ def verify_all_resources_turn_in(game_state)
 
       if (bx-x).abs <= TILE_SIZE && (by-y).abs <= TILE_SIZE
         puts "Unit(#{id}) for player #{pid} had resources at end of turn while standing next to base (x,y)"
-      end
-
+      end 
       tx = ent["Position"]['tile_x']
       ty = ent["Position"]['tile_y']
       btx = base_ent["Position"]['tile_x']
@@ -102,9 +109,11 @@ File.open log_name do |log_file|
   while raw = log_file.gets
     msg = JSON.parse(raw)
     if msg['type'] == 'game_state'
-      last_game_state = msg
+      verify_turn_duration(last_game_state, msg) 
       verify_all_resources_turn_in(msg) 
       verify_moving_positions(msg)
+
+      last_game_state = msg
     elsif msg['type'] == 'to_player'
       verify_sent_messages_for_resource_turn_in(last_game_state, msg)
     elsif msg['type'] == 'from_player'

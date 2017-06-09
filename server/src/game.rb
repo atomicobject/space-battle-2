@@ -28,8 +28,8 @@ class GameLogger
     @log_file.flush
   end
 
-  def self.log_game_state(em)
-    instance.log({time: Time.now.to_ms, type: :game_state, state: em.id_to_comp}.to_json)
+  def self.log_game_state(em, turn)
+    instance.log({turn: turn, time: Time.now.to_ms, type: :game_state, state: em.id_to_comp}.to_json)
   end
 
   def self.log_connection(pid, host, port)
@@ -142,7 +142,7 @@ class RtsGame
           step_count += 1
         end
 
-        GameLogger.log_game_state(entity_manager)
+        GameLogger.log_game_state(entity_manager, turn_count)
 
         time_remaining = ents.first(Timer).get(Timer).ttl
         if time_remaining <= 0
@@ -195,13 +195,14 @@ class RtsGame
   end
 
   include DRb::DRbUndumped
-  attr_reader :input_queue, :next_turn_queue
+  attr_reader :input_queue, :next_turn_queue, :render_mutex 
   def initialize(map:,clients:,fast:false,time:,drb_port:nil)
     build_world clients, map
     @fast_mode = fast
     @time = time
     @input_queue = Queue.new
     @next_turn_queue = Queue.new
+    @render_mutex = Mutex.new
     if drb_port
       @drb = DRb.start_service("druby://localhost:#{drb_port}", self)
       puts 'DRB STARTED!!!'
@@ -211,10 +212,16 @@ class RtsGame
   def start!
     @start = true
     Prefab.timer(entity_manager: @entity_manager, time: @time)
-    # unless @drb
-      start_sim_thread(@entity_manager.deep_clone, @input_queue, @next_turn_queue)
-    # end
+    @sim_thread = start_sim_thread(@entity_manager.deep_clone, @input_queue, @next_turn_queue)
     nil
+  end
+
+  def pause!
+    @start = false
+    # @sim_thread.kill
+    require 'pry'
+    binding.pry
+    @start = true
   end
 
   def started?
@@ -226,7 +233,10 @@ class RtsGame
       if @start && !@game_over
         if @fast_mode
           @input_queue << @network_manager.pop_messages_with_timeout!(RtsGame::TURN_DURATION.to_f / 1000.0)
-          @entity_manager, _ = @next_turn_queue.pop
+          tmp, _ = @next_turn_queue.pop
+          # @render_mutex.synchronize do
+            @entity_manager = tmp
+          # end
         else
           @turn_time ||= 0
           @turn_time += delta
