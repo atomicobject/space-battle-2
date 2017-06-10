@@ -210,6 +210,7 @@ class RtsGame
   end
 
   def start!
+    return if @start # DO NOT CALL THIS TWICE!
     @start = true
     Prefab.timer(entity_manager: @entity_manager, time: @time)
     @sim_thread = start_sim_thread(@entity_manager.deep_clone, @input_queue, @next_turn_queue)
@@ -232,7 +233,9 @@ class RtsGame
     begin
       if @start && !@game_over
         if @fast_mode
-          @input_queue << @network_manager.pop_messages_with_timeout!(RtsGame::TURN_DURATION.to_f / 1000.0)
+          msgs = @network_manager.pop_messages_with_timeout!(RtsGame::TURN_DURATION.to_f / 1000.0)
+          puts "EMPTY TURN!" if msgs.empty?
+          @input_queue << msgs
           tmp, _ = @next_turn_queue.pop
           # @render_mutex.synchronize do
             @entity_manager = tmp

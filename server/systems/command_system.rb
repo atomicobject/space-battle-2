@@ -19,7 +19,12 @@ class CommandSystem
 
             if owner.id == msg.connection_id
               dir = RtsGame::DIR_VECS[cmd['dir']]
-              next unless dir
+              if dir.nil?
+                u.status = :idle
+                u.dirty = true
+                puts "Invalid MOVE DIR #{dir} for unit #{uid} from player #{msg.connection_id}"
+                next
+              end
 
               target_tile_x = pos.tile_x + dir.x
               target_tile_y = pos.tile_y + dir.y
@@ -39,7 +44,7 @@ class CommandSystem
             base_ent = entity_manager.find(Base, Unit, PlayerOwned).
               select{|ent| ent.get(PlayerOwned).id == msg.connection_id}.first
 
-            unless base_ent.nil? || base_ent.get(Unit).status == :building || entity_manager.find_by_id(base_ent.id, CreateCommand)
+            unless base_ent.nil? || base_ent.get(Unit).status != :idle
               entity_manager.add_component(id: base_ent.id, 
                 component: CreateCommand.new(type: type.to_sym, build_time: info[:create_time]) )
             end
@@ -50,7 +55,7 @@ class CommandSystem
             next unless ent 
 
             u, pos, owner = ent.components
-            if owner.id == msg.connection_id
+            if owner.id == msg.connection_id && u.status == :idle
               entity_manager.add_component(id: uid, component: ShootCommand.new(id: uid, dx: dx, dy: dy))
             end
 
@@ -60,7 +65,7 @@ class CommandSystem
             next unless ent 
 
             u, pos, owner = ent.components
-            if owner.id == msg.connection_id
+            if owner.id == msg.connection_id && u.status == :idle
               entity_manager.add_component(id: uid, component: MeleeCommand.new(id: uid, target: target))
             end
 
@@ -69,9 +74,9 @@ class CommandSystem
             next unless ent
 
             u, pos, res_car, owner = ent.components
-            next unless res_car.resource = 0
+            if owner.id == msg.connection_id && u.status == :idle
+              next unless res_car.resource = 0
 
-            if owner.id == msg.connection_id
               dir = RtsGame::DIR_VECS[cmd['dir']]
               if dir.nil?
                 u.status = :idle
