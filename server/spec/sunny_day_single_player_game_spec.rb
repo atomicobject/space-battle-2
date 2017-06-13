@@ -27,6 +27,48 @@ describe 'sunny day' do
 
     msg = JSON.parse(client.messages_from_server.pop)
     expect(msg['turn']).to eq(0)
+    game_info = msg['game_info']
+    expect(game_info['map_width']).to eq(32)
+    expect(game_info['map_height']).to eq(32)
+    expect(game_info['turn_duration']).to eq(200)
+    expect(game_info['game_duration']).to eq(300_000)
+    expect(game_info['unit_info']).to eq(
+      'base' => {
+        'hp' => 50,
+        'range' => 2,
+      },
+      'worker' => {
+        'cost' => 100,
+        'hp' => 10,
+        'range' => 2,
+        'speed' => 1,
+        'attack' => 2,
+        'attack_type' => 'melee',
+        'attack_cooldown' => 3,
+        'can_carry' => true,
+        'create_time' => 5,
+      },
+      'scout' => {
+        'cost' => 130,
+        'hp' => 5,
+        'range' => 5,
+        'speed' => 2,
+        'attack' => 1,
+        'attack_type' => 'melee',
+        'attack_cooldown' => 3,
+        'create_time' => 10,
+      },
+      'tank' => {
+        'cost' => 150,
+        'hp' => 20,
+        'range' => 2,
+        'speed' => 0.5,
+        'attack' => 4,
+        'attack_type' => 'ranged',
+        'attack_cooldown' => 5,
+        'create_time' => 15,
+      },
+    )
 
     sleep 1
     client.tick_turn
@@ -38,6 +80,7 @@ describe 'sunny day' do
 
     msg = JSON.parse(client.messages_from_server.pop)
     expect(msg['turn']).to eq(1)
+    expect(msg['game_info']).to be(nil)
   end
 end
 

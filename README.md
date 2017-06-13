@@ -142,6 +142,7 @@ WIP
 | `player_id` | `int` | Your player id |
 | `tile_updates` | `array of Tiles` | Tiles that changed last turn |
 | `unit_updates` | `array of Units` | Your units that changed last turn |
+| `game_info` | `GameInfo` | Game settings, only sent on turn 0 |
 
 #### Unit
 | property | type | notes |
@@ -186,6 +187,28 @@ __* Optional:__ may or may not be present depending on the unit type.
 | `player_id` | `int` | Identifier of the player that owns the unit |
 | `health` | `int` | Current health of unit |
 
+
+#### Game Info
+| property | type | notes |
+|----------|------|-------|
+| `map_width` | `int` | Map width in tiles |
+| `map_height` | `int` | Map height in tiles |
+| `game_duration` | `int` | Length of game in milliseconds |
+| `turn_duration` | `int` | Length of each turn in milliseconds |
+| `unit_info` | `map of Unit type to Unit Info` | Information about each unit type |
+
+#### Unit Info
+| property | type | notes |
+|----------|------|-------|
+| `hp` | `int` | Initial health of units |
+| `range` | `int` | Number of tiles in any direction the unit can see |
+| `cost` | `int` | Resource cost to create (optional) |
+| `create_time` | `int` | the number of turns it takes to create (optional) |
+| `speed` | `float` | Speed multiplier of unit (a value of 1 represents 5 turns/tile, 0.5 is 10 turns/tile) (optional) |
+| `attack` | `int` | Damage dealt by this unit (optional) |
+| `attack_type` | `string` | melee or ranged (optional) |
+| `attack_cooldown` | `int` | number of turns the unit must wait to attack again (optional) |
+| `can_carry` | `bool` | true if the unit can `HARVEST` and carry resources (optional) |
 
 
 ## Setting Up the game

@@ -390,6 +390,13 @@ class RtsGame
       end
     end
     msg = {unit_updates: units, tile_updates: tiles}
+    msg.merge!(game_info: {
+      map_width: map.width,
+      map_height: map.height,
+      game_duration: GAME_LENGTH_IN_MS,
+      turn_duration: TURN_DURATION,
+      unit_info: UNITS,
+    }) if turn_count == 0
     msg.merge!( player: player_id, turn: turn_count, time: time_remaining)
     Oj.dump(msg, mode: :compat)
   end

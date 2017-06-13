@@ -53,7 +53,7 @@
       Ranged.new(distance: unit_def[:range]),
       Attack.new(damage: unit_def[:attack], 
                  range: unit_def[:range], 
-                 cooldown: unit_def[:attack_cooldown],
+                 cooldown: unit_def[:attack_cooldown]*10,
                  current_cooldown: 0,
                  can_attack: true
                 ),
