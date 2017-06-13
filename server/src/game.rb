@@ -277,7 +277,11 @@ class RtsGame
 
     time_remaining = entity_manager.first(Timer).get(Timer).ttl
     if time_remaining <= 0
-      return Oj.dump({player: player_id, turn: turn_count, time: time_remaining}, mode: :compat)
+      results = {}
+      base_ents = entity_manager.each_entity(Base, Unit, Health, PlayerOwned, Position) do |rec|
+        results[rec.get(PlayerOwned).id] = { score: rec.get(Base).resource }
+      end
+      return Oj.dump({player: player_id, turn: turn_count, time: time_remaining, results: results}, mode: :compat)
     end
 
     base_ent = entity_manager.find(Base, Unit, Health, PlayerOwned, Position).select{|ent| ent.get(PlayerOwned).id == player_id}.first

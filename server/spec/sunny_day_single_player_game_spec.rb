@@ -8,10 +8,36 @@ require_relative "../src/game"
 describe 'sunny day' do
   after do
     begin
-      @process.poll_for_exit(10) if @process
+      @process.poll_for_exit(4) if @process
     rescue ChildProcess::TimeoutError
       @process.stop # tries increasingly harsher methods to kill the process.
     end
+  end
+
+  it 'reports end of game results' do
+    client = start_client
+    sleep 1
+    start_remote_game(client)
+    sleep 1
+    game = client.remote_game
+    sleep 2
+    expect(game).to be
+    game.start!
+
+    msg = client.messages_from_server.pop
+    (300_000/200).times do
+      client.tick_turn
+      # sleep 0.01
+      msg = JSON.parse(client.messages_from_server.pop)
+      puts msg['time']
+    end
+    expect(msg['time']).to eq(0)
+    expect(msg['results']).to eq({
+      '0' => {
+        'score' => 750 #starting amount
+      }
+    })
+    # msg = client.messages_from_server.pop
   end
 
   it 'progresses a single turn' do
@@ -96,7 +122,6 @@ class Client
     turn_duration = 200
     @total_time += turn_duration
     input = InputSnapshot.new nil, turn_duration
-    puts "calling update with #{turn_duration}"
     @remote_game.update delta: turn_duration, input: input
     # TODO do we need to push on the input Q instead of calling update?
   end
@@ -116,7 +141,6 @@ def start_client(port=9191)
       sleep 2
       puts c.remote_game.inspect
       while msg = server_connection.gets
-        puts "GOT MESSAGE!"
         c.messages_from_server.push msg
       end
       # listening_thread = Thread.new do
