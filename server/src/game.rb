@@ -142,7 +142,7 @@ class RtsGame
           step_count += 1
         end
 
-        GameLogger.log_game_state(entity_manager, turn_count)
+        GameLogger.log_game_state(ents, turn_count)
 
         time_remaining = ents.first(Timer).get(Timer).ttl
         if time_remaining <= 0
