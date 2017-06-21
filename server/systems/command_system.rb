@@ -48,7 +48,7 @@ class CommandSystem
 
             unless base_ent.nil? || base_ent.get(Unit).status != :idle
               entity_manager.add_component(id: base_ent.id, 
-                component: CreateCommand.new(type: type.to_sym, build_time: info[:create_time]*10) )
+                component: CreateCommand.new(type: type.to_sym, build_time: info[:create_time]) )
             end
 
           elsif c == 'SHOOT'
