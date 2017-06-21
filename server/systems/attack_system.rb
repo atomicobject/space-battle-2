@@ -26,8 +26,8 @@ class AttackSystem
       end
     end
 
-    entity_manager.each_entity(Unit, MeleeCommand, Melee, Attack, Position, PlayerOwned) do |ent|
-      u, cmd, melee, attack, pos, player = ent.components
+    entity_manager.each_entity(Unit, MeleeCommand, Melee, Attack, Position, PlayerOwned, Sprited) do |ent|
+      u, cmd, melee, attack, pos, player, sprite = ent.components
       entity_manager.remove_component klass: MeleeCommand, id: ent.id
       next if u.status == :dead || !attack.can_attack 
       target_ent = entity_manager.find_by_id(cmd.target, Unit, Position, Health, PlayerOwned)
@@ -36,9 +36,16 @@ class AttackSystem
         next
       end
       t_pos = target_ent.get(Position)
-      dx = (t_pos.tile_x - pos.tile_x).abs
+      dir_x = t_pos.tile_x - pos.tile_x
+      dx = dir_x.abs
       dy = (t_pos.tile_y - pos.tile_y).abs
       next unless dx <= 1 && dy <= 1
+
+      if dir_x > 0
+        sprite.flipped = true
+      elsif dir_x < 0
+        sprite.flipped = false
+      end
       attack.current_cooldown = attack.cooldown
       attack.can_attack = false
 
@@ -68,8 +75,8 @@ class AttackSystem
       kill_unit!(entity_manager, target_ent.id, target_unit, target_player.id, ent.id, u, player.id) if target_health.points <= 0
     end
 
-    entity_manager.each_entity(Unit, ShootCommand, Shooter, Attack, Position, PlayerOwned) do |ent|
-      u, cmd, shooter, attack, pos, player = ent.components
+    entity_manager.each_entity(Unit, ShootCommand, Shooter, Attack, Position, PlayerOwned, Sprited) do |ent|
+      u, cmd, shooter, attack, pos, player, sprite = ent.components
       entity_manager.remove_component klass: ShootCommand, id: ent.id
       next if u.status == :dead || !attack.can_attack
 
@@ -80,6 +87,11 @@ class AttackSystem
       tile_size = RtsGame::TILE_SIZE
       next unless dx.abs <= range && dy.abs <= range
 
+      if dx > 0
+        sprite.flipped = true
+      elsif dx < 0
+        sprite.flipped = false
+      end
       attack.current_cooldown = attack.cooldown
       attack.can_attack = false
       u.dirty = true

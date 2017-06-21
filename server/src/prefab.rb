@@ -29,7 +29,7 @@
       b,
       Position.new(x:x, y:y, tile_x: (x/tile_size).floor, tile_y: (y/tile_size).floor, z:10),
       PlayerOwned.new(id: player_id),
-      Sprited.new(image: "base#{player_id}".to_sym),
+      Sprited.new(image: "base#{player_id}".to_sym, flipped: false),
       Label.new(size: 24, text: b.resource),
       r,
       health
@@ -59,7 +59,7 @@
                 ),
       Speed.new(speed: unit_def[:speed]),
       PlayerOwned.new(id: player_id),
-      Sprited.new(image: "#{type}#{player_id}".to_sym),
+      Sprited.new(image: "#{type}#{player_id}".to_sym, flipped: false),
       health
     )
 

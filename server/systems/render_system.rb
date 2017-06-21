@@ -39,7 +39,7 @@ class RenderSystem
             # images[obj.image].draw base_x, base_y, ZOrder::Env
             obj_img = images[obj.image]
             if obj_img
-              sorted_by_y_x[base_y][base_x] << [obj_img, ZOrder::Env]
+              sorted_by_y_x[base_y][base_x] << [obj_img, false, ZOrder::Env]
             else
               puts "could not find object image for: #{obj.image}"
             end
@@ -50,15 +50,16 @@ class RenderSystem
       entity_manager.each_entity Sprited, Position do |rec|
         sprited, pos = rec.components
         # images[sprited.image].draw pos.x, pos.y, pos.z
-        sorted_by_y_x[pos.y][pos.x] << [images[sprited.image],pos.z]
+        sorted_by_y_x[pos.y][pos.x] << [images[sprited.image],sprited.flipped,pos.z]
       end
 
       sprite_scale = 0.75
 
       sorted_by_y_x.keys.sort.each do |y|
         sorted_by_y_x[y].keys.sort.reverse.each do |x|
-          sorted_by_y_x[y][x].each do |(img,z)|
-            img.draw_rot x+RtsGame::TILE_SIZE/2,y+RtsGame::TILE_SIZE/2,z,0,0.5,0.5,sprite_scale,sprite_scale
+          sorted_by_y_x[y][x].each do |(img,flipped,z)|
+            x_scale = sprite_scale * (flipped ? 1 : -1)
+            img.draw_rot x+RtsGame::TILE_SIZE/2,y+RtsGame::TILE_SIZE/2,z,0,0.5,0.5,x_scale,sprite_scale
           end
         end
       end

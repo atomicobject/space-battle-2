@@ -9,8 +9,8 @@ class MovementSystem
       
     tile_size = RtsGame::TILE_SIZE
     base_speed = tile_size.to_f/(RtsGame::TURN_DURATION * 5 - RtsGame::SIMULATION_STEP)
-    entity_manager.each_entity PlayerOwned, Unit, MovementCommand, Position, Speed do |ent|
-      pwn, u, movement, pos, s = ent.components
+    entity_manager.each_entity PlayerOwned, Unit, MovementCommand, Position, Speed, Sprited do |ent|
+      pwn, u, movement, pos, s, sprite = ent.components
 
       ent_id = ent.id
 
@@ -23,6 +23,7 @@ class MovementSystem
 
       speed = base_speed * s.speed
 
+
       displacement = movement.target_vec - pos.to_vec
       dist = displacement.magnitude
       move = (displacement.unit * dt * speed).clip_to(dist) # clip any overshoot
@@ -30,6 +31,11 @@ class MovementSystem
       pre_move_pos = pos.deep_clone
       pos.x += move.x
       pos.y += move.y
+      if move.x > 0
+        sprite.flipped = true
+      elsif move.x < 0
+        sprite.flipped = false
+      end
 
       # semi arbitrarily set to 1/4 the distance a unit could travel in a simulation step
       #   should be much larger than any rounding error

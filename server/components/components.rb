@@ -90,7 +90,7 @@ class ResourceCarrier
   end
 end
 Base = define_component(attrs: [:resource])
-Sprited = define_component(attrs: [:image])
+Sprited = define_component(attrs: [:image, :flipped])
 PlayerOwned = define_component(attrs: [:id])
 Health = define_component(attrs: [:points, :max])
 EntityTarget = define_component(attrs: [:id])
