@@ -51,9 +51,9 @@
       Unit.new(type: type.to_sym),
       Position.new(x:x, y:y, tile_x: (x/tile_size).floor, tile_y: (y/tile_size).floor),
       Ranged.new(distance: unit_def[:range]),
-      Attack.new(damage: unit_def[:attack], 
+      Attack.new(damage: unit_def[:attack_damage], 
                  range: unit_def[:range], 
-                 cooldown: unit_def[:attack_cooldown]*10,
+                 cooldown: unit_def[:attack_cooldown_duration]*10,
                  current_cooldown: 0,
                  can_attack: true
                 ),

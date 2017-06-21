@@ -85,9 +85,9 @@ class RtsGame
       hp: 10,
       range: 2,
       speed: 1,
-      attack: 2,
+      attack_damage: 2,
       attack_type: :melee,
-      attack_cooldown: 3 * STEPS_PER_TURN,
+      attack_cooldown_duration: 3 * STEPS_PER_TURN,
       can_carry: true,
       create_time: 5 * STEPS_PER_TURN,
     },
@@ -96,9 +96,9 @@ class RtsGame
       hp: 5,
       range: 5,
       speed: 2,
-      attack: 1,
+      attack_damage: 1,
       attack_type: :melee,
-      attack_cooldown: 3 * STEPS_PER_TURN,
+      attack_cooldown_duration: 3 * STEPS_PER_TURN,
       create_time: 10 * STEPS_PER_TURN,
     },
     tank: {
@@ -106,9 +106,9 @@ class RtsGame
       hp: 20,
       range: 2,
       speed: 0.5,
-      attack: 4,
+      attack_damage: 4,
       attack_type: :ranged,
-      attack_cooldown: 5 * STEPS_PER_TURN,
+      attack_cooldown_duration: 7 * STEPS_PER_TURN,
       create_time: 15 * STEPS_PER_TURN,
     },
   }
@@ -377,7 +377,11 @@ class RtsGame
           res = res_car_result&.get(ResourceCarrier)&.resource
 
           attack_res = entity_manager.find_by_id(ent.id, Attack)
-          can_attack = attack_res&.get(Attack)&.can_attack
+          attack = attack_res&.get(Attack)
+          can_attack = attack&.can_attack
+
+          speed = entity_manager.find_by_id(ent.id, Speed)&.get(Speed)&.speed
+          range = entity_manager.find_by_id(ent.id, Ranged)&.get(Ranged)&.distance
 
           unit_info = { id: ent.id, player_id: player.id, 
             x: (pos.tile_x-base_pos.tile_x),
@@ -386,8 +390,22 @@ class RtsGame
             type: u.type,
             health: health.points, 
             can_attack: can_attack,
+
+            range: range,
+            speed: speed,
           }
           unit_info[:resource] = res if res
+          if attack
+            unit_info.merge!(
+              attack_damage: attack.damage,
+              attack_cooldown_duration: attack.cooldown, 
+              attack_cooldown: attack.current_cooldown 
+            )
+          end
+
+          shooter = entity_manager.find_by_id(ent.id, Shooter)
+          unit_info[:attack_type] = shooter ? :ranged : :melee
+            
           units << unit_info
           u.dirty = false
         end

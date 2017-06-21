@@ -142,7 +142,8 @@ WIP
 | `player_id` | `int` | Your player id |
 | `tile_updates` | `array of Tiles` | Tiles that changed last turn |
 | `unit_updates` | `array of Units` | Your units that changed last turn |
-| `game_info` | `GameInfo` | Game settings, only sent on turn 0 |
+| `game_info` | `Game Info` | Game settings, only sent on turn 0 |
+| `results` | `map of player id to Results` | Results of game, only sent once game has finished |
 
 #### Unit
 | property | type | notes |
@@ -205,10 +206,17 @@ __* Optional:__ may or may not be present depending on the unit type.
 | `cost` | `int` | Resource cost to create (optional) |
 | `create_time` | `int` | the number of turns it takes to create (optional) |
 | `speed` | `float` | Speed multiplier of unit (a value of 1 represents 5 turns/tile, 0.5 is 10 turns/tile) (optional) |
-| `attack` | `int` | Damage dealt by this unit (optional) |
 | `attack_type` | `string` | melee or ranged (optional) |
+| `attack_damage` | `int` | Damage dealt by this unit (optional) |
+| `attack_cooldown_duration` | `int` | number of turns the unit must wait between attacks (optional) |
 | `attack_cooldown` | `int` | number of turns the unit must wait to attack again (optional) |
 | `can_carry` | `bool` | true if the unit can `HARVEST` and carry resources (optional) |
+
+
+#### Results
+| property | type | notes |
+|----------|------|-------|
+| `score` | `int` | Total score for the game |
 
 
 ## Setting Up the game
