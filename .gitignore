@@ -14,3 +14,4 @@ ctags
 *.lock
 vendor
 game-log.txt
+test-log.txt
