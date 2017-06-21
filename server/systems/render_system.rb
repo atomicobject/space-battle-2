@@ -29,12 +29,20 @@ class RenderSystem
           base_x = x*tile_size
           base_y = y*tile_size
           img = images[t.image]
-          puts "could not find image for: #{t.image}" unless img
-          img.draw base_x, base_y, ZOrder::Terrain
+          if img
+            img.draw base_x, base_y, ZOrder::Terrain
+          else
+            puts "could not find tile image for: #{t.image}"
+          end
 
           t.objects.each do |obj|
             # images[obj.image].draw base_x, base_y, ZOrder::Env
-            sorted_by_y_x[base_y][base_x] << [images[obj.image],ZOrder::Env]
+            obj_img = images[obj.image]
+            if obj_img
+              sorted_by_y_x[base_y][base_x] << [obj_img, ZOrder::Env]
+            else
+              puts "could not find object image for: #{obj.image}"
+            end
           end
         end
       end
