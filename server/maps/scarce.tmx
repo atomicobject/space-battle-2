@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="32" height="32" tilewidth="64" tileheight="64" nextobjectid="82">
+ <tileset firstgid="1" name="scifi_tilesheet" tilewidth="64" tileheight="64" tilecount="126" columns="18">
+  <image source="assets/Tilesheet/scifi_tilesheet.png" width="1152" height="448"/>
+ </tileset>
+ <layer name="terrain" width="32" height="32">
+  <data encoding="base64" compression="zlib">
+   eJyllMsSwjAMA1v+/6OBG5OxduVyyBSSOn5o1fu6rvuzXsfzXL/n2zXFTXem/K9j//xN+VIPqUe6e3p3OqN+Ux9W55RrO+tUa1PDlDdxkXSy92jP5rnpM+ll58YAzahlk/pqGaO4xqc0/8Tjhr8nOto9lr+ZyZO85hmbSctK8shGz3SPcUZ8kkesvpTL6tsy3XJvvJgGbS1tv6QXaZuYar4HU3/kqdSz7dM5zYh0feKfhvGWK5u78bTRYPuf9hv/Nx5pGdvwRV6y2ZoWDZctjxRj7JEGNjfK0X5PmpiWefOPcZ/i05l5d+ODRndi5Z+7N3ktVzNj4jTpZ2xsPdf0bDVta7Ba6C7SxdggLcnTFJv82Ob5Pt/zVwY7
+  </data>
+ </layer>
+ <layer name="environment" width="32" height="32">
+  <data encoding="base64" compression="zlib">
+   eJzFlusNgzAMhL0EGSFk/wlbfliyjvMLKD3JApomn20SGxGRKb6isa7W1wZZXxk4Nh7mMwaOoc1kvGpVPvNHtYGhvHHPlzflsVcyj8V5aL/nTlmMY3Nc9eOqv7ucc3A8jwZ/N9aVcpDv7UGPvxw+qwnIz7Q595bvxc/4GlvlvNg8sJxkeR/Cz0AnvwOuyI+0HH5HXT6rqR2WV18r67B+onugMh/Pg333Vb7tedYHNW+dWWRk6yJfn4f5n51nxeqBHcNnXI/19GmuC+Z0FH0voA/Ix3xEDCvssxUfWV7Znoj42XdGpqzuqvD8ds7aIa+ORfyov3T4mme2llf3tN9GfQ/vI37mG7KVz3KQ9Tn09W5dv6NO//qlD//U1fw/0ZOvasm59u/Cv6Hwd6wVLI4srgX3VyyKp8N/Ql78Xr1/690r+wOV8CDb
+  </data>
+ </layer>
+ <objectgroup name="objects">
+  <object id="5" type="base" gid="35" x="384" y="512" width="64" height="64"/>
+  <object id="7" type="base" gid="35" x="1600" y="1600" width="64" height="64"/>
+  <object id="23" gid="113" x="0" y="64" width="64" height="64"/>
+  <object id="24" type="small_resource" gid="113" x="0" y="64" width="64" height="64"/>
+  <object id="41" type="small_resource" gid="113" x="1984" y="2048" width="64" height="64"/>
+  <object id="52" type="large_resource" gid="114" x="896" y="1024" width="64" height="64"/>
+  <object id="61" type="small_resource" gid="113" x="768" y="1152" width="64" height="64"/>
+  <object id="63" type="large_resource" gid="114" x="320" y="128" width="64" height="64"/>
+  <object id="67" type="large_resource" gid="114" x="1088" y="1152" width="64" height="64"/>
+  <object id="68" type="small_resource" gid="113" x="1216" y="1024" width="64" height="64"/>
+  <object id="73" type="large_resource" gid="114" x="320" y="1984" width="64" height="64"/>
+  <object id="77" type="large_resource" gid="114" x="1728" y="128" width="64" height="64"/>
+  <object id="79" type="large_resource" gid="114" x="1664" y="1984" width="64" height="64"/>
+ </objectgroup>
+ <layer name="blocked" width="32" height="32" opacity="0.35">
+  <data encoding="base64" compression="zlib">
+   eJztV1sKwDAI6x3a+591P/0YxXesLWMBGUMwUaftWqtDnyb5pfcsDZJvNc1vNSs/xYdCyqkKHLem55Te21FVlyweLs6Ytpufg8RfMS9a/hb05fllfmm/Rns1ml2HZ39HNWTOg2f3rxooLZHzC9HggedsjwLtP6rh/a17a0vpQPgRVPAjuz1j72tzXHG2/DiHaP1vuKdnaBhEDM99H/3X4mJY+TMQyb+y9w91/Qxh
+  </data>
+ </layer>
+</map>

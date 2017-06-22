@@ -95,7 +95,7 @@ end
 		o.integer '-p1p', '--p1_port', 'player 1 port', default: 9090
 		o.string '-p2', '--p2_host', 'player 2 host'
 		o.integer '-p2p', '--p2_port', 'player 2 port', default: 9090
-		o.string '-m', '--map', 'map filename to play (tmx format)', default: 'map.tmx'
+		o.string '-m', '--map', 'map filename to play (tmx format)', default: 'maps/map.tmx'
 		o.bool '-q', '--quiet', 'suppress output (quiet mode)'
 		o.bool '-l', '--log', 'log entire game'
 		o.bool '-f', '--fast', 'advance to the next turn as soon as all clients have sent a message'
