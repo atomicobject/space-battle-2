@@ -25,6 +25,26 @@ def define_component(opts={})
     end
   end
 end
+Base = define_component(attrs: [:resource])
+Sprited = define_component(attrs: [:image, :flipped])
+Decorated = define_component(attrs: [:image, :scale, :offset])
+PlayerOwned = define_component(attrs: [:id])
+Health = define_component(attrs: [:points, :max])
+EntityTarget = define_component(attrs: [:id])
+Resource = define_component(attrs: [:value, :total])
+Timed = define_component(attrs: [:accumulated_time_in_ms])
+Ranged = define_component(attrs: [:distance])
+Speed = define_component(attrs: [:speed])
+Attack = define_component(attrs: [:damage,:range,:cooldown,:current_cooldown,:can_attack])
+ShootCommand = define_component(attrs: [:id,:dx,:dy])
+MeleeCommand = define_component(attrs: [:id,:target])
+Shooter = define_component
+Melee = define_component
+MeleeEffect = define_component
+Explosion = define_component
+MovementCommand = define_component(attrs: [:target_vec])
+CreateCommand = define_component(attrs: [:type, :build_time])
+
 
 class TileInfo
   include JsonIvars
@@ -89,25 +109,6 @@ class ResourceCarrier
     @resource = 0
   end
 end
-Base = define_component(attrs: [:resource])
-Sprited = define_component(attrs: [:image, :flipped])
-PlayerOwned = define_component(attrs: [:id])
-Health = define_component(attrs: [:points, :max])
-EntityTarget = define_component(attrs: [:id])
-Resource = define_component(attrs: [:value, :total])
-Timed = define_component(attrs: [:accumulated_time_in_ms])
-Ranged = define_component(attrs: [:distance])
-Speed = define_component(attrs: [:speed])
-Attack = define_component(attrs: [:damage,:range,:cooldown,:current_cooldown,:can_attack])
-ShootCommand = define_component(attrs: [:id,:dx,:dy])
-MeleeCommand = define_component(attrs: [:id,:target])
-Shooter = define_component
-Melee = define_component
-MeleeEffect = define_component
-Explosion = define_component
-MovementCommand = define_component(attrs: [:target_vec])
-CreateCommand = define_component(attrs: [:type, :build_time])
-
 class Position
   include JsonIvars
   attr_accessor :x, :y, :z, :tile_x, :tile_y

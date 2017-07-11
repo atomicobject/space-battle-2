@@ -29,7 +29,7 @@ describe 'sunny day' do
       client.tick_turn
       # sleep 0.01
       msg = JSON.parse(client.messages_from_server.pop)
-      puts msg['time']
+      # puts msg['time']
     end
     expect(msg['time']).to eq(0)
     expect(msg['results']).to eq({
@@ -68,31 +68,31 @@ describe 'sunny day' do
         'hp' => 10,
         'range' => 2,
         'speed' => 1,
-        'attack' => 2,
+        'attack_damage' => 2,
         'attack_type' => 'melee',
-        'attack_cooldown' => 3,
+        'attack_cooldown_duration' => 30,
         'can_carry' => true,
-        'create_time' => 5,
+        'create_time' => 50,
       },
       'scout' => {
         'cost' => 130,
         'hp' => 5,
         'range' => 5,
         'speed' => 2,
-        'attack' => 1,
+        'attack_damage' => 1,
         'attack_type' => 'melee',
-        'attack_cooldown' => 3,
-        'create_time' => 10,
+        'attack_cooldown_duration' => 30,
+        'create_time' => 100,
       },
       'tank' => {
         'cost' => 150,
         'hp' => 20,
         'range' => 2,
         'speed' => 0.5,
-        'attack' => 4,
+        'attack_damage' => 4,
         'attack_type' => 'ranged',
-        'attack_cooldown' => 5,
-        'create_time' => 15,
+        'attack_cooldown_duration' => 70,
+        'create_time' => 150,
       },
     )
 

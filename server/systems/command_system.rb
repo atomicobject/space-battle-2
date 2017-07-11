@@ -51,6 +51,18 @@ class CommandSystem
                 component: CreateCommand.new(type: type.to_sym, build_time: info[:create_time]) )
             end
 
+          elsif c == 'IDENTIFY'
+            name, uid = cmd.values_at('name','unit')
+            ent = nil
+            if uid
+              ent = entity_manager.find_by_id(uid, Unit, PlayerOwned, Label)
+            else
+              ent = entity_manager.find(Base, Unit, PlayerOwned, Label).
+                select{|ent| ent.get(PlayerOwned).id == msg.connection_id}.first
+            end
+            next unless ent 
+            ent.get(Label).text = name
+
           elsif c == 'SHOOT'
             dx, dy, uid = cmd.values_at('dx','dy','unit')
             ent = entity_manager.find_by_id(uid, Unit, Position, PlayerOwned, Attack)
@@ -110,7 +122,9 @@ class CommandSystem
                 res_car.resource = resource.value
                 u.dirty = true
                 u.status = :idle
-                entity_manager.add_component(id: uid, component: Label.new(size:14,text:res_car.resource))
+                # entity_manager.add_component(id: uid, component: Label.new(size:14,text:res_car.resource))
+                res_image = res_car.resource > 10 ? :large_res1 : :small_res1
+                entity_manager.add_component(id: uid, component: Decorated.new(image: res_image, scale: 0.3, offset: vec(10, -10)))
 
                 if resource.total <= 0
                   MapInfoHelper.remove_resource_at(map_info, target_tile_x, target_tile_y)

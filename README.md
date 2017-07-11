@@ -84,7 +84,7 @@ This is the current turn of the game. Each turn is 200ms.
 
 Commands are your AIs way of telling the server what you want your units to do. Some commands take many turns to complete. When finished executing a command, a unit's status will be set to `idle`.
 
-__MOVE__: `unit`,`dir` Move a unit by id in a given direction `N,S,E,W`. Command will be ignored if the unit cannot move in the specified direction or is currently executing a previous `MOVE` command.
+__MOVE__: `unit`,`dir` Move a unit by id in a given direction `N,S,E,W`. Command will be ignored if the unit cannot move in the specified direction or is currently executing a previous `MOVE` command. Units _**can**_ occupy the same location.
 
 __GATHER__: `unit`,`dir` Tell a unit to collect from a resource in the specified direction `N,S,E,W`. Command will be ignored if the unit cannot gather in the specified direction. Resources are automatically deposited by walking over the players base.
 
@@ -93,6 +93,8 @@ __CREATE__: `type` Create a new unit by type: `worker,scout,tank`. Command is ig
 __SHOOT__: `unit`,`dx`,`dy` Tell the unit to shoot a location relative to the attacker. All units at the location will be damaged (including your own). Command is ignored if the location is out of the attacker's range (within unit vision). Each unit has an attack cooldown. `can_attack` will be sent down as `true` when they can attack again.
 
 __MELEE__: `unit`,`target` Tell the unit to melee a nearby unit. Command is ignored if target unit is more than a single tile away. Each unit has an attack cooldown. `can_attack` will be sent down as `true` when they can attack again.
+
+__IDENTIFY__: `unit`, `name` Name the unit (or player if left blank). This name will only show on the graphical server window. Command is ignored if the unit is owned by another player.
 
 ####Note:
     When a unit has died, its status will be set to "dead".

@@ -139,6 +139,7 @@ class AttackSystem
     entity_manager.remove_component(klass: Sprited, id: id)
     entity_manager.remove_component(klass: ResourceCarrier, id: id)
     entity_manager.remove_component(klass: Label, id: id)
+    entity_manager.remove_component(klass: Decorated, id: id)
   end
 end
 

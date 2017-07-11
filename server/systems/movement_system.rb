@@ -59,19 +59,18 @@ class MovementSystem
         u.dirty = true
         u.status = :idle
 
-        base_ent = entity_manager.find(Base, Unit, PlayerOwned, Position, Label).select{|ent| ent.get(PlayerOwned).id == pwn.id}.first
+        base_ent = entity_manager.find(Base, Unit, PlayerOwned, Position).select{|ent| ent.get(PlayerOwned).id == pwn.id}.first
         base_pos = base_ent.get(Position)
 
         if (tile_x - base_pos.tile_x).abs <= 1 && (tile_y - base_pos.tile_y).abs <= 1
           base = base_ent.get(Base)
-          unit_res_ent = entity_manager.find_by_id(ent_id, ResourceCarrier, Label)
+          unit_res_ent = entity_manager.find_by_id(ent_id, ResourceCarrier, Decorated)
           if unit_res_ent
-            unit_res, unit_label = unit_res_ent.components
+            unit_res, unit_dec = unit_res_ent.components
             base.resource += unit_res.resource
-            base_ent.get(Label).text = base.resource
             base_ent.get(Unit).dirty = true
             unit_res.resource = 0
-            unit_label.text = ""
+            entity_manager.remove_component(klass: Decorated, id: ent_id)
           end
         end
 

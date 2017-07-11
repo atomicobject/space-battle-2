@@ -39,7 +39,7 @@ class RenderSystem
             # images[obj.image].draw base_x, base_y, ZOrder::Env
             obj_img = images[obj.image]
             if obj_img
-              sorted_by_y_x[base_y][base_x] << [obj_img, false, ZOrder::Env]
+              sorted_by_y_x[base_y][base_x] << [obj_img, false, ZOrder::Env, 1]
             else
               puts "could not find object image for: #{obj.image}"
             end
@@ -50,14 +50,19 @@ class RenderSystem
       entity_manager.each_entity Sprited, Position do |rec|
         sprited, pos = rec.components
         # images[sprited.image].draw pos.x, pos.y, pos.z
-        sorted_by_y_x[pos.y][pos.x] << [images[sprited.image],sprited.flipped,pos.z]
+        sorted_by_y_x[pos.y][pos.x] << [images[sprited.image],sprited.flipped,pos.z,0.75]
       end
 
-      sprite_scale = 0.75
+      entity_manager.each_entity Decorated, Position do |rec|
+        dec, pos = rec.components
+        # images[sprited.image].draw pos.x, pos.y, pos.z
+        sorted_by_y_x[pos.y+dec.offset.y][pos.x+dec.offset.x] << [images[dec.image],false,pos.z+1, dec.scale]
+      end
+
 
       sorted_by_y_x.keys.sort.each do |y|
         sorted_by_y_x[y].keys.sort.reverse.each do |x|
-          sorted_by_y_x[y][x].each do |(img,flipped,z)|
+          sorted_by_y_x[y][x].each do |(img,flipped,z,sprite_scale)|
             x_scale = sprite_scale * (flipped ? 1 : -1)
             img.draw_rot x+RtsGame::TILE_SIZE/2,y+RtsGame::TILE_SIZE/2,z,0,0.5,0.5,x_scale,sprite_scale
           end
@@ -92,10 +97,10 @@ class RenderSystem
 
 
       score_x = 50
-      entity_manager.each_entity Base, PlayerOwned do |rec|
-        base, player = rec.components
+      entity_manager.each_entity Base, PlayerOwned, Label do |rec|
+        base, player, label = rec.components
         font = get_cached_font size: 48
-        font.draw("Player #{player.id}: #{base.resource}", score_x, map.height*tile_size-100, ZOrder::HUD)
+        font.draw("#{label.text}: #{base.resource}", score_x, map.height*tile_size-100, ZOrder::HUD)
         score_x += map.width*tile_size-450
       end
 
