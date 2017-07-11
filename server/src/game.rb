@@ -77,7 +77,7 @@ class RtsGame
   GAME_LENGTH_IN_MS = 300_000
   UNITS = {
     base: {
-      hp: 50,
+      hp: 300, # roughly 2 tanks full attack for 60 sec
       range: 2,
     },
     worker: {
@@ -145,7 +145,8 @@ class RtsGame
         GameLogger.log_game_state(ents, turn_count)
 
         time_remaining = ents.first(Timer).get(Timer).ttl
-        if time_remaining <= 0
+        base_ents = ents.find(Base, Unit)
+        if time_remaining <= 0 || base_ents.any?{|be| be.get(Unit).status == :dead}
           puts "GAME OVER!"
           @game_over = true 
         end
@@ -175,8 +176,10 @@ class RtsGame
   def winner
     max_score = -999
     max_player = nil
-    scores.each do |id, score|
-      if score > max_score
+    scores.each do |id, info|
+      score = info[:resources]
+      alive = info[:status] != :dead
+      if alive && score > max_score
         max_score = score
         max_player = id
       end
@@ -189,7 +192,7 @@ class RtsGame
     # TODO add other stats... units created/killed/harvested/commands sent?
     @entity_manager.each_entity(Base, PlayerOwned) do |ent|
       b,owner = ent.components
-      player_scores[owner.id] = b.resource
+      player_scores[owner.id] = {resources: b.resource, status: u.status}
     end
     player_scores
   end

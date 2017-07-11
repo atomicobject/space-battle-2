@@ -68,8 +68,6 @@ class AttackSystem
       end
 
       target_health.points = [target_health.points-attack.damage, 0].max
-      target_health.points = 1 if target_health.points <= 0 && target_unit.type == :base
-
       target_player = target_ent.get(PlayerOwned)
 
       kill_unit!(entity_manager, target_ent.id, target_unit, target_player.id, ent.id, u, player.id) if target_health.points <= 0
@@ -113,8 +111,6 @@ class AttackSystem
         target_unit.dirty = true
 
         target_health.points = [target_health.points-attack.damage, 0].max
-        target_health.points = 1 if target_health.points <= 0 && target_unit.type == :base
-
         target_player = target_ent.get(PlayerOwned)
         kill_unit!(entity_manager, target_ent.id, target_unit, target_player.id, ent.id, u, player.id) if target_health.points <= 0
       end
@@ -138,7 +134,7 @@ class AttackSystem
     # TODO possibly change sprite to splat on death?
     entity_manager.remove_component(klass: Sprited, id: id)
     entity_manager.remove_component(klass: ResourceCarrier, id: id)
-    entity_manager.remove_component(klass: Label, id: id)
+    entity_manager.remove_component(klass: Label, id: id) unless target_unit.type == :base
     entity_manager.remove_component(klass: Decorated, id: id)
   end
 end

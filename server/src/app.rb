@@ -5,7 +5,7 @@ require_relative './game'
 
 class RtsWindow < Gosu::Window
   def initialize(**opts)
-    super(1024,1024,fullscreen: false)
+    super(1024,1024, fullscreen: opts.delete(:fullscreen))
     @input_cacher = InputCacher.new
     @last_millis = Gosu::milliseconds.to_f
 
@@ -99,6 +99,7 @@ end
 		o.bool '-q', '--quiet', 'suppress output (quiet mode)'
 		o.bool '-l', '--log', 'log entire game'
 		o.bool '-f', '--fast', 'advance to the next turn as soon as all clients have sent a message'
+		o.bool '-fs', '--fullscreen', 'Run in fullscreen mode', default: false
 		o.bool '-nu', '--no_ui', 'No GUI; exit code is winning player'
 		o.integer '-t', '--time', 'length of game in ms', default: RtsGame::GAME_LENGTH_IN_MS
 		o.integer '-drb', '--drb_port', 'debugging port for tests'
@@ -132,8 +133,8 @@ end
       end
     end
 
-    @game.scores.each do |id, score|
-      puts "Player #{id}: #{score}"
+    @game.scores.each do |id, info|
+      puts "Player #{id}: #{info}"
     end
     winner = @game.winner
     puts "Player #{winner} wins!"
@@ -144,7 +145,8 @@ end
     # puts "YAY"
 
   else
-    $window = RtsWindow.new map: opts[:map], clients: clients, fast: opts[:fast], time: opts[:time], drb_port: opts[:drb_port]
+    $window = RtsWindow.new map: opts[:map], clients: clients, fast: opts[:fast], time: opts[:time], 
+      drb_port: opts[:drb_port], fullscreen: opts[:fullscreen]
     $window.show
   end
 # end
