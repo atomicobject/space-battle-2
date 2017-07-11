@@ -97,11 +97,12 @@ class RenderSystem
 
 
       score_x = 50
+      score_y = map.height*tile_size-200
       entity_manager.each_entity Base, PlayerOwned, Label do |rec|
         base, player, label = rec.components
         font = get_cached_font size: 48
-        font.draw("#{label.text}: #{base.resource}", score_x, map.height*tile_size-100, ZOrder::HUD)
-        score_x += map.width*tile_size-450
+        font.draw("#{label.text}: #{base.resource}", score_x, score_y, ZOrder::HUD)
+        score_y += 55
       end
 
       # TODO figure out a clean way to do this as a Label, Position combo

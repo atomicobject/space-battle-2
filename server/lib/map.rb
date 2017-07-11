@@ -124,8 +124,6 @@ class Map
     blocked = layers["blocked"].first
     w = tmx["width"]
     h = tmx["height"]
-    # %w(terrain environment objects).map
-    # map_data.tile_grid[0].size
 
     Map.new(w,h,objects).tap do |m|
 			blocked.data.each.with_index do |tile_id, i|

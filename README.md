@@ -239,9 +239,8 @@ __* Optional:__ may or may not be present depending on the unit type.
     -p1p, --p1_port  player 1 port, default 9090
     -p2,  --p2_host  player 2 host
     -p2p, --p2_port  player 2 port
-    -m,   --map      map filename to play (tmx format)
+    -m,   --map      map filename to play (json format, non-compressed)
     -q,   --quiet    suppress output (quiet mode)
-    -l,   --log      log entire game
     -f,   --fast     advance to the next turn as soon as all clients have sent a message
     -nu,  --no_ui    No GUI; exit code is winning player
     -t,   --time     length of game in ms
@@ -250,4 +249,18 @@ __* Optional:__ may or may not be present depending on the unit type.
 **Notes**
 
 1. Disconnecting. Game will continue, but you will lose control of your units.
-2. Games are logged to game-log.txt.
+2. Games are logged to `game-log.txt`
+
+
+## Creating your own maps
+
+You may want to test out edge cases or set up situations for testing that are not in the training maps. Maps are built using [Tiled](http://www.mapeditor.org/). To build your own:
+
+* Download and Install Tiled
+* Copy an existing map
+* Update layers
+   * blocked layer has cells filled in that are not walkable
+   * objects has resources and base starting locations _(copying existing resources/bases will maintain needed properties)_
+   * environment has decorative tiles _(note: not all tiles are known to the server)_
+   * terrain is just background images
+* export the map as JSON with Map -> Properties -> Tile Layer Format set to CSV

@@ -59,6 +59,7 @@ class CommandSystem
             else
               ent = entity_manager.find(Base, Unit, PlayerOwned, Label).
                 select{|ent| ent.get(PlayerOwned).id == msg.connection_id}.first
+              name = "#{name} (#{msg.connection_id})"
             end
             next unless ent 
             ent.get(Label).text = name
