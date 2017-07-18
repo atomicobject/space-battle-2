@@ -1,18 +1,47 @@
  module Prefab
   def self.explosion(entity_manager:,x:,y:)
-    entity_manager.add_entity(
-      Explosion.new,
-      Position.new(x:x, y:y, z:10),
-      Label.new(size: 70, text: '#')
+    timings = {
+      explosion1: 39,
+      explosion2: 59,
+      explosion3: 59,
+      explosion4: 39,
+    }
+    frames = [ :explosion1, :explosion2, :explosion3, :explosion4 ]
+
+    x += rand(-30..30)
+    y += rand(-30..30)
+    eid = entity_manager.add_entity(
+      Position.new(x:x, y:y, z:20),
+      Sprited.new(image: frames.first, flipped: false),
+      Animated.new(timings: timings, frames: frames, index: 0, loop: false, time: 0),
+      SoundEffectEvent.new(sound_to_play: [:explosion_sound1, :explosion_sound2].sample)
     )
+    timer_name = "death-explosion-#{eid}"
+    entity_manager.add_component component: Timer.new(timer_name, timings.values.sum*100, false, DeathEvent), id: eid
+    eid
   end
 
   def self.melee(entity_manager:,x:,y:)
-    entity_manager.add_entity(
-      MeleeEffect.new,
-      Position.new(x:x, y:y, z:10),
-      Label.new(size: 70, text: '/')
+    timings = {
+      melee1: 39,
+      melee2: 59,
+      melee3: 59,
+      melee4: 39,
+    }
+    melee_frames = [ :melee1, :melee2, :melee3, :melee4 ]
+    frames = melee_frames.sample(2)
+
+    x += rand(-20..20)
+    y += rand(-20..20)
+    eid = entity_manager.add_entity(
+      Position.new(x:x, y:y, z:20),
+      Sprited.new(image: frames.first, flipped: false),
+      Animated.new(timings: timings, frames: frames, index: 0, loop: false, time: 0),
+      SoundEffectEvent.new(sound_to_play: [:melee_sound1, :melee_sound2].sample)
     )
+    timer_name = "death-melee-#{eid}"
+    entity_manager.add_component component: Timer.new(timer_name, 140*100, false, DeathEvent), id: eid
+    eid
   end
 
   def self.base(entity_manager:,x:,y:,player_id:,map_info:)

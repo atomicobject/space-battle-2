@@ -7,13 +7,6 @@ class AttackSystem
       tile_infos[player.id] = tile_info
     end
 
-    entity_manager.each_entity(MeleeEffect) do |ent|
-      entity_manager.remove_entity(id: ent.id)
-    end
-    entity_manager.each_entity(Explosion) do |ent|
-      entity_manager.remove_entity(id: ent.id)
-    end
-
     entity_manager.each_entity(Unit, Attack) do |ent|
       u, attack = ent.components
 
@@ -54,7 +47,7 @@ class AttackSystem
       tx = pos.tile_x+dx
       ty = pos.tile_y+dy
       tile_size = RtsGame::TILE_SIZE
-      Prefab.melee(entity_manager: entity_manager, x: tx*tile_size, y: ty*tile_size)
+      Prefab.melee(entity_manager: entity_manager, x: t_pos.x, y: t_pos.y)
 
       target_health = target_ent.get(Health)
       target_unit = target_ent.get(Unit)
@@ -96,7 +89,6 @@ class AttackSystem
 
       tx = pos.tile_x+dx
       ty = pos.tile_y+dy
-
       Prefab.explosion(entity_manager: entity_manager, x: tx*tile_size, y: ty*tile_size)
 
       tile_infos.values.each do |tile_info|
@@ -136,6 +128,7 @@ class AttackSystem
     entity_manager.remove_component(klass: ResourceCarrier, id: id)
     entity_manager.remove_component(klass: Label, id: id) unless target_unit.type == :base
     entity_manager.remove_component(klass: Decorated, id: id)
+
   end
 end
 

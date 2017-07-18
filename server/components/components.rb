@@ -27,6 +27,7 @@ def define_component(opts={})
 end
 Base = define_component(attrs: [:resource])
 Sprited = define_component(attrs: [:image, :flipped])
+Animated = define_component(attrs: [:frames, :timings, :index, :loop, :time])
 Decorated = define_component(attrs: [:image, :scale, :offset])
 PlayerOwned = define_component(attrs: [:id])
 Health = define_component(attrs: [:points, :max])
@@ -41,10 +42,9 @@ MeleeCommand = define_component(attrs: [:id,:target])
 Shooter = define_component
 Melee = define_component
 MeleeEffect = define_component
-Explosion = define_component
 MovementCommand = define_component(attrs: [:target_vec])
 CreateCommand = define_component(attrs: [:type, :build_time])
-
+SoundEffectEvent = define_component(attrs: [:sound_to_play])
 
 class TileInfo
   include JsonIvars
@@ -157,10 +157,6 @@ class Timer
   end
 end
 
-class SoundEffectEvent
+class DeathEvent
   include JsonIvars
-  attr_accessor :sound_to_play
-  def initialize(sound_to_play)
-    @sound_to_play = sound_to_play
-  end
 end
