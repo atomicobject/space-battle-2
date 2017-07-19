@@ -62,7 +62,7 @@ class AttackSystem
         TileInfoHelper.dirty_tile(tile_info, tx, ty)
       end
 
-      attack_happened_this_tick = false
+      attack_happened_this_tick = true
       target_health.points = [target_health.points-attack.damage, 0].max
       target_player = target_ent.get(PlayerOwned)
 
