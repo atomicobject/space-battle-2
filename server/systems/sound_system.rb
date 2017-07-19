@@ -21,21 +21,23 @@ class SoundSystem
       @debounce_map[sound] = [@debounce_map[sound]-1,0].max
     end
 
-    music_info = entity_manager.find(MusicInfo).first.get(MusicInfo)
-    if music_info.mood == :peace
-      music = res[:music][music_info.peace]
-      music.volume = 0.2
-      music.play(true) unless music&.playing?
+    if res
+      music_info = entity_manager.find(MusicInfo).first.get(MusicInfo)
+      if music_info.mood == :peace
+        music = res[:music][music_info.peace]
+        music.volume = 0.2
+        music.play(true) unless music&.playing?
 
-      music = res[:music][music_info.battle]
-      music.stop if music&.playing?
-    else
-      music = res[:music][music_info.battle]
-      music.volume = 0.2
-      music.play(true) unless music&.playing?
+        music = res[:music][music_info.battle]
+        music.stop if music&.playing?
+      else
+        music = res[:music][music_info.battle]
+        music.volume = 0.2
+        music.play(true) unless music&.playing?
 
-      music = res[:music][music_info.peace]
-      music.stop if music&.playing?
+        music = res[:music][music_info.peace]
+        music.stop if music&.playing?
+      end
     end
   end
 end
