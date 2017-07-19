@@ -46,6 +46,8 @@ MovementCommand = define_component(attrs: [:target_vec])
 CreateCommand = define_component(attrs: [:type, :build_time])
 SoundEffectEvent = define_component(attrs: [:sound_to_play])
 
+MusicInfo = define_component(attrs: [:mood, :battle, :peace, :peace_timer])
+
 class TileInfo
   include JsonIvars
   attr_accessor :dirty_tiles, :interesting_tiles#, :tiles 

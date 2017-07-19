@@ -1,5 +1,7 @@
 class AttackSystem
   def update(entity_manager, dt, input, res)
+    attack_happened_this_tick = false
+
     map_info = entity_manager.first(MapInfo).get(MapInfo)
     tile_infos =  {} 
     entity_manager.each_entity(PlayerOwned, TileInfo) do |ent|
@@ -60,6 +62,7 @@ class AttackSystem
         TileInfoHelper.dirty_tile(tile_info, tx, ty)
       end
 
+      attack_happened_this_tick = false
       target_health.points = [target_health.points-attack.damage, 0].max
       target_player = target_ent.get(PlayerOwned)
 
@@ -102,6 +105,7 @@ class AttackSystem
         next if target_unit.status == :dead
         target_unit.dirty = true
 
+        attack_happened_this_tick = true
         target_health.points = [target_health.points-attack.damage, 0].max
         target_player = target_ent.get(PlayerOwned)
         kill_unit!(entity_manager, target_ent.id, target_unit, target_player.id, ent.id, u, player.id) if target_health.points <= 0
@@ -113,6 +117,17 @@ class AttackSystem
     end
     entity_manager.each_entity(ShootCommand) do |ent|
       entity_manager.remove_component klass: ShootCommand, id: ent.id
+    end
+
+    music_info = entity_manager.find(MusicInfo).first.get(MusicInfo)
+    if attack_happened_this_tick
+      music_info.mood = :battle
+      music_info.peace_timer = 0
+    else
+      music_info.peace_timer += 1
+    end
+    if music_info.peace_timer > (RtsGame::STEPS_PER_TURN * RtsGame::TURNS_PER_SECOND * 10)
+      music_info.mood = :peace
     end
 
   end

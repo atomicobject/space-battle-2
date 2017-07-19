@@ -143,11 +143,9 @@
   end
 
   def self.map(player_count:, entity_manager:, resources:)
-
+    music_info(entity_manager: entity_manager)
     info = map_info(entity_manager: entity_manager, static_map: resources[:map])
-
-    bases(player_count: player_count, entity_manager: entity_manager, static_map: resources[:map], map_info:  info)
-
+    bases(player_count: player_count, entity_manager: entity_manager, static_map: resources[:map], map_info: info)
     resources(entity_manager: entity_manager, static_map: resources[:map], map_info: info)
   end
 
@@ -174,6 +172,10 @@
     static_map.objects.select{|o|o['type'] == "large_resource"}.each do |res|
       resource(entity_manager: entity_manager, x: res.x, y: res.y-tile_size, map_info: map_info, type: "large")
     end
+  end
+
+  def self.music_info(entity_manager:)
+    entity_manager.add_entity MusicInfo.new(mood: :peace, battle: :battle_music1, peace: :peace_music1, peace_timer: 99_999)
   end
 
 end

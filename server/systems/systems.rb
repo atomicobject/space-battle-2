@@ -2,6 +2,7 @@ require_relative 'command_system'
 require_relative 'movement_system'
 require_relative 'create_system'
 require_relative 'attack_system'
+require_relative 'sound_system'
 
 class AnimationSystem
   def initialize(fast_mode:)
@@ -98,29 +99,3 @@ class TimerSystem
     end
   end
 end
-
-class SoundSystem
-  DEBOUNCE_UPDATES = 30
-  def update(entity_manager, dt, input, res)
-    @debounce_map ||= Hash.new{|h,k|h[k] = 0}
-
-    entity_manager.each_entity SoundEffectEvent do |rec|
-      ent_id = rec.id
-      effect = rec.get(SoundEffectEvent)
-      entity_manager.remove_component klass: effect.class, id: ent_id
-      if res
-        if @debounce_map[effect.sound_to_play] <= 0
-          @debounce_map[effect.sound_to_play] = DEBOUNCE_UPDATES
-          sample = res[:sounds][effect.sound_to_play]
-          sample.play if sample
-        end
-
-      end
-    end
-
-    @debounce_map.keys.each do |sound|
-      @debounce_map[sound] = [@debounce_map[sound]-1,0].max
-    end
-  end
-end
-

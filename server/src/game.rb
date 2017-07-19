@@ -81,10 +81,18 @@ class RtsGame
     melee_sound2: 'assets/sounds/melee2.wav',
     harvest_sound1: 'assets/sounds/harvest1.wav',
     harvest_sound2: 'assets/sounds/harvest2.wav',
+    collect_sound: 'assets/sounds/collect.wav',
+
+    peace_music1: 'assets/music/peace1.mp3',
+    peace_music2: 'assets/music/peace2.mp3',
+    peace_music3: 'assets/music/peace3.mp3',
+    peace_music4: 'assets/music/peace4.mp3',
+    battle_music1: 'assets/music/battle1.mp3',
   }
 
   MAX_UPDATE_SIZE_IN_MILLIS = 500
   TURN_DURATION = 200
+  TURNS_PER_SECOND = 1000/TURN_DURATION
   TILE_SIZE = 64
   SIMULATION_STEP = 20
   STEPS_PER_TURN = TURN_DURATION / SIMULATION_STEP
