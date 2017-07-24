@@ -1,17 +1,12 @@
 class AttackSystem
   def update(entity_manager, dt, input, res)
+    attack_happened_this_tick = false
+
     map_info = entity_manager.first(MapInfo).get(MapInfo)
     tile_infos =  {}
     entity_manager.each_entity(PlayerOwned, TileInfo) do |ent|
       player, tile_info = ent.components
       tile_infos[player.id] = tile_info
-    end
-
-    entity_manager.each_entity(MeleeEffect) do |ent|
-      entity_manager.remove_entity(id: ent.id)
-    end
-    entity_manager.each_entity(Explosion) do |ent|
-      entity_manager.remove_entity(id: ent.id)
     end
 
     entity_manager.each_entity(Unit, Attack) do |ent|
@@ -54,7 +49,7 @@ class AttackSystem
       tx = pos.tile_x+dx
       ty = pos.tile_y+dy
       tile_size = RtsGame::TILE_SIZE
-      Prefab.melee(entity_manager: entity_manager, x: tx*tile_size, y: ty*tile_size)
+      Prefab.melee(entity_manager: entity_manager, x: t_pos.x, y: t_pos.y)
 
       target_health = target_ent.get(Health)
       target_unit = target_ent.get(Unit)
@@ -67,6 +62,7 @@ class AttackSystem
         TileInfoHelper.dirty_tile(tile_info, tx, ty)
       end
 
+      attack_happened_this_tick = true
       target_health.points = [target_health.points-attack.damage, 0].max
       target_player = target_ent.get(PlayerOwned)
 
@@ -96,7 +92,6 @@ class AttackSystem
 
       tx = pos.tile_x+dx
       ty = pos.tile_y+dy
-
       Prefab.explosion(entity_manager: entity_manager, x: tx*tile_size, y: ty*tile_size)
 
       tile_infos.values.each do |tile_info|
@@ -110,6 +105,7 @@ class AttackSystem
         next if target_unit.status == :dead
         target_unit.dirty = true
 
+        attack_happened_this_tick = true
         target_health.points = [target_health.points-attack.damage, 0].max
         target_player = target_ent.get(PlayerOwned)
         kill_unit!(entity_manager, target_ent.id, target_unit, target_player.id, ent.id, u, player.id) if target_health.points <= 0
@@ -121,6 +117,17 @@ class AttackSystem
     end
     entity_manager.each_entity(ShootCommand) do |ent|
       entity_manager.remove_component klass: ShootCommand, id: ent.id
+    end
+
+    music_info = entity_manager.find(MusicInfo).first.get(MusicInfo)
+    if attack_happened_this_tick
+      music_info.mood = :battle
+      music_info.peace_timer = 0
+    else
+      music_info.peace_timer += 1
+    end
+    if music_info.peace_timer > (RtsGame::STEPS_PER_TURN * RtsGame::TURNS_PER_SECOND * 10)
+      music_info.mood = :peace
     end
 
   end
@@ -136,6 +143,7 @@ class AttackSystem
     entity_manager.remove_component(klass: ResourceCarrier, id: id)
     entity_manager.remove_component(klass: Label, id: id) unless target_unit.type == :base
     entity_manager.remove_component(klass: Decorated, id: id)
+
   end
 end
 

@@ -67,10 +67,33 @@ class RtsGame
     tank1: 'assets/PNG/Retina/Unit/scifiUnit_20.png',
     small_res1: 'assets/PNG/Retina/Environment/scifiEnvironment_14.png',
     large_res1: 'assets/PNG/Retina/Environment/scifiEnvironment_15.png',
+    explosion1: 'assets/PNG/Retina/Other/explosion1.png',
+    explosion2: 'assets/PNG/Retina/Other/explosion2.png',
+    explosion3: 'assets/PNG/Retina/Other/explosion3.png',
+    explosion4: 'assets/PNG/Retina/Other/explosion4.png',
+    melee1: 'assets/PNG/Retina/Other/melee1.png',
+    melee2: 'assets/PNG/Retina/Other/melee2.png',
+    melee3: 'assets/PNG/Retina/Other/melee3.png',
+    melee4: 'assets/PNG/Retina/Other/melee4.png',
+
+    explosion_sound1: 'assets/sounds/explosion1.wav',
+    explosion_sound2: 'assets/sounds/explosion2.wav',
+    melee_sound1: 'assets/sounds/melee1.wav',
+    melee_sound2: 'assets/sounds/melee2.wav',
+    harvest_sound1: 'assets/sounds/harvest1.wav',
+    harvest_sound2: 'assets/sounds/harvest2.wav',
+    collect_sound: 'assets/sounds/collect.wav',
+
+    peace_music1: 'assets/music/peace1.mp3',
+    peace_music2: 'assets/music/peace2.mp3',
+    peace_music3: 'assets/music/peace3.mp3',
+    peace_music4: 'assets/music/peace4.mp3',
+    battle_music1: 'assets/music/battle1.mp3',
   }
 
   MAX_UPDATE_SIZE_IN_MILLIS = 500
   TURN_DURATION = 200
+  TURNS_PER_SECOND = 1000/TURN_DURATION
   TILE_SIZE = 64
   SIMULATION_STEP = 20
   STEPS_PER_TURN = TURN_DURATION / SIMULATION_STEP
@@ -139,7 +162,7 @@ class RtsGame
           total_time = step_count * RtsGame::SIMULATION_STEP
           input = InputSnapshot.new(nil, total_time)
           input[:messages] = msgs if i == 0
-          @world.update ents, SIMULATION_STEP, input, nil
+          @world.update ents, SIMULATION_STEP, input, @resources #nil
           step_count += 1
         end
 
@@ -201,7 +224,6 @@ class RtsGame
   include DRb::DRbUndumped
   attr_reader :input_queue, :next_turn_queue, :render_mutex
   def initialize(map:,clients:,fast:false,time:,drb_port:nil)
-    build_world clients, map
     @fast_mode = fast
     @time = time
     @input_queue = Queue.new
@@ -211,6 +233,7 @@ class RtsGame
       @drb = DRb.start_service("druby://localhost:#{drb_port}", self)
       puts 'DRB STARTED!!!'
     end
+    build_world clients, map
   end
 
   def start!
@@ -251,7 +274,7 @@ class RtsGame
 
           while (@sim_steps * SIMULATION_STEP <= @turn_time) && (@sim_steps < STEPS_PER_TURN)
             input[:messages] = @input_msgs if @input_msgs
-            @world.update @entity_manager, SIMULATION_STEP, input, @resources
+            @world.update @entity_manager, SIMULATION_STEP, input, nil #@resources
             input.delete(:messages)
             @input_msgs = nil
             @sim_steps+=1
@@ -457,6 +480,8 @@ class RtsGame
       TimedSystem.new,
       TimedLevelSystem.new,
       SoundSystem.new,
+      DeathSystem.new,
+      AnimationSystem.new(fast_mode: @fast_mode),
     ]
     @render_system = RenderSystem.new
   end

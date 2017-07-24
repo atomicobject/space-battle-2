@@ -70,6 +70,8 @@ class MovementSystem
             base.resource += unit_res.resource
             base_ent.get(Unit).dirty = true
             unit_res.resource = 0
+
+            # entity_manager.add_component id: base_ent.id, component: SoundEffectEvent.new(sound_to_play: :collect_sound)
             entity_manager.remove_component(klass: Decorated, id: ent_id)
           end
         end

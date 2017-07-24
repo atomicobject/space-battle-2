@@ -127,6 +127,9 @@ class CommandSystem
                 res_image = res_car.resource > 10 ? :large_res1 : :small_res1
                 entity_manager.add_component(id: uid, component: Decorated.new(image: res_image, scale: 0.3, offset: vec(10, -10)))
 
+                sound = SoundEffectEvent.new(sound_to_play: [:harvest_sound1, :harvest_sound2].sample)
+                entity_manager.add_component(id: uid, component: sound)
+
                 if resource.total <= 0
                   MapInfoHelper.remove_resource_at(map_info, target_tile_x, target_tile_y)
                   entity_manager.remove_entity(id: res_info[:id])

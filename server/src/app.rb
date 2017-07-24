@@ -60,13 +60,23 @@ class RtsWindow < Gosu::Window
 
   def preload_assets!(res)
     images = {}
+    sounds = {}
+    music = {}
     RtsGame::ASSETS.each do |name,file|
-      images[name] ||= Gosu::Image.new(file, tileable: true)
+      if file.end_with? '.wav'
+        sounds[name] ||= Gosu::Sample.new(file)
+      elsif file.end_with? '.mp3'
+        music[name] ||= Gosu::Song.new(file)
+      else
+        images[name] ||= Gosu::Image.new(file, tileable: true)
+      end
     end
     puts "loaded images: #{images.keys}"
 
-    # TODO add sounds and music here?
     res[:images] = images
+    res[:sounds] = sounds
+    res[:music] = music
+    nil
   end
 
   def relative_delta

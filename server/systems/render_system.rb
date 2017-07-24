@@ -50,7 +50,12 @@ class RenderSystem
       entity_manager.each_entity Sprited, Position do |rec|
         sprited, pos = rec.components
         # images[sprited.image].draw pos.x, pos.y, pos.z
-        sorted_by_y_x[pos.y][pos.x] << [images[sprited.image],sprited.flipped,pos.z,0.75]
+        img = images[sprited.image]
+        if img
+          sorted_by_y_x[pos.y][pos.x] << [img,sprited.flipped,pos.z,0.75]
+        else
+          puts "could not find sprite image for: #{sprited.image}"
+        end
       end
 
       entity_manager.each_entity Decorated, Position do |rec|
