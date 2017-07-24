@@ -25,7 +25,7 @@
     health = Health.new(points: hp, max: hp)
     tile_size = RtsGame::TILE_SIZE
     id = entity_manager.add_entity(
-      Unit.new(status: :idle, type: :base), 
+      Unit.new(status: :idle, type: :base),
       b,
       Position.new(x:x, y:y, tile_x: (x/tile_size).floor, tile_y: (y/tile_size).floor, z:10),
       PlayerOwned.new(id: player_id),
@@ -51,8 +51,8 @@
       Unit.new(type: type.to_sym),
       Position.new(x:x, y:y, tile_x: (x/tile_size).floor, tile_y: (y/tile_size).floor),
       Ranged.new(distance: unit_def[:range]),
-      Attack.new(damage: unit_def[:attack_damage], 
-                 range: unit_def[:range], 
+      Attack.new(damage: unit_def[:attack_damage],
+                 range: unit_def[:range],
                  cooldown: unit_def[:attack_cooldown_duration],
                  current_cooldown: 0,
                  can_attack: true
@@ -126,11 +126,11 @@
     bases = static_map.objects.select{|o|o['type'] == "base"}.shuffle
     player_count.times do |i|
       start_point = vec(bases[i].x, bases[i].y-RtsGame::TILE_SIZE)
-      base(entity_manager: entity_manager, x: start_point.x, y: start_point.y, 
+      base(entity_manager: entity_manager, x: start_point.x, y: start_point.y,
            player_id: i, map_info: map_info)
 
       RtsGame::STARTING_WORKERS.times do
-        unit(type: :worker, entity_manager: entity_manager, 
+        unit(type: :worker, entity_manager: entity_manager,
              player_id: i, map_info: map_info,
              x: start_point.x, y: start_point.y)
       end

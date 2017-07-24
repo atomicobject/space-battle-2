@@ -4,7 +4,7 @@ AO RTS
 
 ## Goal
 
-Write an AI to command your troops to gather the most resources in the time allotted. The AI communicates over TCP via a JSON protocol.
+Write an AI to command your troops to gather the most resources in the time allotted. You gather resources by exploring the map, finding resources, executing a gather action, and then returning to your base with the gathered resources. The AI communicates over TCP via a JSON protocol.
 
 ***
 
@@ -35,7 +35,7 @@ The server will connect to your client. You will start receiving messages in the
           id: 12,
           type: "small",
           total:200,
-			value:10
+      value:10
         },
         units: [{
           id:60,
@@ -46,8 +46,21 @@ The server will connect to your client. You will start receiving messages in the
         }]}
       ],
     }
-    
-To command your units:
+
+##### unit_updates
+Any time something one of your units changes, (position, status, etc), you will receive an update.
+
+##### tile_updates
+Any time something about a tile changes, (enemy units, visibility, etc), you will receive an update.
+
+##### time
+This is the amount of time remaining in the game (in milliseconds).
+
+##### turn
+This is the current turn of the game. Each turn is 200ms.
+
+### Sending commands
+To command your units, send messages to the server using the format:
 
 
     {
@@ -66,23 +79,12 @@ To command your units:
     The protocol is newline delimited. Make sure your JSON has all but its last newline stripped!
 
 
-##### unit_updates
-Any time something one of your units changes, (position, status, etc), you will receive an update.
-
-##### tile_updates
-Any time something about a tile changes, (enemy units, visibility, etc), you will receive an update.
-
-##### time
-This is the amount of time remaining in the game (in milliseconds). 
-
-##### turn
-This is the current turn of the game. Each turn is 200ms.
 
 ***
 
 ## Commands
 
-Commands are your AIs way of telling the server what you want your units to do. Some commands take many turns to complete. When finished executing a command, a unit's status will be set to `idle`.
+Commands are your AI's way of telling the server what you want your units to do. Some commands take many turns to complete. When finished executing a command, a unit's status will be set to `idle`.
 
 __MOVE__: `unit`,`dir` Move a unit by id in a given direction `N,S,E,W`. Command will be ignored if the unit cannot move in the specified direction or is currently executing a previous `MOVE` command. Units _**can**_ occupy the same location.
 
@@ -96,7 +98,7 @@ __MELEE__: `unit`,`target` Tell the unit to melee a nearby unit. Command is igno
 
 __IDENTIFY__: `unit`, `name` Name the unit (or player if left blank). This name will only show on the graphical server window. Command is ignored if the unit is owned by another player.
 
-####Note:
+#### Note:
     When a unit has died, its status will be set to "dead".
     Dead units will no longer respond to your commands.
 ***
@@ -105,7 +107,7 @@ __IDENTIFY__: `unit`, `name` Name the unit (or player if left blank). This name 
 ## Units
 ![base](server/assets/PNG/Retina/Structure/scifiStructure_11.png "base")
 
-__BASE__: When joining the game, your base will be placed at a random location on the map. Any map location will be sent from the server relative to your base's location.
+__BASE__: When joining the game, your base will be placed at a random location on the map. Map locations will be sent from the server relative to your base's location (i.e. A location of x: 1, y: 1 would indicate the tile 1 step east and 1 step south of your base).
 
 ![worker](server/assets/PNG/Retina/Unit/scifiUnit_02.png "worker")
 
@@ -119,23 +121,23 @@ __SCOUT__: Scouts have longer vision, faster speed, lower health, and a weak mel
 
 __TANK__: Tanks have average vision, slower speed, higher health, and a ranged attack. Cost 150.
 
-| type   | cost | range (+/-) | speed (tpt<sup>*</sup>) | health | attack cooldown (turns) | build time (turns) |
-|--------|------|-------|-------|--------|-----------------|---|
-| worker | 100  | 2     | 5     | 10     | 3 | 5  |
-| scout  | 130  | 2     | 5     | 5      | 3 | 10 |
-| tank   | 150  | 2     | 5     | 20     | 5 | 15 |
+| type   | cost | range (+/-) | speed (tpt<sup>*</sup>) | health | attack cooldown (turns) | attack damage | build time (turns) |
+|--------|------|-------|-------|--------|-----------------|---|---|
+| worker | 100  | 2     | 1     | 10     | 3 | 2 | 5  |
+| scout  | 130  | 5     | 2     | 5      | 3 | 1 | 10 |
+| tank   | 150  | 2     | 0.5   | 20     | 7 | 4 | 15 |
 
-<sup>*</sup>__turns per tile (tpt):__ Number of turns required to move from one grid location to the next. smaller is faster.
+<sup>*</sup>__turns per tile (tpt):__ Number of turns required to move from one grid location to the next. Smaller is faster.
 
 ***
 
 ## Communication Overview
 
-WIP
+Your chosen starter kit should implement the basic communication protocol with the server. Ask your coach if you need detail in addition to what's listed here.
 
 ## JSON Schema
 
-###Message from Server
+### Message from Server
 
 | property | type | notes |
 |----------|------|-------|
@@ -179,7 +181,7 @@ __* Optional:__ may or may not be present depending on the unit type.
 | `type` | `string` | Time of resource (small or large) |
 | `total` | `int` | Total amount of value left in this resource. |
 | `value` | `int` | Value of a single harvested load. |
-          
+
 #### Enemy Units
 
 | property | type | notes |
@@ -230,11 +232,11 @@ __* Optional:__ may or may not be present depending on the unit type.
 * cd server
 * bundle install
 * ruby src/app.rb
-    
+
 ## Running the game
 
-	$ruby src/app.rb --help
-	usage: src/app.rb [options]
+  $ruby src/app.rb --help
+  usage: src/app.rb [options]
     -p1,  --p1_host  player 1 host, default localhost
     -p1p, --p1_port  player 1 port, default 9090
     -p2,  --p2_host  player 2 host

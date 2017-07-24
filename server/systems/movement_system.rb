@@ -1,12 +1,12 @@
 class MovementSystem
 
   def update(entity_manager, dt, input, res)
-    tile_infos =  {} 
+    tile_infos =  {}
     entity_manager.each_entity(PlayerOwned, TileInfo) do |ent|
       player, tile_info = ent.components
       tile_infos[player.id] = tile_info
     end
-      
+
     tile_size = RtsGame::TILE_SIZE
     base_speed = tile_size.to_f/(RtsGame::TURN_DURATION * 5 - RtsGame::SIMULATION_STEP)
     entity_manager.each_entity PlayerOwned, Unit, MovementCommand, Position, Speed, Sprited do |ent|

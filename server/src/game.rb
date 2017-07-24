@@ -56,6 +56,7 @@ class RtsGame
     tree4: 'assets/PNG/Default size/Tile/scifiTile_28.png',
     tree5: 'assets/PNG/Default size/Tile/scifiTile_29.png',
     tree6: 'assets/PNG/Default size/Tile/scifiTile_30.png',
+    rock1: 'assets/PNG/Default size/Environment/scifiEnvironment_12.png',
     base0: 'assets/PNG/Retina/Structure/scifiStructure_11.png',
     worker0: 'assets/PNG/Retina/Unit/scifiUnit_01.png',
     scout0: 'assets/PNG/Retina/Unit/scifiUnit_05.png',
@@ -130,14 +131,14 @@ class RtsGame
       step_count = 0
       msgs = []
       loop do
-        
+
         msgs.each do |msg|
           GameLogger.log_received(msg.connection_id, msg.data)
         end
         STEPS_PER_TURN.times do |i|
           total_time = step_count * RtsGame::SIMULATION_STEP
           input = InputSnapshot.new(nil, total_time)
-          input[:messages] = msgs if i == 0 
+          input[:messages] = msgs if i == 0
           @world.update ents, SIMULATION_STEP, input, nil
           step_count += 1
         end
@@ -148,7 +149,7 @@ class RtsGame
         base_ents = ents.find(Base, Unit)
         if time_remaining <= 0 || base_ents.any?{|be| be.get(Unit).status == :dead}
           puts "GAME OVER!"
-          @game_over = true 
+          @game_over = true
         end
 
         @network_manager.clients.each do |player_id|
@@ -198,7 +199,7 @@ class RtsGame
   end
 
   include DRb::DRbUndumped
-  attr_reader :input_queue, :next_turn_queue, :render_mutex 
+  attr_reader :input_queue, :next_turn_queue, :render_mutex
   def initialize(map:,clients:,fast:false,time:,drb_port:nil)
     build_world clients, map
     @fast_mode = fast
@@ -309,7 +310,7 @@ class RtsGame
     end
     tile_info.interesting_tiles = interesting_tiles
     newly_visible_tiles = interesting_tiles - prev_interesting_tiles
-    no_longer_visible_tiles = prev_interesting_tiles - interesting_tiles 
+    no_longer_visible_tiles = prev_interesting_tiles - interesting_tiles
 
     dirty_tiles = TileInfoHelper.dirty_tiles(tile_info)
 
@@ -338,7 +339,7 @@ class RtsGame
           ent = entity_manager.find_by_id(tu, Position, PlayerOwned, Unit, Health)
           pid = ent.get(PlayerOwned).id
           status = ent.get(Unit).status == :dead ? :dead : :unknown
-          pid != player_id ? 
+          pid != player_id ?
           {
             id: tu,
             type: ent.get(Unit).type,
@@ -361,7 +362,7 @@ class RtsGame
     end
 
     if base_unit.dirty?
-      units << { id: base_ent.id, player_id: player_id, 
+      units << { id: base_ent.id, player_id: player_id,
         x: 0,
         y: 0,
         status: base_unit.status,
@@ -386,12 +387,12 @@ class RtsGame
           speed = entity_manager.find_by_id(ent.id, Speed)&.get(Speed)&.speed
           range = entity_manager.find_by_id(ent.id, Ranged)&.get(Ranged)&.distance
 
-          unit_info = { id: ent.id, player_id: player.id, 
+          unit_info = { id: ent.id, player_id: player.id,
             x: (pos.tile_x-base_pos.tile_x),
             y: (pos.tile_y-base_pos.tile_y),
             status: u.status,
             type: u.type,
-            health: health.points, 
+            health: health.points,
             can_attack: can_attack,
 
             range: range,
@@ -401,14 +402,14 @@ class RtsGame
           if attack
             unit_info.merge!(
               attack_damage: attack.damage,
-              attack_cooldown_duration: attack.cooldown, 
-              attack_cooldown: attack.current_cooldown 
+              attack_cooldown_duration: attack.cooldown,
+              attack_cooldown: attack.current_cooldown
             )
           end
 
           shooter = entity_manager.find_by_id(ent.id, Shooter)
           unit_info[:attack_type] = shooter ? :ranged : :melee
-            
+
           units << unit_info
           u.dirty = false
         end
@@ -443,8 +444,8 @@ class RtsGame
       @network_manager.connect(c[:host], c[:port])
     end
 
-    Prefab.map(player_count: clients.size, 
-               entity_manager: @entity_manager, 
+    Prefab.map(player_count: clients.size,
+               entity_manager: @entity_manager,
                resources: @resources)
 
     @world = World.new [

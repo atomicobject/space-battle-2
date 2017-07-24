@@ -32,9 +32,9 @@ class CommandSystem
               target_tile_y = pos.tile_y + dir.y
               target = vec(target_tile_x, target_tile_y)*RtsGame::TILE_SIZE
 
-              unless MapInfoHelper.blocked?(map_info, target_tile_x, target_tile_y) || 
+              unless MapInfoHelper.blocked?(map_info, target_tile_x, target_tile_y) ||
                 u.status == :moving || u.status == :dead || entity_manager.find_by_id(uid, MovementCommand)
-                entity_manager.add_component(id: uid, 
+                entity_manager.add_component(id: uid,
                   component: MovementCommand.new(target_vec: target) )
               end
             end
@@ -47,7 +47,7 @@ class CommandSystem
               select{|ent| ent.get(PlayerOwned).id == msg.connection_id}.first
 
             unless base_ent.nil? || base_ent.get(Unit).status != :idle
-              entity_manager.add_component(id: base_ent.id, 
+              entity_manager.add_component(id: base_ent.id,
                 component: CreateCommand.new(type: type.to_sym, build_time: info[:create_time]) )
             end
 
@@ -61,13 +61,13 @@ class CommandSystem
                 select{|ent| ent.get(PlayerOwned).id == msg.connection_id}.first
               name = "#{name} (#{msg.connection_id})"
             end
-            next unless ent 
+            next unless ent
             ent.get(Label).text = name
 
           elsif c == 'SHOOT'
             dx, dy, uid = cmd.values_at('dx','dy','unit')
             ent = entity_manager.find_by_id(uid, Unit, Position, PlayerOwned, Attack)
-            next unless ent 
+            next unless ent
 
             u, pos, owner = ent.components
             if owner.id == msg.connection_id && u.status == :idle
@@ -77,7 +77,7 @@ class CommandSystem
           elsif c == 'MELEE'
             target, uid = cmd.values_at('target','unit')
             ent = entity_manager.find_by_id(uid, Unit, Position, PlayerOwned, Attack)
-            next unless ent 
+            next unless ent
 
             u, pos, owner = ent.components
             if owner.id == msg.connection_id && u.status == :idle
@@ -105,7 +105,7 @@ class CommandSystem
               res_info = MapInfoHelper.resource_at(map_info, target_tile_x, target_tile_y)
               if res_info
 
-                tile_infos =  {} 
+                tile_infos =  {}
                 entity_manager.each_entity(PlayerOwned, TileInfo) do |ent|
                   player, tile_info = ent.components
                   tile_infos[player.id] = tile_info

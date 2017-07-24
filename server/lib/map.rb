@@ -21,7 +21,7 @@ class TileInfoHelper
     end
 
     def dirty_tiles(tile_info)
-      dirties = tile_info.dirty_tiles 
+      dirties = tile_info.dirty_tiles
       tile_info.dirty_tiles = Set.new
       dirties
     end
@@ -91,6 +91,7 @@ class Map
     38 => :tree4,
     39 => :tree5,
     40 => :tree6,
+    95 => :rock1,
   }
 
   def initialize(w,h, objects)

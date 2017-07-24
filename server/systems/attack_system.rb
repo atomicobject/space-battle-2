@@ -1,7 +1,7 @@
 class AttackSystem
   def update(entity_manager, dt, input, res)
     map_info = entity_manager.first(MapInfo).get(MapInfo)
-    tile_infos =  {} 
+    tile_infos =  {}
     entity_manager.each_entity(PlayerOwned, TileInfo) do |ent|
       player, tile_info = ent.components
       tile_infos[player.id] = tile_info
@@ -29,7 +29,7 @@ class AttackSystem
     entity_manager.each_entity(Unit, MeleeCommand, Melee, Attack, Position, PlayerOwned, Sprited) do |ent|
       u, cmd, melee, attack, pos, player, sprite = ent.components
       entity_manager.remove_component klass: MeleeCommand, id: ent.id
-      next if u.status == :dead || !attack.can_attack 
+      next if u.status == :dead || !attack.can_attack
       target_ent = entity_manager.find_by_id(cmd.target, Unit, Position, Health, PlayerOwned)
       if target_ent.nil?
         puts "MELEE on an unknown target: #{cmd.target}"

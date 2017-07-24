@@ -22,7 +22,7 @@ class CreateSystem
         entity_manager.remove_component(klass: CreateCommand, id: base_ent.id)
       else
         if u.status != :building
-          u.dirty = true 
+          u.dirty = true
           u.status = :building
         end
       end

@@ -12,7 +12,7 @@ class RenderSystem
 
   def get_cached_font(font:nil,size:)
     @font_cache[font] ||= {}
-    opts = {} 
+    opts = {}
     opts[:name] if font if font
     @font_cache[font][size] ||= Gosu::Font.new size, opts
   end

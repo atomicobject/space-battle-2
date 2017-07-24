@@ -40,15 +40,15 @@ class RtsWindow < Gosu::Window
 
   def button_down(id)
     if id == Gosu::KbEscape
-      close 
+      close
     else
-      if @game.started? 
+      if @game.started?
         if id == Gosu::KbP
           @game.pause!
         end
         @input_cacher.button_down id
       else
-        @game.start! 
+        @game.start!
       end
     end
   end
@@ -145,7 +145,7 @@ end
     # puts "YAY"
 
   else
-    $window = RtsWindow.new map: opts[:map], clients: clients, fast: opts[:fast], time: opts[:time], 
+    $window = RtsWindow.new map: opts[:map], clients: clients, fast: opts[:fast], time: opts[:time],
       drb_port: opts[:drb_port], fullscreen: opts[:fullscreen]
     $window.show
   end

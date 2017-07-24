@@ -48,7 +48,7 @@ CreateCommand = define_component(attrs: [:type, :build_time])
 
 class TileInfo
   include JsonIvars
-  attr_accessor :dirty_tiles, :interesting_tiles#, :tiles 
+  attr_accessor :dirty_tiles, :interesting_tiles#, :tiles
   def initialize
     @dirty_tiles = Set.new
     @interesting_tiles = Set.new

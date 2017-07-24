@@ -155,7 +155,7 @@ class NetworkManager
       conn.flush!
     end
   end
-  
+
   def pop_messages!
     raise "mutex must be locked" unless @mutex.locked?
     @connections.flat_map do |id, conn|
@@ -166,11 +166,11 @@ class NetworkManager
   end
 
   def pop_messages_with_timeout!(timeout = nil)
-    @mutex.synchronize do 
+    @mutex.synchronize do
       if timeout.nil?
         # wait forever. We have to have a while loop because the posix spec allows for
-        # spurious wakeups, we also have to check to see if the condition has been fulfilled already 
-        #  otherwise we'll be waiting for a signal that already happened. 
+        # spurious wakeups, we also have to check to see if the condition has been fulfilled already
+        #  otherwise we'll be waiting for a signal that already happened.
         while !message_received_for_all_clients?
           @cv.wait(@mutex)
         end

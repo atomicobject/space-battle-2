@@ -14,7 +14,7 @@ class InputSnapshot
   def down?(id)
     @down_ids && @down_ids.include?(id)
   end
-  
+
   def up?(id)
     !@down_ids || !@down_ids.include?(id)
   end
