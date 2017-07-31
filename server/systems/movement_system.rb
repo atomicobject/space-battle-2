@@ -32,9 +32,13 @@ class MovementSystem
       pos.x += move.x
       pos.y += move.y
       if move.x > 0
-        sprite.flipped = true
+        pos.rotation = 0
       elsif move.x < 0
-        sprite.flipped = false
+        pos.rotation = 180
+      elsif move.y < 0
+        pos.rotation = 270
+      elsif move.y > 0
+        pos.rotation = 90
       end
 
       # semi arbitrarily set to 1/4 the distance a unit could travel in a simulation step

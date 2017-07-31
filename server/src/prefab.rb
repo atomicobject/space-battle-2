@@ -12,7 +12,7 @@
     y += rand(-30..30)
     eid = entity_manager.add_entity(
       Position.new(x:x, y:y, z:20),
-      Sprited.new(image: frames.first, flipped: false),
+      Sprited.new(image: frames.first, flipped: false, offset: vec),
       Animated.new(timings: timings, frames: frames, index: 0, loop: false, time: 0),
       SoundEffectEvent.new(sound_to_play: [:explosion_sound1, :explosion_sound2].sample)
     )
@@ -35,7 +35,7 @@
     y += rand(-20..20)
     eid = entity_manager.add_entity(
       Position.new(x:x, y:y, z:20),
-      Sprited.new(image: frames.first, flipped: false),
+      Sprited.new(image: frames.first, flipped: false, offset: vec),
       Animated.new(timings: timings, frames: frames, index: 0, loop: false, time: 0),
       SoundEffectEvent.new(sound_to_play: [:melee_sound1, :melee_sound2].sample)
     )
@@ -56,9 +56,9 @@
     id = entity_manager.add_entity(
       Unit.new(status: :idle, type: :base), 
       b,
-      Position.new(x:x, y:y, tile_x: (x/tile_size).floor, tile_y: (y/tile_size).floor, z:10),
+      Position.new(x:x, y:y, tile_x: (x/tile_size).floor, tile_y: (y/tile_size).floor, z:1),
       PlayerOwned.new(id: player_id),
-      Sprited.new(image: "base#{player_id}".to_sym, flipped: false),
+      Sprited.new(image: "base#{player_id}".to_sym, flipped: false, offset: vec),
       Label.new(size: 24, text: "Player #{player_id}"),
       r,
       health
@@ -88,7 +88,9 @@
                 ),
       Speed.new(speed: unit_def[:speed]),
       PlayerOwned.new(id: player_id),
-      Sprited.new(image: "#{type}#{player_id}".to_sym, flipped: false),
+      Sprited.new(image: "#{type}#{player_id}".to_sym, 
+        flipped: false, 
+        offset: vec(rand(-8..8),rand(-8..8))),
       Label.new(size: 14),
       health
     )
@@ -111,7 +113,7 @@
     else
       res = Resource.new(total: 1000, value:20)
     end
-    id = entity_manager.add_entity res, Label.new(size:16,text:"#{res.value}/#{res.total}"), Position.new(x:x, y:y), Sprited.new(image: "#{type}_res1".to_sym)
+    id = entity_manager.add_entity res, Label.new(size:16,text:res.total.to_s), Position.new(x:x, y:y), Sprited.new(image: "#{type}_res1".to_sym, offset: vec)
 
     # TODO where should world => tile coord conversion happen
     tile_size = RtsGame::TILE_SIZE

@@ -4,8 +4,12 @@ require 'slop'
 require_relative './game'
 
 class RtsWindow < Gosu::Window
+  FULL_DISPLAY_WIDTH = 1820
+  FULL_DISPLAY_HEIGHT = 1024
+  GAME_WIDTH = 1024
+
   def initialize(**opts)
-    super(1024,1024, fullscreen: opts.delete(:fullscreen))
+    super(FULL_DISPLAY_WIDTH, FULL_DISPLAY_HEIGHT, fullscreen: opts.delete(:fullscreen))
     @input_cacher = InputCacher.new
     @last_millis = Gosu::milliseconds.to_f
 

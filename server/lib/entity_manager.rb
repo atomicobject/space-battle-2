@@ -59,7 +59,7 @@ class EntityManager
       @comp_to_id[k] ||= []
     end
     id_collection = @comp_to_id.values_at(*klasses)
-    intersecting_ids = id_collection.inject &:&
+    intersecting_ids = id_collection.sort_by(&:size).inject &:&
     result = intersecting_ids.map do |id|
       build_record id, @id_to_comp[id].values_at(*klasses)
     end
@@ -280,7 +280,7 @@ if $0 == __FILE__
   player_id = entity_manager.add_entity Position.new(x:2, y:3), Player.new
 
 
-  100_000.times do |i|
+  10_000.times do |i|
     entity_manager.add_entity Position.new(x:4,y:5), Foo.new, Bar.new
   end
 
@@ -288,7 +288,7 @@ if $0 == __FILE__
   # binding.pry
 
   require 'benchmark'
-  n = 100_000
+  n = 10_000
   Benchmark.bm do |x|
     x.report do
       n.times do |i|

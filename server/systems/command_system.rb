@@ -118,7 +118,7 @@ class CommandSystem
                 resource = resource_ent.get(Resource)
 
                 resource.total -= resource.value
-                resource_ent.get(Label).text = "#{resource.value}/#{resource.total}"
+                resource_ent.get(Label).text = "#{resource.total}"
 
                 res_car.resource = resource.value
                 u.dirty = true
