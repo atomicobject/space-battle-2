@@ -51,6 +51,7 @@ class RtsWindow < Gosu::Window
         @game.start!
       end
     end
+    super
   end
 
   def button_up(id)
