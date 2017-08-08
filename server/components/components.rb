@@ -26,7 +26,8 @@ def define_component(opts={})
   end
 end
 Base = define_component(attrs: [:resource])
-Sprited = define_component(attrs: [:image, :flipped, :offset, :scale])
+Sprited = define_component(attrs: [:image, :flipped, :offset, :scale, :x_scale, :y_scale])
+Textured = define_component(attrs: [:image, :x1, :y1, :x2, :y2, :x3, :y3, :x4, :y4])
 Animated = define_component(attrs: [:frames, :timings, :index, :loop, :time])
 Decorated = define_component(attrs: [:image, :scale, :offset])
 PlayerOwned = define_component(attrs: [:id])

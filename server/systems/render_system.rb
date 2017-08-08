@@ -58,7 +58,7 @@ class RenderSystem
               # images[obj.image].draw base_x, base_y, ZOrder::Env
               obj_img = images[obj.image]
               if obj_img
-                sorted_by_y_x[base_y][base_x] << [obj_img, false, ZOrder::Env, 1]
+                sorted_by_y_x[base_y][base_x] << [obj_img, false, ZOrder::Env, 1, 1]
               else
                 puts "could not find object image for: #{obj.image}"
               end
@@ -71,27 +71,41 @@ class RenderSystem
           # images[sprited.image].draw pos.x, pos.y, pos.z
           img = images[sprited.image]
           if img
-            offset = sprited.offset
-            sorted_by_y_x[pos.y+offset.y][pos.x+offset.x] << [img,pos.rotation,pos.z,0.75]
+            offset = sprited.offset || vec(0,0)
+            scale = (sprited.scale.nil? || sprited.scale == 0) ? 0.75 : sprited.scale
+            x_scale = sprited.x_scale || scale
+            y_scale = sprited.y_scale || scale
+            sorted_by_y_x[pos.y+offset.y][pos.x+offset.x] << [img,pos.rotation,pos.z,x_scale, y_scale]
           else
             puts "could not find sprite image for: #{sprited.image}"
           end
         end
 
+        entity_manager.each_entity Textured, Position do |rec|
+          tex, pos = rec.components
+          img = images[tex.image]
+          if img
+            w = Gosu::Color::WHITE
+            img.draw_as_quad tex.x1, tex.y1, w, tex.x2, tex.y2, w, tex.x3, tex.y3, w, tex.x4, tex.y4, w, 19
+          else
+            puts "could not find texture image for: #{tex.image}"
+          end
+        end
+
+
         entity_manager.each_entity Decorated, Position do |rec|
           dec, pos = rec.components
           # images[sprited.image].draw pos.x, pos.y, pos.z
-          sorted_by_y_x[pos.y+dec.offset.y][pos.x+dec.offset.x] << [images[dec.image],false,pos.z+1, dec.scale]
+          sorted_by_y_x[pos.y+dec.offset.y][pos.x+dec.offset.x] << [images[dec.image],0,pos.z+1, dec.scale, dec.scale]
         end
 
 
         half_tile = RtsGame::TILE_SIZE/2
         sorted_by_y_x.keys.sort.each do |y|
           sorted_by_y_x[y].keys.sort.reverse.each do |x|
-            sorted_by_y_x[y][x].each do |(img,rot,z,sprite_scale)|
+            sorted_by_y_x[y][x].each do |(img,rot,z,sprite_x_scale,sprite_y_scale)|
               rot ||= 0
-              # x_scale = sprite_scale * (flipped ? 1 : -1)
-              img.draw_rot x+half_tile,y+half_tile,z,rot,0.5,0.5,sprite_scale,sprite_scale
+              img.draw_rot x+half_tile, y+half_tile, z, rot, 0.5, 0.5, sprite_x_scale, sprite_y_scale
             end
           end
         end

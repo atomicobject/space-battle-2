@@ -1,4 +1,27 @@
  module Prefab
+  def self.laser(entity_manager:,pid:,x:,y:,x2:,y2:)
+    dx = x2-x
+    dy = y-y2
+    # dist = Math.sqrt(dx*dx+dy*dy)
+    # radians = Math.atan2(dy, dx)
+    # degs = radians * 180.0/Math::PI
+    # degs = degs + 360 if degs < 0
+
+    w = 2
+    off = RtsGame::TILE_SIZE/2
+    eid = entity_manager.add_entity(
+      Position.new(x:x+dx/2, y:y+dy/2, z:90),
+      Textured.new(image: "laser#{pid}".to_sym, 
+        x1: off+x-w, y1: off+y-w, 
+        x2: off+x+w, y2: off+y+w,
+        x3: off+x2-w, y3: off+y2-w, 
+        x4: off+x2+w, y4: off+y2+w)
+    )
+    timer_name = "death-laser-#{eid}"
+    entity_manager.add_component component: Timer.new(timer_name, 3000, false, DeathEvent), id: eid
+    eid
+  end
+
   def self.explosion(entity_manager:,x:,y:)
     timings = {
       explosion1: 39,
@@ -76,6 +99,7 @@
     unit_def = RtsGame::UNITS[type.to_sym]
     health = Health.new(points: unit_def[:hp], max: unit_def[:hp])
     tile_size = RtsGame::TILE_SIZE
+    scale = type.to_sym == :tank ? 0.6 : 0.3
     id = entity_manager.add_entity(
       Unit.new(type: type.to_sym),
       Position.new(x:x, y:y, tile_x: (x/tile_size).floor, tile_y: (y/tile_size).floor),
@@ -90,6 +114,7 @@
       PlayerOwned.new(id: player_id),
       Sprited.new(image: "#{type}#{player_id}".to_sym, 
         flipped: false, 
+        scale: scale,
         offset: vec(rand(-8..8),rand(-8..8))),
       Label.new(size: 14),
       health

@@ -94,6 +94,8 @@ class AttackSystem
       ty = pos.tile_y+dy
       Prefab.explosion(entity_manager: entity_manager, x: tx*tile_size, y: ty*tile_size)
 
+      Prefab.laser(entity_manager: entity_manager, pid: player.id, x: pos.x, y: pos.y, x2: tx*tile_size, y2: ty*tile_size)
+
       tile_infos.values.each do |tile_info|
         TileInfoHelper.dirty_tile(tile_info, tx, ty)
       end
