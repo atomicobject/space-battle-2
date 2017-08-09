@@ -23,7 +23,8 @@ class MovementSystem
 
       speed = base_speed * s.speed
 
-
+      require 'pry'
+      binding.pry if movement.nil?
       displacement = movement.target_vec - pos.to_vec
       dist = displacement.magnitude
       move = (displacement.unit * dt * speed).clip_to(dist) # clip any overshoot

@@ -136,7 +136,7 @@ class RenderSystem
           end
         end
 
-
+        
         # TODO figure out a clean way to do this as a Label, Position combo
         timer = entity_manager.first(Timer)
         if timer
@@ -164,19 +164,19 @@ class RenderSystem
       big_font.draw(score_text, score_x+110, score_y, ZOrder::HUD)
       med_font.draw("#{label.text}", score_x+10, score_y+64+10, ZOrder::HUD)
 
-      # TODO some sort of PlayerStats component?
-      # worker_count = 12
-      # scout_count = 12
-      # tank_count = 12
+      workers = entity_manager.query(Q.must(PlayerOwned).with(id: player.id).must(Unit).with(type: :worker)) 
+      scouts = entity_manager.query(Q.must(PlayerOwned).with(id: player.id).must(Unit).with(type: :scout)) 
+      tanks = entity_manager.query(Q.must(PlayerOwned).with(id: player.id).must(Unit).with(type: :tank)) 
+      med_font.draw("W: #{workers.size}", score_x+50, 200, ZOrder::HUD)
+      med_font.draw("S: #{scouts.size}", score_x+50, 250, ZOrder::HUD)
+      med_font.draw("T: #{tanks.size}", score_x+50, 300, ZOrder::HUD)
 
+
+      # TODO some sort of PlayerStats component?
       # kills = 0
       # deaths = 0
       # orders = 4000
       # bad_commands = 2
-
-      # small_font.draw("workers: #{worker_count}", score_x, score_y+120, ZOrder::HUD)
-      # small_font.draw("scouts: #{scout_count}", score_x, score_y+140, ZOrder::HUD)
-      # small_font.draw("tanks: #{tank_count}", score_x, score_y+160, ZOrder::HUD)
 
       # small_font.draw("kills: #{kills}", score_x, score_y+260, ZOrder::HUD)
       # small_font.draw("deaths: #{deaths}", score_x, score_y+280, ZOrder::HUD)
