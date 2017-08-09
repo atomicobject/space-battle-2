@@ -18,7 +18,7 @@
         x4: off+x2+w, y4: off+y2+w)
     )
     timer_name = "death-laser-#{eid}"
-    entity_manager.add_component component: Timer.new(timer_name, 3000, false, DeathEvent), id: eid
+    entity_manager.add_component component: Timer.new(timer_name, 1000, false, DeathEvent), id: eid
     eid
   end
 
@@ -65,6 +65,10 @@
     timer_name = "death-melee-#{eid}"
     entity_manager.add_component component: Timer.new(timer_name, 140*100, false, DeathEvent), id: eid
     eid
+  end
+
+  def self.start_instructions(entity_manager:)
+    entity_manager.add_entity Label.new(size: 128, text: "Press Any Key"), Position.new(x: 600, y: 600, z: 1000)
   end
 
   def self.base(entity_manager:,x:,y:,player_id:,map_info:)

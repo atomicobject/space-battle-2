@@ -49,12 +49,12 @@ class AttackSystem
       tx = pos.tile_x+dx
       ty = pos.tile_y+dy
       tile_size = RtsGame::TILE_SIZE
-      Prefab.melee(entity_manager: entity_manager, x: t_pos.x, y: t_pos.y)
 
       target_health = target_ent.get(Health)
       target_unit = target_ent.get(Unit)
 
       next if target_unit.status == :dead
+      Prefab.melee(entity_manager: entity_manager, x: t_pos.x, y: t_pos.y)
 
       target_unit.dirty = true
 
@@ -92,14 +92,16 @@ class AttackSystem
 
       tx = pos.tile_x+dx
       ty = pos.tile_y+dy
-      Prefab.explosion(entity_manager: entity_manager, x: tx*tile_size, y: ty*tile_size)
-
-      Prefab.laser(entity_manager: entity_manager, pid: player.id, x: pos.x, y: pos.y, x2: tx*tile_size, y2: ty*tile_size)
 
       tile_infos.values.each do |tile_info|
         TileInfoHelper.dirty_tile(tile_info, tx, ty)
       end
       tile_units = MapInfoHelper.units_at(map_info, tx, ty)
+      if tile_units.size > 0
+        Prefab.explosion(entity_manager: entity_manager, x: tx*tile_size, y: ty*tile_size)
+        Prefab.laser(entity_manager: entity_manager, pid: player.id, x: pos.x, y: pos.y, x2: tx*tile_size, y2: ty*tile_size)
+      end
+
       tile_units.each do |tu_id|
         target_ent = entity_manager.find_by_id(tu_id, Unit, Health, PlayerOwned)
         target_health = target_ent.get(Health)

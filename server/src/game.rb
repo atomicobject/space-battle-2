@@ -243,6 +243,7 @@ class RtsGame
   def start!
     return if @start # DO NOT CALL THIS TWICE!
     @start = true
+    @entity_manager.remove_entity id: @instructions
     Prefab.timer(entity_manager: @entity_manager, time: @time)
     @sim_thread = start_sim_thread(@entity_manager.deep_clone, @input_queue, @next_turn_queue)
     nil
@@ -474,6 +475,7 @@ class RtsGame
     Prefab.map(player_count: clients.size, 
                entity_manager: @entity_manager, 
                resources: @resources)
+    @instructions = Prefab.start_instructions(entity_manager: @entity_manager)
 
     @world = World.new [
       CommandSystem.new,
