@@ -164,12 +164,11 @@ class RenderSystem
       big_font.draw(score_text, score_x+110, score_y, ZOrder::HUD)
       med_font.draw("#{label.text}", score_x+10, score_y+64+10, ZOrder::HUD)
 
-      workers = entity_manager.query(Q.must(PlayerOwned).with(id: player.id).must(Unit).with(type: :worker)).select{|r|r.get(Unit).status != :dead}
-      scouts = entity_manager.query(Q.must(PlayerOwned).with(id: player.id).must(Unit).with(type: :scout)).select{|r|r.get(Unit).status != :dead}
-      tanks = entity_manager.query(Q.must(PlayerOwned).with(id: player.id).must(Unit).with(type: :tank)).select{|r|r.get(Unit).status != :dead}
-      med_font.draw("W: #{workers.size}", score_x+50, 200, ZOrder::HUD)
-      med_font.draw("S: #{scouts.size}", score_x+50, 250, ZOrder::HUD)
-      med_font.draw("T: #{tanks.size}", score_x+50, 300, ZOrder::HUD)
+      player_info = entity_manager.query(Q.must(PlayerOwned).with(id: player.id).must(PlayerInfo)).first.components.last
+
+      med_font.draw("W: #{player_info.worker_count}", score_x+50, 200, ZOrder::HUD)
+      med_font.draw("S: #{player_info.scout_count}", score_x+50, 250, ZOrder::HUD)
+      med_font.draw("T: #{player_info.tank_count}", score_x+50, 300, ZOrder::HUD)
 
 
       # TODO some sort of PlayerStats component?

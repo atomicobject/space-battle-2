@@ -31,6 +31,9 @@ Textured = define_component(attrs: [:image, :x1, :y1, :x2, :y2, :x3, :y3, :x4, :
 Animated = define_component(attrs: [:frames, :timings, :index, :loop, :time])
 Decorated = define_component(attrs: [:image, :scale, :offset])
 PlayerOwned = define_component(attrs: [:id])
+PlayerInfo = define_component(attrs: [
+  :worker_count, :scout_count, :tank_count,
+])
 Health = define_component(attrs: [:points, :max])
 EntityTarget = define_component(attrs: [:id])
 Resource = define_component(attrs: [:value, :total])

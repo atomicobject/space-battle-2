@@ -85,6 +85,7 @@
       b,
       Position.new(x:x, y:y, tile_x: (x/tile_size).floor, tile_y: (y/tile_size).floor, z:1),
       PlayerOwned.new(id: player_id),
+      PlayerInfo.new(id: player_id, worker_count: RtsGame::STARTING_WORKERS, tank_count: 0, scout_count: 0),
       Sprited.new(image: "base#{player_id}".to_sym, flipped: false, offset: vec),
       Label.new(size: 24, text: "Player #{player_id}"),
       r,
