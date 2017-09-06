@@ -35,6 +35,11 @@ class TileInfoHelper
       tile_info.seen_tiles[x] && tile_info.seen_tiles[x][y]
     end
 
+    def can_see_tile?(tile_info, x,y)
+      # TODO make this a faster lookup via a Hash
+      tile_info.interesting_tiles.include?([x,y])
+    end
+
   end
 end
 

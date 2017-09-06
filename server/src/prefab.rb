@@ -100,7 +100,7 @@
         death_count: 0, total_resources: RtsGame::PLAYER_START_RESOURCE,
         total_commands: 0, invalid_commands: 0,
         ),
-      Sprited.new(image: "base#{player_id}".to_sym, flipped: false, offset: vec, scale: 0.63),
+      Sprited.new(image: "base#{player_id}".to_sym, flipped: false, offset: vec, scale: 0.35),
       r,
       health
     )

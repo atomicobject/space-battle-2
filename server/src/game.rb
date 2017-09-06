@@ -80,6 +80,18 @@ class RtsGame
     bg_space: 'assets/PNG/Retina/Other/bg_space.jpg',
     space_block: 'assets/PNG/Retina/Other/test_space_block.png',
 
+    tank_icon: 'assets/PNG/Retina/Other/tank_icon.png',
+    scout_icon: 'assets/PNG/Retina/Other/scout_icon.png',
+    worker_icon: 'assets/PNG/Retina/Other/worker_icon.png',
+    kill_icon: 'assets/PNG/Retina/Other/kills_icon.png',
+    rip_icon: 'assets/PNG/Retina/Other/deaths_icon.png',
+
+    total_units_icon: 'assets/PNG/Retina/Other/total_units_icon.png',
+    total_res_icon: 'assets/PNG/Retina/Other/resources_icon.png',
+    bad_commands_icon: 'assets/PNG/Retina/Other/bad_commands_icon.png',
+    total_commands_icon: 'assets/PNG/Retina/Other/total_commands_icon.png',
+    map_icon: 'assets/PNG/Retina/Other/map_icon.png',
+
     explosion_sound1: 'assets/sounds/explosion1.wav',
     explosion_sound2: 'assets/sounds/explosion2.wav',
     melee_sound1: 'assets/sounds/melee1.wav',
@@ -332,7 +344,7 @@ class RtsGame
     interesting_tiles = Set.new
     entity_manager.each_entity(Unit, PlayerOwned, Position, Ranged) do |ent|
       u, player, pos, rang = ent.components
-      if player.id == player_id && u.status != 'dead'
+      if player.id == player_id && u.status != :dead
         interesting_tiles.merge(TileInfoHelper.tiles_near_unit(tile_info, u, pos, rang))
       end
     end
