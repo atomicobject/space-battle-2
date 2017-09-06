@@ -71,9 +71,12 @@ class CommandSystem
             if uid
               ent = entity_manager.find_by_id(uid, Unit, PlayerOwned, Label)
             else
-              ent = entity_manager.find(Base, Unit, PlayerOwned, Label).
-                select{|ent| ent.get(PlayerOwned).id == msg.connection_id}.first
               name = "#{name} (#{msg.connection_id})"
+              ent = entity_manager.query(
+                Q.must(PlayerOwned).with(id: msg.connection_id).
+                  must(Label).
+                  must(Named).with(name: "player-name")
+                ).first
             end
             if ent.nil?
               player_info.invalid_commands += 1

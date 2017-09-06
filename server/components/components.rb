@@ -43,14 +43,18 @@ Timed = define_component(attrs: [:accumulated_time_in_ms])
 Ranged = define_component(attrs: [:distance])
 Speed = define_component(attrs: [:speed])
 Attack = define_component(attrs: [:damage,:range,:cooldown,:current_cooldown,:can_attack])
+
 ShootCommand = define_component(attrs: [:id,:dx,:dy])
 MeleeCommand = define_component(attrs: [:id,:target])
 Shooter = define_component
 Melee = define_component
 MeleeEffect = define_component
+
 MovementCommand = define_component(attrs: [:target_vec])
 CreateCommand = define_component(attrs: [:type, :build_time])
 SoundEffectEvent = define_component(attrs: [:sound_to_play])
+
+Named = define_component(attrs: [:name])
 
 MusicInfo = define_component(attrs: [:mood, :battle, :peace, :peace_timer])
 
