@@ -154,8 +154,14 @@ class RenderSystem
     small_font = get_cached_font size: 18
 
     player_colors = [ AO_RED, AO_GREEN ]
-    entity_manager.each_entity Base, PlayerOwned, Label do |rec|
-      base, player, label = rec.components
+    entity_manager.each_entity Base, PlayerOwned do |rec|
+      base, player = rec.components
+
+      label = entity_manager.query(
+        Q.must(PlayerOwned).with(id: player.id).
+          must(Label).
+          must(Named).with(name: "player-name")
+        ).first.get(Label)
 
       draw_rect(target, score_x, 0, 1, game_offset, 25, player_colors[player.id])
 

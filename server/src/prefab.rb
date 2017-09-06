@@ -80,6 +80,13 @@
     hp = RtsGame::UNITS[:base][:hp]
     health = Health.new(points: hp, max: hp)
     tile_size = RtsGame::TILE_SIZE
+
+    entity_manager.add_entity(
+      Label.new(size: 24, text: "Player #{player_id}"),
+      PlayerOwned.new(id: player_id),
+      Named.new(name: 'player-name')
+    )
+
     id = entity_manager.add_entity(
       Unit.new(status: :idle, type: :base), 
       b,
@@ -93,8 +100,7 @@
         death_count: 0, total_resources: RtsGame::PLAYER_START_RESOURCE,
         total_commands: 0, invalid_commands: 0,
         ),
-      Sprited.new(image: "base#{player_id}".to_sym, flipped: false, offset: vec),
-      Label.new(size: 24, text: "Player #{player_id}"),
+      Sprited.new(image: "base#{player_id}".to_sym, flipped: false, offset: vec, scale: 0.63),
       r,
       health
     )
