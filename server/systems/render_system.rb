@@ -169,19 +169,35 @@ class RenderSystem
       med_font.draw("W: #{player_info.worker_count}", score_x+50, 200, ZOrder::HUD)
       med_font.draw("S: #{player_info.scout_count}", score_x+50, 250, ZOrder::HUD)
       med_font.draw("T: #{player_info.tank_count}", score_x+50, 300, ZOrder::HUD)
+      med_font.draw("K: #{player_info.kill_count}", score_x+50, 350, ZOrder::HUD)
+      med_font.draw("total units: #{player_info.total_units}", score_x+50, 400, ZOrder::HUD)
+      med_font.draw("total res: #{player_info.total_resources}", score_x+50, 450, ZOrder::HUD)
+      med_font.draw("! cmds: #{player_info.invalid_commands}", score_x+50, 500, ZOrder::HUD)
+      med_font.draw("# cmds: #{player_info.total_commands}", score_x+50, 550, ZOrder::HUD)
+      med_font.draw("rip: #{player_info.death_count}", score_x+50, 600, ZOrder::HUD)
 
+      seen_count = 0
+      mini_x = score_x + 20
+      mini_y = 650 + 40
+      mini_size = 10
+      mini_clear_color = Gosu::Color::GRAY
+      mini_fog_color = Gosu::Color::BLACK
+      tile_info = entity_manager.query(Q.must(PlayerOwned).with(id: player.id).must(TileInfo)).first.components.last
 
-      # TODO some sort of PlayerStats component?
-      # kills = 0
-      # deaths = 0
-      # orders = 4000
-      # bad_commands = 2
+      # TODO cache this if needed
+      map.width.times do |mx|
+        map.height.times do |my|
+          if TileInfoHelper.seen_tile?(tile_info, mx, my)
+            seen_count += 1
+            draw_rect(target, mini_x + mx*mini_size, mini_y + my*mini_size, ZOrder::HUD, mini_size, mini_size, mini_clear_color)
+          else
+            draw_rect(target, mini_x + mx*mini_size, mini_y + my*mini_size, ZOrder::HUD, mini_size, mini_size, mini_fog_color)
+          end
+        end
+      end
 
-      # small_font.draw("kills: #{kills}", score_x, score_y+260, ZOrder::HUD)
-      # small_font.draw("deaths: #{deaths}", score_x, score_y+280, ZOrder::HUD)
-      # small_font.draw("orders: #{orders}", score_x, score_y+300, ZOrder::HUD)
-      # small_font.draw("bad commands: #{bad_commands}", score_x, score_y+320, ZOrder::HUD)
-
+      perc_map = (seen_count.to_f/(map.width*map.height)*100).round
+      med_font.draw("% map: #{perc_map}%", score_x+50, 650, ZOrder::HUD)
       score_x += game_offset + RtsWindow::GAME_WIDTH
     end
 

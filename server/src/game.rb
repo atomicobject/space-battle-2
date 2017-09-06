@@ -357,6 +357,8 @@ class RtsGame
 
       tile_units = MapInfoHelper.units_at(map,i,j)
       blocked = MapInfoHelper.blocked?(map,i,j)
+
+      TileInfoHelper.see_tile(tile_info, i, j)
       tiles << {
         visible: true,
         x: i-base_pos.tile_x,

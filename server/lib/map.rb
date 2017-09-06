@@ -25,6 +25,16 @@ class TileInfoHelper
       tile_info.dirty_tiles = Set.new
       dirties
     end
+
+    def see_tile(tile_info, x,y)
+      tile_info.seen_tiles[x] ||= {}
+      tile_info.seen_tiles[x][y] = true
+    end
+
+    def seen_tile?(tile_info, x,y)
+      tile_info.seen_tiles[x] && tile_info.seen_tiles[x][y]
+    end
+
   end
 end
 

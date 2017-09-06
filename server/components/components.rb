@@ -32,7 +32,9 @@ Animated = define_component(attrs: [:frames, :timings, :index, :loop, :time])
 Decorated = define_component(attrs: [:image, :scale, :offset])
 PlayerOwned = define_component(attrs: [:id])
 PlayerInfo = define_component(attrs: [
-  :worker_count, :scout_count, :tank_count,
+  :base_count, :worker_count, :scout_count, :tank_count, 
+  :total_units, :kill_count, :total_resources,
+  :death_count, :total_commands, :invalid_commands
 ])
 Health = define_component(attrs: [:points, :max])
 EntityTarget = define_component(attrs: [:id])
@@ -54,10 +56,11 @@ MusicInfo = define_component(attrs: [:mood, :battle, :peace, :peace_timer])
 
 class TileInfo
   include JsonIvars
-  attr_accessor :dirty_tiles, :interesting_tiles#, :tiles 
+  attr_accessor :dirty_tiles, :interesting_tiles, :seen_tiles 
   def initialize
     @dirty_tiles = Set.new
     @interesting_tiles = Set.new
+    @seen_tiles = {}
   end
 
   def to_json(*opts)

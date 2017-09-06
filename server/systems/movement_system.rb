@@ -66,6 +66,7 @@ class MovementSystem
 
         base_ent = entity_manager.find(Base, Unit, PlayerOwned, Position).select{|ent| ent.get(PlayerOwned).id == pwn.id}.first
         base_pos = base_ent.get(Position)
+        owner = base_ent.get(PlayerOwned)
 
         if (tile_x - base_pos.tile_x).abs <= 1 && (tile_y - base_pos.tile_y).abs <= 1
           base = base_ent.get(Base)
@@ -73,6 +74,9 @@ class MovementSystem
           if unit_res_ent
             unit_res, unit_dec = unit_res_ent.components
             base.resource += unit_res.resource
+            player_info = entity_manager.query(Q.must(PlayerOwned).
+              with(id: owner.id).must(PlayerInfo)).first.components.last
+            player_info.total_resources += unit_res.resource
             base_ent.get(Unit).dirty = true
             unit_res.resource = 0
 

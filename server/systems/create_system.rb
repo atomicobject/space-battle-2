@@ -18,6 +18,7 @@ class CreateSystem
           getter = "#{cmd.type}_count"
           setter = "#{cmd.type}_count="
           player_info.send(setter, player_info.send(getter)+1)
+          player_info.total_units += 1
           u.dirty = true
         else
           puts "#{owner.id} tried to create #{cmd.type} without enough resources #{cost} required, but only has #{base.resource}"

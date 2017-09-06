@@ -145,6 +145,15 @@ class AttackSystem
     getter = "#{target_unit.type}_count"
     setter = "#{target_unit.type}_count="
     target_player_info.send(setter, target_player_info.send(getter)-1)
+    target_player_info.death_count += 1
+
+    killer_player_info = entity_manager.query(Q.must(PlayerOwned).with(id: killer_player_id).must(PlayerInfo)).first.components.last
+    killer_player_info.kill_count += 1
+
+    if target_unit.type == :base
+      base = entity_manager.find_by_id(id, Base).get(Base)
+      base.resource = 0
+    end
 
     # TODO drop their resources?
     # TODO possibly change sprite to splat on death?
