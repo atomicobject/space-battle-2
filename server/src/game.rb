@@ -77,6 +77,22 @@ class RtsGame
     melee3: 'assets/PNG/Retina/Other/melee3.png',
     melee4: 'assets/PNG/Retina/Other/melee4.png',
 
+    ff_cap_down: 'assets/PNG/Retina/Other/Force-Field/FF-Cap/FF-Cap-Down.png',
+    ff_cap_left: 'assets/PNG/Retina/Other/Force-Field/FF-Cap/FF-Cap-Left.png',
+    ff_cap_right: 'assets/PNG/Retina/Other/Force-Field/FF-Cap/FF-Cap-Right.png',
+    ff_cap_up: 'assets/PNG/Retina/Other/Force-Field/FF-Cap/FF-Cap-Up.png',
+    ff_corner_1: 'assets/PNG/Retina/Other/Force-Field/FF-Corner/FF-Corner-1.png',
+    ff_corner_2: 'assets/PNG/Retina/Other/Force-Field/FF-Corner/FF-Corner-2.png',
+    ff_corner_3: 'assets/PNG/Retina/Other/Force-Field/FF-Corner/FF-Corner-3.png',
+    ff_corner_4: 'assets/PNG/Retina/Other/Force-Field/FF-Corner/FF-Corner-4.png',
+    ff_cross: 'assets/PNG/Retina/Other/Force-Field/FF-Cross/FF-Cross-All.png',
+    ff_horizontal: 'assets/PNG/Retina/Other/Force-Field/FF-Straight/FF-Straight-Horizontal.png',
+    ff_vertical: 'assets/PNG/Retina/Other/Force-Field/FF-Straight/FF-Straight-Vertical.png',
+    ff_t_down: 'assets/PNG/Retina/Other/Force-Field/FF-T/FF-T-Down.png',
+    ff_t_left: 'assets/PNG/Retina/Other/Force-Field/FF-T/FF-T-Left.png',
+    ff_t_right: 'assets/PNG/Retina/Other/Force-Field/FF-T/FF-T-Right.png',
+    ff_t_up: 'assets/PNG/Retina/Other/Force-Field/FF-T/FF-T-Up.png',
+
     bg_space: 'assets/PNG/Retina/Other/bg_space.jpg',
     space_block: 'assets/PNG/Retina/Other/test_space_block.png',
 

@@ -106,6 +106,25 @@ class Map
     38 => :tree4,
     39 => :tree5,
     40 => :tree6,
+
+    127 => :ff_cap_down,
+    128 => :ff_cap_left,
+    129 => :ff_cap_right,
+    130 => :ff_cap_up,
+
+    131 => :ff_corner_1,
+    132 => :ff_corner_2,
+    133 => :ff_corner_3,
+    134 => :ff_corner_4,
+
+    135 => :ff_cross,
+    136 => :ff_horizontal,
+    137 => :ff_vertical,
+
+    138 => :ff_t_down,
+    139 => :ff_t_left,
+    140 => :ff_t_right,
+    141 => :ff_t_up,
   }
 
   def initialize(w,h, objects)

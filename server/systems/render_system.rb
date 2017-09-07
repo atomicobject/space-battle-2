@@ -46,10 +46,14 @@ class RenderSystem
             base_x = x*tile_size
             base_y = y*tile_size
             unless t.image == :dirt1 || t.image == :dirt2
-              # img = images[t.image]
-              img = images[:space_block]
+              img = images[t.image]
+              if t.image.to_s.start_with?('tree')
+                img = images[:space_block]
+              end
               if img
-                img.draw base_x, base_y, ZOrder::Terrain, 0.45, 0.45
+                # img.draw base_x, base_y, ZOrder::Terrain, 0.45, 0.45
+                # TODO RETRO MODE?
+                img.draw base_x, base_y, ZOrder::Terrain, 0.5, 0.5
               else
                 puts "could not find tile image for: #{t.image}"
               end
