@@ -86,6 +86,8 @@ class RtsGame
     ff_corner_3: 'assets/PNG/Retina/Other/Force-Field/FF-Corner/FF-Corner-3.png',
     ff_corner_4: 'assets/PNG/Retina/Other/Force-Field/FF-Corner/FF-Corner-4.png',
     ff_cross: 'assets/PNG/Retina/Other/Force-Field/FF-Cross/FF-Cross-All.png',
+    ff_single_horizontal: 'assets/PNG/Retina/Other/Force-Field/FF-Single/FF-Single-Horizontal.png',
+    ff_single_vertical: 'assets/PNG/Retina/Other/Force-Field/FF-Single/FF-Single-Vertical.png',
     ff_horizontal: 'assets/PNG/Retina/Other/Force-Field/FF-Straight/FF-Straight-Horizontal.png',
     ff_vertical: 'assets/PNG/Retina/Other/Force-Field/FF-Straight/FF-Straight-Vertical.png',
     ff_t_down: 'assets/PNG/Retina/Other/Force-Field/FF-T/FF-T-Down.png',

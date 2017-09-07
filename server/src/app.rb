@@ -73,7 +73,7 @@ class RtsWindow < Gosu::Window
       elsif file.end_with? '.mp3'
         music[name] ||= Gosu::Song.new(file)
       else
-        images[name] ||= Gosu::Image.new(file, tileable: true)
+        images[name] ||= Gosu::Image.new(file, retro: true, tileable: true)
       end
     end
     puts "loaded images: #{images.keys}"

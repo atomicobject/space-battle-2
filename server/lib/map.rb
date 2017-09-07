@@ -118,13 +118,16 @@ class Map
     134 => :ff_corner_4,
 
     135 => :ff_cross,
-    136 => :ff_horizontal,
-    137 => :ff_vertical,
+    136 => :ff_single_horizontal,
+    137 => :ff_single_vertical,
 
-    138 => :ff_t_down,
-    139 => :ff_t_left,
-    140 => :ff_t_right,
-    141 => :ff_t_up,
+    138 => :ff_horizontal,
+    139 => :ff_vertical,
+
+    140 => :ff_t_down,
+    141 => :ff_t_left,
+    142 => :ff_t_right,
+    143 => :ff_t_up,
   }
 
   def initialize(w,h, objects)
