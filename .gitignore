@@ -15,3 +15,5 @@ ctags
 vendor
 game-log.txt
 test-log.txt
+.ruby-version
+sdks/clojure/target
