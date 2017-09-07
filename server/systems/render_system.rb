@@ -16,6 +16,7 @@ class RenderSystem
   def initialize
     @font_cache = {}
     @color_cache = {}
+    @draw_count = 0
   end
 
   def get_cached_font(font:nil,size:)
@@ -147,128 +148,141 @@ class RenderSystem
       end
     end
 
-    score_x = 0
-    score_y = 0
-    med_font = get_cached_font size: 24
-    small_font = get_cached_font size: 18
+    @hud_img ||= target.record(RtsWindow::FULL_DISPLAY_WIDTH, RtsWindow::FULL_DISPLAY_HEIGHT) do
+      score_x = 0
+      score_y = 0
+      med_font = get_cached_font size: 24
+      small_font = get_cached_font size: 18
 
-    player_colors = [ AO_RED, AO_GREEN ]
-    entity_manager.each_entity Base, PlayerOwned, Position do |rec|
-      base, player, pos = rec.components
+      player_colors = [ AO_RED, AO_GREEN ]
+      entity_manager.each_entity Base, PlayerOwned, Position do |rec|
+        base, player, pos = rec.components
 
-      label = entity_manager.query(
-        Q.must(PlayerOwned).with(id: player.id).
-          must(Label).
-          must(Named).with(name: "player-name")
-        ).first.get(Label)
+        label = entity_manager.query(
+          Q.must(PlayerOwned).with(id: player.id).
+            must(Label).
+            must(Named).with(name: "player-name")
+          ).first.get(Label)
 
-      player_color = player_colors[player.id]
-      other_player_color = player_colors[player.id-1]
-      draw_rect(target, score_x, 0, 1, game_offset, 50, player_color)
+        player_color = player_colors[player.id]
+        other_player_color = player_colors[player.id-1]
+        draw_rect(target, score_x, 0, 1, game_offset, 50, player_color)
 
-      score_text = base.resource.to_s
+        score_text = base.resource.to_s
 
-      name_img = Gosu::Image.from_text(label.text, 30, align: :center, width: game_offset)
-      name_img.draw(score_x, score_y+10, ZOrder::HUD)
+        name_img = Gosu::Image.from_text(label.text, 30, align: :center, width: game_offset)
+        name_img.draw(score_x, score_y+10, ZOrder::HUD)
 
-      score_img = Gosu::Image.from_text(score_text, 64, align: :center, width: game_offset)
-      score_img.draw(score_x, score_y+60, ZOrder::HUD)
+        score_img = Gosu::Image.from_text(score_text, 64, align: :center, width: game_offset)
+        score_img.draw(score_x, score_y+60, ZOrder::HUD)
 
-      player_info = entity_manager.query(Q.must(PlayerOwned).with(id: player.id).must(PlayerInfo)).first.components.last
+        player_info = entity_manager.query(Q.must(PlayerOwned).with(id: player.id).must(PlayerInfo)).first.components.last
 
-      stats_y = 160
-      images[:worker_icon].draw(score_x+42, stats_y, ZOrder::HUD, 0.4, 0.4)
-      med_font.draw("x#{player_info.worker_count}", score_x+87, stats_y, ZOrder::HUD)
+        stats_y = 160
+        images[:worker_icon].draw(score_x+42, stats_y, ZOrder::HUD, 0.4, 0.4)
+        med_font.draw("x#{player_info.worker_count}", score_x+87, stats_y, ZOrder::HUD)
 
-      images[:scout_icon].draw(score_x+37, stats_y+42, ZOrder::HUD, 0.6, 0.6)
-      med_font.draw("x#{player_info.scout_count}", score_x+87, stats_y+50, ZOrder::HUD)
+        images[:scout_icon].draw(score_x+37, stats_y+42, ZOrder::HUD, 0.6, 0.6)
+        med_font.draw("x#{player_info.scout_count}", score_x+87, stats_y+50, ZOrder::HUD)
 
-      images[:tank_icon].draw(score_x+37, stats_y+95, ZOrder::HUD, 0.6, 0.6)
-      med_font.draw("x#{player_info.tank_count}", score_x+87, stats_y+100, ZOrder::HUD)
+        images[:tank_icon].draw(score_x+37, stats_y+95, ZOrder::HUD, 0.6, 0.6)
+        med_font.draw("x#{player_info.tank_count}", score_x+87, stats_y+100, ZOrder::HUD)
 
-      images[:kill_icon].draw(score_x+32, stats_y+140, ZOrder::HUD, 0.6, 0.6)
-      med_font.draw("x#{player_info.kill_count}", score_x+87, stats_y+150, ZOrder::HUD)
+        images[:kill_icon].draw(score_x+32, stats_y+140, ZOrder::HUD, 0.6, 0.6)
+        med_font.draw("x#{player_info.kill_count}", score_x+87, stats_y+150, ZOrder::HUD)
 
-      images[:rip_icon].draw(score_x+32, stats_y+190, ZOrder::HUD, 0.6, 0.6)
-      med_font.draw("x#{player_info.death_count}", score_x+87, stats_y+200, ZOrder::HUD)
+        images[:rip_icon].draw(score_x+32, stats_y+190, ZOrder::HUD, 0.6, 0.6)
+        med_font.draw("x#{player_info.death_count}", score_x+87, stats_y+200, ZOrder::HUD)
 
-      images[:total_res_icon].draw(score_x+37, stats_y+240, ZOrder::HUD, 0.6, 0.6)
-      med_font.draw("x#{player_info.total_resources}", score_x+87, stats_y+250, ZOrder::HUD)
+        images[:total_res_icon].draw(score_x+37, stats_y+240, ZOrder::HUD, 0.6, 0.6)
+        med_font.draw("x#{player_info.total_resources}", score_x+87, stats_y+250, ZOrder::HUD)
 
-      images[:bad_commands_icon].draw(score_x+37, stats_y+290, ZOrder::HUD, 0.6, 0.6)
-      med_font.draw("x#{player_info.invalid_commands}", score_x+87, stats_y+300, ZOrder::HUD)
+        images[:bad_commands_icon].draw(score_x+37, stats_y+290, ZOrder::HUD, 0.6, 0.6)
+        med_font.draw("x#{player_info.invalid_commands}", score_x+87, stats_y+300, ZOrder::HUD)
 
-      images[:total_commands_icon].draw(score_x+37, stats_y+340, ZOrder::HUD, 0.6, 0.6)
-      med_font.draw("x#{player_info.total_commands}", score_x+87, stats_y+350, ZOrder::HUD)
+        images[:total_commands_icon].draw(score_x+37, stats_y+340, ZOrder::HUD, 0.6, 0.6)
+        med_font.draw("x#{player_info.total_commands}", score_x+87, stats_y+350, ZOrder::HUD)
 
-      images[:total_units_icon].draw(score_x+37, stats_y+390, ZOrder::HUD, 0.6, 0.6)
-      med_font.draw("x#{player_info.total_units}", score_x+87, stats_y+400, ZOrder::HUD)
+        images[:total_units_icon].draw(score_x+37, stats_y+390, ZOrder::HUD, 0.6, 0.6)
+        med_font.draw("x#{player_info.total_units}", score_x+87, stats_y+400, ZOrder::HUD)
 
-      seen_count = 0
-      mini_x = score_x + 40
-      mini_y = stats_y+500
-      mini_size = 10
-      mini_clear_color = Gosu::Color.rgb(0xAA, 0xAA, 0xAA)
-      mini_fog_color = Gosu::Color::GRAY
-      mini_blocked_color = Gosu::Color.rgb(0x60, 0x60, 0x60)
-      mini_unknown_color = Gosu::Color::BLACK
-      tile_info = entity_manager.query(Q.must(PlayerOwned).with(id: player.id).must(TileInfo)).first.components.last
+        seen_count = 0
+        mini_x = score_x + 40
+        mini_y = stats_y+500
+        mini_size = 10
+        mini_clear_color = Gosu::Color.rgb(0xAA, 0xAA, 0xAA)
+        mini_fog_color = Gosu::Color::GRAY
+        mini_blocked_color = Gosu::Color.rgb(0x60, 0x60, 0x60)
+        mini_unknown_color = Gosu::Color::BLACK
+        tile_info = entity_manager.query(Q.must(PlayerOwned).with(id: player.id).must(TileInfo)).first.components.last
 
 
-      # TODO cache this somewhere else?
-      unit_recs = entity_manager.query(
-        Q.must(Unit).must(PlayerOwned).must(Position))
+        # TODO cache this somewhere else?
+        unit_recs = entity_manager.query(
+          Q.must(Unit).must(PlayerOwned).must(Position))
 
-      my_units = Hash.new{|h,k| h[k] = {}}
-      their_units = Hash.new{|h,k| h[k] = {}}
-      unit_recs.each do |urec|
-        u,p,unit_pos = urec.components
-        if u.status != :dead
-          if p.id == player.id
-            my_units[unit_pos.tile_x][unit_pos.tile_y] = true
-          else
-            their_units[unit_pos.tile_x][unit_pos.tile_y] = true
+        my_units = Hash.new{|h,k| h[k] = {}}
+        their_units = Hash.new{|h,k| h[k] = {}}
+        unit_recs.each do |urec|
+          u,p,unit_pos = urec.components
+          if u.status != :dead
+            if p.id == player.id
+              my_units[unit_pos.tile_x][unit_pos.tile_y] = true
+            else
+              their_units[unit_pos.tile_x][unit_pos.tile_y] = true
+            end
           end
         end
-      end
 
-      # TODO cache this once per turn
-      map.width.times do |mx|
-        map.height.times do |my|
-          color = nil
-          if TileInfoHelper.seen_tile?(tile_info, mx, my)
-            seen_count += 1
-            if TileInfoHelper.can_see_tile?(tile_info, mx, my)
-              if MapInfoHelper.resource_at(map,mx,my)
-                color = Gosu::Color::GREEN
-              elsif MapInfoHelper.blocked?(map,mx,my)
-                color = mini_blocked_color
-              elsif my_units[mx][my]
-                color = player_color
-              elsif their_units[mx][my]
-                color = other_player_color
+        map.width.times do |mx|
+          map.height.times do |my|
+            color = nil
+            if TileInfoHelper.seen_tile?(tile_info, mx, my)
+              seen_count += 1
+              if TileInfoHelper.can_see_tile?(tile_info, mx, my)
+                if MapInfoHelper.resource_at(map,mx,my)
+                  color = Gosu::Color::GREEN
+                elsif MapInfoHelper.blocked?(map,mx,my)
+                  color = mini_blocked_color
+                elsif my_units[mx][my]
+                  color = player_color
+                elsif their_units[mx][my]
+                  color = other_player_color
+                else
+                  color = mini_clear_color
+                end
               else
-                color = mini_clear_color
+                if MapInfoHelper.blocked?(map,mx,my)
+                  color = mini_blocked_color
+                else
+                  color ||= mini_fog_color
+                end
               end
             else
-              if MapInfoHelper.blocked?(map,mx,my)
-                color = mini_blocked_color
-              else
-                color ||= mini_fog_color
-              end
+              color = mini_unknown_color
             end
-          else
-            color = mini_unknown_color
+            draw_rect(target, mini_x + mx*mini_size, mini_y + my*mini_size, ZOrder::HUD, mini_size, mini_size, color)
           end
-          draw_rect(target, mini_x + mx*mini_size, mini_y + my*mini_size, ZOrder::HUD, mini_size, mini_size, color)
         end
-      end
 
-      images[:map_icon].draw(score_x+37, stats_y+440, ZOrder::HUD, 0.6, 0.6)
-      perc_map = (seen_count.to_f/(map.width*map.height)*100).floor
-      med_font.draw("#{perc_map}%", score_x+87, stats_y+450, ZOrder::HUD)
-      score_x += game_offset + RtsWindow::GAME_WIDTH
+        images[:map_icon].draw(score_x+37, stats_y+440, ZOrder::HUD, 0.6, 0.6)
+        perc_map = (seen_count.to_f/(map.width*map.height)*100).floor
+        med_font.draw("#{perc_map}%", score_x+87, stats_y+450, ZOrder::HUD)
+
+        score_x += game_offset + RtsWindow::GAME_WIDTH
+      end
     end
+
+    @hud_img.draw(0,0,ZOrder::HUD)
+
+    # this is too intensive atm to leave on every frame and 
+    # _really_ only needs to be updated once per turn
+    if @draw_count == 10
+      @hud_img = nil 
+      @draw_count = 0
+    end
+    @draw_count += 1
+
 
   end
 

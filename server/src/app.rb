@@ -15,6 +15,7 @@ class RtsWindow < Gosu::Window
 
     @game = RtsGame.new **opts
     preload_assets! @game.resources
+    self.caption = "Atomic Games: RTS"
   end
 
   def needs_cursor?
@@ -23,8 +24,7 @@ class RtsWindow < Gosu::Window
 
   def update
     begin
-      self.caption = "FPS: #{Gosu.fps} ENTS: #{@game.entity_manager.num_entities}"
-
+      # self.caption = "FPS: #{Gosu.fps} ENTS: #{@game.entity_manager.num_entities}"
       delta = relative_delta
       input = take_input_snapshot
       @game.update delta: delta, input: input
