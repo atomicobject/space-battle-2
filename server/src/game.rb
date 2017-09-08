@@ -117,6 +117,7 @@ class RtsGame
     harvest_sound1: 'assets/sounds/harvest1.wav',
     harvest_sound2: 'assets/sounds/harvest2.wav',
     collect_sound: 'assets/sounds/collect.wav',
+    game_over_sound: 'assets/sounds/collect.wav',
 
     peace_music1: 'assets/music/peace1.mp3',
     peace_music2: 'assets/music/peace2.mp3',
@@ -207,6 +208,11 @@ class RtsGame
         if time_remaining <= 0 || base_ents.any?{|be| be.get(Unit).status == :dead}
           puts "GAME OVER!"
           @game_over = true 
+          @resources[:music].values.each do |m|
+            m.stop if m.playing?
+          end
+          @resources[:sounds][:explosion_sound1].play
+          @resources[:sounds][:game_over_sound].play
         end
 
         @network_manager.clients.each do |player_id|
@@ -248,8 +254,8 @@ class RtsGame
   def scores
     player_scores = {}
     # TODO add other stats... units created/killed/harvested/commands sent?
-    @entity_manager.each_entity(Base, PlayerOwned) do |ent|
-      b,owner = ent.components
+    @entity_manager.each_entity(Unit, Base, PlayerOwned) do |ent|
+      u,b,owner = ent.components
       player_scores[owner.id] = {resources: b.resource, status: u.status}
     end
     player_scores

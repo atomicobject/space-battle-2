@@ -4,6 +4,7 @@ module ZOrder
   Units = 30
   HUD = 60
   HEALTH = 61
+  POPUP = 62
   Debug = 100
 end
 
@@ -12,6 +13,7 @@ class RenderSystem
   AO_RED = Gosu::Color.rgba(253, 79, 87, 255)
   AO_GREEN = Gosu::Color.rgba(22, 203, 196, 255)
   AO_BLACK = Gosu::Color.rgba(76, 72, 69, 255)
+  PLAYER_COLORS = [ AO_RED, AO_GREEN ]
 
   def initialize
     @font_cache = {}
@@ -26,7 +28,7 @@ class RenderSystem
     @font_cache[font][size] ||= Gosu::Font.new size, opts
   end
 
-  def draw(target, entity_manager, res)
+  def draw(target, entity_manager, res, game)
     map = res[:map]
     images = res[:images]
     tile_size = RtsGame::TILE_SIZE
@@ -34,8 +36,7 @@ class RenderSystem
     draw_rect(target, 0, 0, 0, RtsWindow::FULL_DISPLAY_WIDTH, RtsWindow::FULL_DISPLAY_HEIGHT, AO_BLACK)
 
     game_offset = (RtsWindow::FULL_DISPLAY_WIDTH - RtsWindow::GAME_WIDTH)/2
-    target.translate(game_offset, 0) do
-      img = images[:bg_space]
+    target.translate(game_offset, 0) do img = images[:bg_space]
       img.draw 0, 0, ZOrder::Terrain
 
       target.scale 0.5 do
@@ -158,7 +159,6 @@ class RenderSystem
       med_font = get_cached_font size: 24
       small_font = get_cached_font size: 18
 
-      player_colors = [ AO_RED, AO_GREEN ]
       entity_manager.each_entity Base, PlayerOwned, Position do |rec|
         base, player, pos = rec.components
 
@@ -168,8 +168,8 @@ class RenderSystem
             must(Named).with(name: "player-name")
           ).first.get(Label)
 
-        player_color = player_colors[player.id]
-        other_player_color = player_colors[player.id-1]
+        player_color = PLAYER_COLORS[player.id]
+        other_player_color = PLAYER_COLORS[player.id-1]
         draw_rect(target, score_x, 0, 1, game_offset, 50, player_color)
 
         score_text = base.resource.to_s
@@ -281,12 +281,37 @@ class RenderSystem
 
     # this is too intensive atm to leave on every frame and 
     # _really_ only needs to be updated once per turn
-    if @draw_count == 10
+    if @draw_count == 5
       @hud_img = nil 
       @draw_count = 0
     end
     @draw_count += 1
 
+    if game.game_over?
+      winner_id = game.winner
+      ent = entity_manager.query(
+        Q.must(PlayerOwned).with(id: winner_id).
+          must(Label).
+          must(Named).with(name: "player-name")
+        ).first
+      name = ent.get(Label).text
+
+      w = 600
+      h = 300
+      x = (RtsWindow::FULL_DISPLAY_WIDTH-w)/2
+      y = 300
+
+      winner_img = Gosu::Image.from_text("WINNER!", 75, align: :center, width: w)
+      name_img = Gosu::Image.from_text(name, 65, align: :center, width: w)
+
+      score_text = 5000
+      score_img = Gosu::Image.from_text(score_text.to_s, 95, align: :center, width: w)
+      draw_rect(target, x, y, ZOrder::POPUP, w, h, PLAYER_COLORS[winner_id])
+
+      winner_img.draw(x, y, ZOrder::POPUP)
+      name_img.draw(x,y+80,ZOrder::POPUP)
+      score_img.draw(x, y+160, ZOrder::POPUP)
+    end
 
   end
 

@@ -38,7 +38,7 @@ class RtsWindow < Gosu::Window
 
   def draw
     # @game.render_mutex.synchronize do
-      @game.render_system.draw self, @game.entity_manager, @game.resources
+      @game.render_system.draw self, @game.entity_manager, @game.resources, @game
     # end
   end
 
