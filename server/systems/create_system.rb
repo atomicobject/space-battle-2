@@ -13,6 +13,12 @@ class CreateSystem
           base.resource -= cost
           Prefab.unit(type: cmd.type, entity_manager: entity_manager, map_info: map_info,
                       x: base_pos.x, y: base_pos.y, player_id: owner.id)
+          player_info = entity_manager.query(Q.must(PlayerOwned).with(id: owner.id).must(PlayerInfo)).first.components.last
+
+          getter = "#{cmd.type}_count"
+          setter = "#{cmd.type}_count="
+          player_info.send(setter, player_info.send(getter)+1)
+          player_info.total_units += 1
           u.dirty = true
         else
           puts "#{owner.id} tried to create #{cmd.type} without enough resources #{cost} required, but only has #{base.resource}"

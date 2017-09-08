@@ -25,6 +25,21 @@ class TileInfoHelper
       tile_info.dirty_tiles = Set.new
       dirties
     end
+
+    def see_tile(tile_info, x,y)
+      tile_info.seen_tiles[x] ||= {}
+      tile_info.seen_tiles[x][y] = true
+    end
+
+    def seen_tile?(tile_info, x,y)
+      tile_info.seen_tiles[x] && tile_info.seen_tiles[x][y]
+    end
+
+    def can_see_tile?(tile_info, x,y)
+      # TODO make this a faster lookup via a Hash
+      tile_info.interesting_tiles.include?([x,y])
+    end
+
   end
 end
 
@@ -92,6 +107,28 @@ class Map
     39 => :tree5,
     40 => :tree6,
     95 => :rock1,
+
+    127 => :ff_cap_down,
+    128 => :ff_cap_left,
+    129 => :ff_cap_right,
+    130 => :ff_cap_up,
+
+    131 => :ff_corner_1,
+    132 => :ff_corner_2,
+    133 => :ff_corner_3,
+    134 => :ff_corner_4,
+
+    135 => :ff_cross,
+    136 => :ff_single_horizontal,
+    137 => :ff_single_vertical,
+
+    138 => :ff_horizontal,
+    139 => :ff_vertical,
+
+    140 => :ff_t_down,
+    141 => :ff_t_left,
+    142 => :ff_t_right,
+    143 => :ff_t_up,
   }
 
   def initialize(w,h, objects)
