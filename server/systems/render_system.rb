@@ -305,6 +305,9 @@ class RenderSystem
       name_img = Gosu::Image.from_text(name, 65, align: :center, width: w)
 
       score_text = 5000
+      score_text = entity_manager.query(
+        Q.must(PlayerOwned).with(id: winner_id).
+          must(Base)).first.get(Base).resource
       score_img = Gosu::Image.from_text(score_text.to_s, 95, align: :center, width: w)
       draw_rect(target, x, y, ZOrder::POPUP, w, h, PLAYER_COLORS[winner_id])
 

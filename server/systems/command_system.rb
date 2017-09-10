@@ -61,8 +61,12 @@ class CommandSystem
             if base_ent.nil? || base_ent.get(Unit).status != :idle
               player_info.invalid_commands += 1
             else
-              entity_manager.add_component(id: base_ent.id, 
-                component: CreateCommand.new(type: type.to_sym, build_time: info[:create_time]) )
+              if entity_manager.find_by_id(base_ent.id, CreateCommand)
+                player_info.invalid_commands += 1
+              else
+                entity_manager.add_component(id: base_ent.id, 
+                  component: CreateCommand.new(type: type.to_sym, build_time: info[:create_time]) )
+              end
             end
 
           elsif c == 'IDENTIFY'
