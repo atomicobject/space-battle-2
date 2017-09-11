@@ -1,0 +1,39 @@
+package com.atomicobject.rts;
+import org.json.simple.JSONObject;
+
+public class Unit {
+
+	String resource;
+	String attackType;
+	String health;
+	String range;
+	String attackDamage;
+	String type;
+	String speed;
+	String attackCooldown;
+	String canAttack;
+	String playerId;
+	String x;
+	String y;
+	Long id;
+	String status;
+	String attackCooldownDuration;
+
+	public Unit(JSONObject json) {
+		resource = (Long) json.get("resource");
+		attackType = (String) json.get("attack_type");
+		health = (String) json.get("health");
+		range = (String) json.get("range");
+		attackDamage = (String) json.get("attack_damage");
+		type = (String) json.get("type");
+		speed = (String) json.get("speed");
+		attackCooldown = (String) json.get("attack_cooldown");
+		canAttack = (String) json.get("can_attack");
+		playerId = (String) json.get("player_id");
+		x = (String) json.get("x");
+		y = (String) json.get("y");
+		id = (Long) json.get("id");
+		status = (String) json.get("status");
+		attackCooldownDuration = (String) json.get("attack_cooldown_duration");
+	}
+}

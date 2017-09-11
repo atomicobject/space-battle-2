@@ -1,0 +1,9 @@
+1505146067927	Infer generic type arguments
+1505146793972	Extract method 'sendCommandList'
+1505146816984	Rename method 'sendCommandList'
+1505146838156	Rename method 'sendCommandsToServer'
+1505146849926	Extract method 'buildCommandList'
+1505147595695	Extract method 'closeStreams'
+1505147625508	Extract method 'closeQuietly'
+1505148865515	Rename method 'processUpdatesFromServer'
+1505148918990	Extract method 'addUnitUpdate'

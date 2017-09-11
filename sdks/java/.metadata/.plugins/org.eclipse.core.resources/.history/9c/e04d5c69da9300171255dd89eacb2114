@@ -1,0 +1,78 @@
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.net.Socket;
+import java.util.Collection;
+import java.util.Map;
+import java.util.concurrent.ConcurrentLinkedQueue;
+
+import org.json.simple.JSONValue;
+
+public class Client {
+	
+	Socket socket;
+	BufferedReader input;
+	OutputStreamWriter out;
+	ConcurrentLinkedQueue<Map<String, Object>> updates;
+
+	public Client(Socket socket) {
+		updates = new ConcurrentLinkedQueue<Map<String, Object>>();
+		try {
+			input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+			out = new OutputStreamWriter(socket.getOutputStream());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void start() {
+		System.out.println("Starting client threads ...");
+		new Thread(() -> readUpdatesFromServer()).start();
+		new Thread(() -> runClientLoop()).start();
+	}
+	
+	public void readUpdatesFromServer() {
+		String nextLine;
+		try {
+			while ((nextLine = input.readLine()) != null) {
+				@SuppressWarnings("unchecked")
+				Map<String, Object> update = (Map<String, Object>) JSONValue.parse(nextLine.trim());
+				updates.add(update);
+			}
+		} catch (IOException e) {
+			// exit thread
+		}		
+	}
+
+	public void runClientLoop() {
+		System.out.println("Starting client update/command processing ...");
+		try {
+			while (true) {
+				processUpdatesFromServer();
+				sendCommandsToServer();
+			}
+		} catch (Exception e) {
+		}
+		try {
+			socket.close();
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+	}
+
+	private void sendCommandsToServer() {
+		
+	}
+
+	private void processUpdatesFromServer() {
+		Map<String, Object> update;
+		while ((update = updates.poll()) != null) {
+			System.out.println("Processing udpate: " + update);
+			Collection<Object> unit_updates = (Collection<Object>) update.get("unit_updates");
+			System.err.println("Unit updates:" + unit_updates);
+			System.err.println(unit_updates.getClass());
+		}
+	}
+
+}

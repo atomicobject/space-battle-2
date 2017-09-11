@@ -1,0 +1,31 @@
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
+
+
+public class Client {
+	
+	int port;
+
+	public Client(int port) {
+		this.port = port;
+	}
+
+	public void start() {
+		try {
+			ServerSocket serverSocket = new ServerSocket(port);
+			while (true) {
+					handleClient(serverSocket);
+			}
+			serverSocket.close();
+		} catch (Exception e) {
+			
+		}
+	}
+
+	private void handleClient(ServerSocket serverSocket) throws IOException {
+		Socket clientSocket = serverSocket.accept();
+	}
+
+
+}

@@ -1,0 +1,10 @@
+1504790514528	Rename method 'readUpdatesFromServer'
+1504795139568	Rename local variable 'unit_updates'
+1504796124760	Move compilation units
+1504796180671	Rename field 'attack_type'
+1504796185358	Rename field 'attack_damage'
+1504796193480	Rename field 'attack_cooldown'
+1504796198376	Rename field 'attacCooldown'
+1504796202494	Rename field 'can_attack'
+1504796207303	Rename field 'player_id'
+1504796214780	Rename field 'attack_cooldown_duration'

@@ -1,0 +1,26 @@
+import java.net.ServerSocket;
+import java.net.Socket;
+
+
+public class Client {
+	
+	int port;
+
+	public Client(int port) {
+		this.port = port;
+	}
+
+	public void start() {
+		try {
+			ServerSocket serverSocket = new ServerSocket(port);
+			while (true) {
+					Socket clientSocket = serverSocket.accept();
+			}
+			serverSocket.close();
+		} catch (Exception e) {
+			
+		}
+	}
+
+
+}
