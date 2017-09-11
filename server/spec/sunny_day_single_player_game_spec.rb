@@ -2,6 +2,7 @@ require 'rspec'
 require 'thread'
 require 'drb/drb'
 require 'childprocess'
+require 'gosu'
 
 require_relative "../src/game"
 

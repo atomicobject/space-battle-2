@@ -1,5 +1,5 @@
 # terrible vector class  =P
-def vec(x,y)
+def vec(x=0,y=0)
   Vec.new(x:x,y:y)
 end
 class Vec

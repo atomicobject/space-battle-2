@@ -4,13 +4,18 @@ require 'slop'
 require_relative './game'
 
 class RtsWindow < Gosu::Window
+  FULL_DISPLAY_WIDTH = 1820
+  FULL_DISPLAY_HEIGHT = 1024
+  GAME_WIDTH = 1024
+
   def initialize(**opts)
-    super(1024,1024, fullscreen: opts.delete(:fullscreen))
+    super(FULL_DISPLAY_WIDTH, FULL_DISPLAY_HEIGHT, fullscreen: opts.delete(:fullscreen))
     @input_cacher = InputCacher.new
     @last_millis = Gosu::milliseconds.to_f
 
     @game = RtsGame.new **opts
     preload_assets! @game.resources
+    self.caption = "Atomic Games: RTS"
   end
 
   def needs_cursor?
@@ -19,8 +24,7 @@ class RtsWindow < Gosu::Window
 
   def update
     begin
-      self.caption = "FPS: #{Gosu.fps} ENTS: #{@game.entity_manager.num_entities}"
-
+      # self.caption = "FPS: #{Gosu.fps} ENTS: #{@game.entity_manager.num_entities}"
       delta = relative_delta
       input = take_input_snapshot
       @game.update delta: delta, input: input
@@ -34,7 +38,7 @@ class RtsWindow < Gosu::Window
 
   def draw
     # @game.render_mutex.synchronize do
-      @game.render_system.draw self, @game.entity_manager, @game.resources
+      @game.render_system.draw self, @game.entity_manager, @game.resources, @game
     # end
   end
 
@@ -51,6 +55,7 @@ class RtsWindow < Gosu::Window
         @game.start!
       end
     end
+    super
   end
 
   def button_up(id)
@@ -68,7 +73,7 @@ class RtsWindow < Gosu::Window
       elsif file.end_with? '.mp3'
         music[name] ||= Gosu::Song.new(file)
       else
-        images[name] ||= Gosu::Image.new(file, tileable: true)
+        images[name] ||= Gosu::Image.new(file, retro: true, tileable: true)
       end
     end
     puts "loaded images: #{images.keys}"

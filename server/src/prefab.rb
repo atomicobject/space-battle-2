@@ -1,4 +1,27 @@
  module Prefab
+  def self.laser(entity_manager:,pid:,x:,y:,x2:,y2:)
+    dx = x2-x
+    dy = y-y2
+    # dist = Math.sqrt(dx*dx+dy*dy)
+    # radians = Math.atan2(dy, dx)
+    # degs = radians * 180.0/Math::PI
+    # degs = degs + 360 if degs < 0
+
+    w = 2
+    off = RtsGame::TILE_SIZE/2
+    eid = entity_manager.add_entity(
+      Position.new(x:x+dx/2, y:y+dy/2, z:90),
+      Textured.new(image: "laser#{pid}".to_sym, 
+        x1: off+x-w, y1: off+y-w, 
+        x2: off+x+w, y2: off+y+w,
+        x3: off+x2-w, y3: off+y2-w, 
+        x4: off+x2+w, y4: off+y2+w)
+    )
+    timer_name = "death-laser-#{eid}"
+    entity_manager.add_component component: Timer.new(timer_name, 1000, false, DeathEvent), id: eid
+    eid
+  end
+
   def self.explosion(entity_manager:,x:,y:)
     timings = {
       explosion1: 39,
@@ -12,7 +35,7 @@
     y += rand(-30..30)
     eid = entity_manager.add_entity(
       Position.new(x:x, y:y, z:20),
-      Sprited.new(image: frames.first, flipped: false),
+      Sprited.new(image: frames.first, flipped: false, offset: vec),
       Animated.new(timings: timings, frames: frames, index: 0, loop: false, time: 0),
       SoundEffectEvent.new(sound_to_play: [:explosion_sound1, :explosion_sound2].sample)
     )
@@ -35,13 +58,17 @@
     y += rand(-20..20)
     eid = entity_manager.add_entity(
       Position.new(x:x, y:y, z:20),
-      Sprited.new(image: frames.first, flipped: false),
+      Sprited.new(image: frames.first, flipped: false, offset: vec),
       Animated.new(timings: timings, frames: frames, index: 0, loop: false, time: 0),
       SoundEffectEvent.new(sound_to_play: [:melee_sound1, :melee_sound2].sample)
     )
     timer_name = "death-melee-#{eid}"
     entity_manager.add_component component: Timer.new(timer_name, 140*100, false, DeathEvent), id: eid
     eid
+  end
+
+  def self.start_instructions(entity_manager:)
+    entity_manager.add_entity Label.new(size: 128, text: "Press Any Key"), Position.new(x: 600, y: 600, z: 1000)
   end
 
   def self.base(entity_manager:,x:,y:,player_id:,map_info:)
@@ -53,13 +80,27 @@
     hp = RtsGame::UNITS[:base][:hp]
     health = Health.new(points: hp, max: hp)
     tile_size = RtsGame::TILE_SIZE
+
+    entity_manager.add_entity(
+      Label.new(size: 24, text: "Player #{player_id}"),
+      PlayerOwned.new(id: player_id),
+      Named.new(name: 'player-name')
+    )
+
     id = entity_manager.add_entity(
       Unit.new(status: :idle, type: :base),
       b,
-      Position.new(x:x, y:y, tile_x: (x/tile_size).floor, tile_y: (y/tile_size).floor, z:10),
+      Position.new(x:x, y:y, tile_x: (x/tile_size).floor, tile_y: (y/tile_size).floor, z:1),
       PlayerOwned.new(id: player_id),
-      Sprited.new(image: "base#{player_id}".to_sym, flipped: false),
-      Label.new(size: 24, text: "Player #{player_id}"),
+      PlayerInfo.new(id: player_id, 
+        base_count: 1,
+        worker_count: RtsGame::STARTING_WORKERS, 
+        tank_count: 0, scout_count: 0,
+        kill_count: 0, total_units: RtsGame::STARTING_WORKERS+1,
+        death_count: 0, total_resources: RtsGame::PLAYER_START_RESOURCE,
+        total_commands: 0, invalid_commands: 0,
+        ),
+      Sprited.new(image: "base#{player_id}".to_sym, flipped: false, offset: vec, scale: 0.35),
       r,
       health
     )
@@ -76,6 +117,7 @@
     unit_def = RtsGame::UNITS[type.to_sym]
     health = Health.new(points: unit_def[:hp], max: unit_def[:hp])
     tile_size = RtsGame::TILE_SIZE
+    scale = type.to_sym == :tank ? 0.6 : 0.3
     id = entity_manager.add_entity(
       Unit.new(type: type.to_sym),
       Position.new(x:x, y:y, tile_x: (x/tile_size).floor, tile_y: (y/tile_size).floor),
@@ -88,7 +130,10 @@
                 ),
       Speed.new(speed: unit_def[:speed]),
       PlayerOwned.new(id: player_id),
-      Sprited.new(image: "#{type}#{player_id}".to_sym, flipped: false),
+      Sprited.new(image: "#{type}#{player_id}".to_sym, 
+        flipped: false, 
+        scale: scale,
+        offset: vec(rand(-8..8),rand(-8..8))),
       Label.new(size: 14),
       health
     )
@@ -111,7 +156,7 @@
     else
       res = Resource.new(total: 1000, value:20)
     end
-    id = entity_manager.add_entity res, Label.new(size:16,text:"#{res.value}/#{res.total}"), Position.new(x:x, y:y), Sprited.new(image: "#{type}_res1".to_sym)
+    id = entity_manager.add_entity res, Label.new(size:16,text:res.total.to_s), Position.new(x:x, y:y), Sprited.new(image: "#{type}_res1".to_sym, offset: vec)
 
     # TODO where should world => tile coord conversion happen
     tile_size = RtsGame::TILE_SIZE
