@@ -296,24 +296,27 @@ class RenderSystem
         ).first
       name = ent.get(Label).text
 
-      w = 600
-      h = 300
+      w = 800
+      h = 400
       x = (RtsWindow::FULL_DISPLAY_WIDTH-w)/2
-      y = 300
+      y = (RtsWindow::FULL_DISPLAY_HEIGHT-h)/2
 
       winner_img = Gosu::Image.from_text("WINNER!", 75, align: :center, width: w)
       name_img = Gosu::Image.from_text(name, 65, align: :center, width: w)
 
-      score_text = 5000
       score_text = entity_manager.query(
         Q.must(PlayerOwned).with(id: winner_id).
           must(Base)).first.get(Base).resource
       score_img = Gosu::Image.from_text(score_text.to_s, 95, align: :center, width: w)
-      draw_rect(target, x, y, ZOrder::POPUP, w, h, PLAYER_COLORS[winner_id])
+      winner_color = PLAYER_COLORS[winner_id]
+      alpha_winner_color = Gosu::Color.argb(200, winner_color.red, winner_color.green, winner_color.blue)
+      draw_rect(target, x, y, ZOrder::POPUP, w, h, alpha_winner_color)
+      draw_box(target, x, y, ZOrder::POPUP, w, h, Gosu::Color::WHITE)
 
-      winner_img.draw(x, y, ZOrder::POPUP)
-      name_img.draw(x,y+80,ZOrder::POPUP)
-      score_img.draw(x, y+160, ZOrder::POPUP)
+      top_margin = 80
+      winner_img.draw(x, y+top_margin, ZOrder::POPUP)
+      name_img.draw(x,y+top_margin+85,ZOrder::POPUP)
+      score_img.draw(x, y+top_margin+170, ZOrder::POPUP)
     end
 
   end
@@ -321,6 +324,13 @@ class RenderSystem
 private
   def draw_rect(t, x, y, z, width, height, color)
     t.draw_quad(x, y, color, x+width, y, color, x, y+height, color, x+width, y+height, color, z)
+  end
+
+  def draw_box(t, x, y, z, width, height, color)
+    t.draw_line x, y, color, x+width, y, color, z
+    t.draw_line x+width, y, color, x+width, y+height, color, z
+    t.draw_line x+width, y+height, color, x, y+height, color, z
+    t.draw_line x, y+height, color, x, y, color, z
 	end
 
   def format_time_string(ms)
