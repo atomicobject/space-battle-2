@@ -125,7 +125,9 @@ class NetworkManager
   end
 
   def message_received_for_all_clients?
-    @connections.values.all?(&:has_message_pending?)
+    @connections.values.all? do |c|
+      !c.alive? || c.has_message_pending?
+    end
   end
 
   def new_message_recieved
