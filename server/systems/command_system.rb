@@ -5,7 +5,8 @@ class CommandSystem
       msgs.each do |msg|
         msg_data = msg.data
         next unless msg_data
-        cmds = msg_data['commands'] || []
+        cmds = msg_data['commands']
+        return unless cmds
         map_info = entity_manager.first(MapInfo).get(MapInfo)
         cmds.each do |cmd|
           raw_c = cmd['command']

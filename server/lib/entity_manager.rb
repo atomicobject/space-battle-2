@@ -340,9 +340,8 @@ module ECS
     end
     alias eql? ==
     def hash
-      @k.hash ^ @attr_conditions.hash
+      @_hash ||= @k.hash ^ @attr_conditions.hash
     end
-
 
     def components
       @k
@@ -426,7 +425,7 @@ module ECS
     end
     alias eql? ==
     def hash
-      self.musts.hash ^ self.maybes.hash
+      @_hash ||= self.musts.hash ^ self.maybes.hash
     end
   end
 end
