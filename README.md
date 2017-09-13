@@ -133,7 +133,14 @@ __TANK__: Tanks have average vision, slower speed, higher health, and a ranged a
 
 ## Communication Overview
 
-Your chosen starter kit should implement the basic communication protocol with the server. Ask your coach if you need detail in addition to what's listed here.
+Your chosen starter kit should implement the basic communication protocol with the server.
+
+The server will send updates to each connected AI at the beginning of a turn. The server then waits a specifed amount of time (defaults to 200ms) for each AI to send commands. It processes any received commands and then advances to the next turn.
+
+**Note that in fast mode (which will be used in the tournament) the server will advance to the next turn after it receives a single message from each AI (or the time limit expires) and so you'll want to batch your commands for each turn into a single message.**
+
+Ask your coach if you need detail in addition to what's listed here.
+
 
 ## JSON Schema
 
