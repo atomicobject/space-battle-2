@@ -1,12 +1,18 @@
-#! /usr/bin/env python3
+#!/usr/bin/python
 
-import socketserver
 import sys
 import json
 import random
 
+if (sys.version_info > (3, 0)):
+    print("Python 3.X detected")
+    import socketserver as ss
+else:
+    print("Python 2.X detected")
+    import SocketServer as ss
 
-class NetworkHandler(socketserver.StreamRequestHandler):
+
+class NetworkHandler(ss.StreamRequestHandler):
     def handle(self):
         game = Game()
 
@@ -39,6 +45,6 @@ if __name__ == "__main__":
     port = int(sys.argv[1]) if (len(sys.argv) > 1 and sys.argv[1]) else 9090
     host = '127.0.0.1'
 
-    server = socketserver.TCPServer((host, port), NetworkHandler)
+    server = ss.TCPServer((host, port), NetworkHandler)
     print("listening on {}:{}".format(host, port))
     server.serve_forever()
