@@ -36,10 +36,12 @@ class RenderSystem
     draw_rect(target, 0, 0, 0, RtsWindow::FULL_DISPLAY_WIDTH, RtsWindow::FULL_DISPLAY_HEIGHT, AO_BLACK)
 
     game_offset = (RtsWindow::FULL_DISPLAY_WIDTH - RtsWindow::GAME_WIDTH)/2
+    map_scale = RtsWindow::GAME_WIDTH / (64*map.width.to_f)
+
     target.translate(game_offset, 0) do img = images[:bg_space]
       img.draw 0, 0, ZOrder::Terrain
 
-      target.scale 0.5 do
+      target.scale map_scale do
         sorted_by_y_x = Hash.new{|h,k|h[k]=Hash.new{|hh,kk|hh[kk]=[]}}
         map.width.times do |x|
           map.height.times do |y|
@@ -63,8 +65,7 @@ class RenderSystem
             t.objects.each do |obj|
               # images[obj.image].draw base_x, base_y, ZOrder::Env
               obj_img = images[obj.image]
-              if obj_img
-                sorted_by_y_x[base_y][base_x] << [obj_img, false, ZOrder::Env, 1, 1]
+              if obj_img sorted_by_y_x[base_y][base_x] << [obj_img, false, ZOrder::Env, 1, 1]
               else
                 puts "could not find object image for: #{obj.image}"
               end
@@ -211,9 +212,12 @@ class RenderSystem
         med_font.draw("x#{player_info.total_units}", score_x+87, stats_y+400, ZOrder::HUD)
 
         seen_count = 0
-        mini_x = score_x + 40
-        mini_y = stats_y+500
         mini_size = 10
+        mini_width = 32*mini_size
+        mini_scale = mini_width / (10*map.width.to_f)
+        mini_x = (score_x + 40) / mini_scale
+        mini_y = (stats_y+500) / mini_scale
+
         mini_clear_color = Gosu::Color.rgb(0xAA, 0xAA, 0xAA)
         mini_fog_color = Gosu::Color::GRAY
         mini_blocked_color = Gosu::Color.rgb(0x60, 0x60, 0x60)
@@ -238,34 +242,36 @@ class RenderSystem
           end
         end
 
-        map.width.times do |mx|
-          map.height.times do |my|
-            color = nil
-            if TileInfoHelper.seen_tile?(tile_info, mx, my)
-              seen_count += 1
-              if TileInfoHelper.can_see_tile?(tile_info, mx, my)
-                if MapInfoHelper.resource_at(map,mx,my)
-                  color = Gosu::Color::GREEN
-                elsif MapInfoHelper.blocked?(map,mx,my)
-                  color = mini_blocked_color
-                elsif my_units[mx][my]
-                  color = player_color
-                elsif their_units[mx][my]
-                  color = other_player_color
+        target.scale mini_scale do
+          map.width.times do |mx|
+            map.height.times do |my|
+              color = nil
+              if TileInfoHelper.seen_tile?(tile_info, mx, my)
+                seen_count += 1
+                if TileInfoHelper.can_see_tile?(tile_info, mx, my)
+                  if MapInfoHelper.resource_at(map,mx,my)
+                    color = Gosu::Color::GREEN
+                  elsif MapInfoHelper.blocked?(map,mx,my)
+                    color = mini_blocked_color
+                  elsif my_units[mx][my]
+                    color = player_color
+                  elsif their_units[mx][my]
+                    color = other_player_color
+                  else
+                    color = mini_clear_color
+                  end
                 else
-                  color = mini_clear_color
+                  if MapInfoHelper.blocked?(map,mx,my)
+                    color = mini_blocked_color
+                  else
+                    color ||= mini_fog_color
+                  end
                 end
               else
-                if MapInfoHelper.blocked?(map,mx,my)
-                  color = mini_blocked_color
-                else
-                  color ||= mini_fog_color
-                end
+                color = mini_unknown_color
               end
-            else
-              color = mini_unknown_color
+              draw_rect(target, mini_x + mx*mini_size, mini_y + my*mini_size, ZOrder::HUD, mini_size, mini_size, color)
             end
-            draw_rect(target, mini_x + mx*mini_size, mini_y + my*mini_size, ZOrder::HUD, mini_size, mini_size, color)
           end
         end
 
