@@ -71,7 +71,7 @@
     entity_manager.add_entity Label.new(size: 128, text: "Press Any Key"), Position.new(x: 600, y: 600, z: 1000)
   end
 
-  def self.base(entity_manager:,x:,y:,player_id:,map_info:)
+  def self.base(entity_manager:,x:,y:,player_id:,map_info:,name:)
     entity_manager.add_entity PlayerOwned.new(id: player_id), TileInfo.new
 
     b = Base.new(resource: RtsGame::PLAYER_START_RESOURCE)
@@ -81,8 +81,9 @@
     health = Health.new(points: hp, max: hp)
     tile_size = RtsGame::TILE_SIZE
 
+    player_name = name || "Player"
     entity_manager.add_entity(
-      Label.new(size: 24, text: "Player #{player_id}"),
+      Label.new(size: 24, text: "#{player_name} (#{player_id})"),
       PlayerOwned.new(id: player_id),
       Named.new(name: 'player-name')
     )
@@ -187,19 +188,19 @@
     entity_manager.add_entity(timer)
   end
 
-  def self.map(player_count:, entity_manager:, resources:)
+  def self.map(player_count:, entity_manager:, resources:, player_names:)
     music_info(entity_manager: entity_manager)
     info = map_info(entity_manager: entity_manager, static_map: resources[:map])
-    bases(player_count: player_count, entity_manager: entity_manager, static_map: resources[:map], map_info: info)
+    bases(player_count: player_count, player_names: player_names, entity_manager: entity_manager, static_map: resources[:map], map_info: info)
     resources(entity_manager: entity_manager, static_map: resources[:map], map_info: info)
   end
 
-  def self.bases(player_count:, entity_manager:, static_map:, map_info:)
+  def self.bases(player_count:, entity_manager:, static_map:, map_info:, player_names:)
     bases = static_map.objects.select{|o|o['type'] == "base"}.shuffle
     player_count.times do |i|
       start_point = vec(bases[i].x, bases[i].y-RtsGame::TILE_SIZE)
       base(entity_manager: entity_manager, x: start_point.x, y: start_point.y,
-           player_id: i, map_info: map_info)
+           player_id: i, map_info: map_info, name: player_names[i])
 
       RtsGame::STARTING_WORKERS.times do
         unit(type: :worker, entity_manager: entity_manager,

@@ -514,6 +514,7 @@ class RtsGame
     end
 
     Prefab.map(player_count: clients.size,
+               player_names: clients.map{|c|c[:name]},
                entity_manager: @entity_manager,
                resources: @resources)
     @instructions = Prefab.start_instructions(entity_manager: @entity_manager)
