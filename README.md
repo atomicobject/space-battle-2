@@ -105,19 +105,19 @@ __IDENTIFY__: `unit`, `name` Name the unit (or player if left blank). This name 
 
 
 ## Units
-![base](server/assets/PNG/Retina/Structure/scifiStructure_11.png "base")
+![base](server/assets/PNG/Retina/Other/base_red.png "base")
 
 __BASE__: When joining the game, your base will be placed at a random location on the map. Map locations will be sent from the server relative to your base's location (i.e. A location of x: 1, y: 1 would indicate the tile 1 step east and 1 step south of your base).
 
-![worker](server/assets/PNG/Retina/Unit/scifiUnit_02.png "worker")
+![worker](server/assets/PNG/Retina/Other/worker_red.png "worker")
 
 __WORKER__: You will start the game with 6 workers. Workers are the only unit that can carry resources. They have average vision, speed, health, and a weak melee attack. Cost: 100.
 
-![scout](server/assets/PNG/Retina/Unit/scifiUnit_06.png "scout")
+![scout](server/assets/PNG/Retina/Other/scout_red.png "scout")
 
 __SCOUT__: Scouts have longer vision, faster speed, lower health, and a weak melee attack. Cost 130.
 
-![tank](server/assets/PNG/Retina/Unit/scifiUnit_08.png "tank")
+![tank](server/assets/PNG/Retina/Other/tank_red.png "tank")
 
 __TANK__: Tanks have average vision, slower speed, higher health, and a ranged attack. Cost 150.
 
