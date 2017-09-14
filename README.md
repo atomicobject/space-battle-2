@@ -10,8 +10,7 @@ Write an AI to command your troops to gather the most resources in the time allo
 
 ## API
 
-The server will connect to your client. You will start receiving messages in the format:
-
+The server will connect to your client. You will start receiving messages in the format: 
     {
       player: 0,
       turn: 12,
@@ -246,8 +245,10 @@ __* Optional:__ may or may not be present depending on the unit type.
   usage: src/app.rb [options]
     -p1,  --p1_host  player 1 host, default localhost
     -p1p, --p1_port  player 1 port, default 9090
+    -p1n, --p1_name  player 1 name
     -p2,  --p2_host  player 2 host
     -p2p, --p2_port  player 2 port
+    -p2n, --p2_name  player 2 name
     -m,   --map      map filename to play (json format, non-compressed)
     -q,   --quiet    suppress output (quiet mode)
     -f,   --fast     advance to the next turn as soon as all clients have sent a message
@@ -271,5 +272,4 @@ You may want to test out edge cases or set up situations for testing that are no
    * blocked layer has cells filled in that are not walkable
    * objects has resources and base starting locations _(copying existing resources/bases will maintain needed properties)_
    * environment has decorative tiles _(note: not all tiles are known to the server)_
-   * terrain is just background images
 * export the map as JSON with Map -> Properties -> Tile Layer Format set to CSV

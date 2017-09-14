@@ -157,7 +157,6 @@ class Map
     layers = tmx.layers.group_by(&:name)
     objects = tmx.objects
 
-    terrain = layers["terrain"].first
     environment = layers["environment"].first
     blocked = layers["blocked"].first
     w = tmx["width"]
