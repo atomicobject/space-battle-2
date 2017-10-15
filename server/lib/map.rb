@@ -89,7 +89,7 @@ class MapInfoHelper
 
     def resource_at(info,x,y)
       tile = at(info, x, y)
-      tile && tile.resource
+      tile&.resource
     end
 
   end
