@@ -108,10 +108,11 @@ end
 
 
 STATS_DIRECTORIES = [
-	%w(Components          components/),
-	%w(Systems             systems/),
-	%w(Lib                 lib/),
-	%w(Src                 src/),
+	# %w(Components          components/),
+	# %w(Systems             systems/),
+	# %w(Lib                 lib/),
+	# %w(Src                 src/),
+	%w(Top                 ./),
 	# %w(Unit\ tests       specs/),
 	# %w(Libraries         lib/),
 ].collect { |name, dir| [ name, "#{dir}" ] }.select { |name, dir| File.directory?(dir) }
