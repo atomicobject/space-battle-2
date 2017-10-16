@@ -1,3 +1,4 @@
+require 'oj'
 require 'set'
 require 'forwardable'
 module ECS
@@ -10,10 +11,9 @@ module ECS
     def deep_clone
       # NOTE! does not work for Hashes with default procs
       if _iterating?
-        raise "AHH! EM is still iterating!!" else
+        raise "AHH! EM is still iterating!!" 
+      else
         em = Marshal.load( Marshal.dump(self) )
-        # TODO why do we need this??
-        # em.clear_cache!
         em
       end
     end
@@ -75,6 +75,7 @@ module ECS
 
       id_collection = @comp_to_id.values_at(*required_comps)
       intersecting_ids = id_collection.sort_by(&:size).inject &:&
+
       recs = intersecting_ids.
         select{|eid| q.matches?(eid, @id_to_comp[eid]) }.
         map do |eid|
@@ -304,7 +305,7 @@ module ECS
         end
       end
       extend Forwardable
-      def_delegators :@records, :first, :any?, :size, :select, :find
+      def_delegators :@records, :first, :any?, :size, :select, :find, :empty?, :first
 
     end
 
