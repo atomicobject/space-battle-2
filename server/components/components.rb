@@ -56,7 +56,7 @@ SoundEffectEvent = define_component(attrs: [:sound_to_play])
 
 Named = define_component(attrs: [:name])
 
-MusicInfo = define_component(attrs: [:mood, :battle, :peace, :peace_timer])
+MusicInfo = define_component(attrs: [:mood, :battle, :peace, :peace_timer, :peace_music])
 
 class TileInfo
   include JsonIvars

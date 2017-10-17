@@ -82,7 +82,6 @@ class RtsWindow < Gosu::Window
     peace_music1: 'assets/music/peace1.mp3',
     peace_music2: 'assets/music/peace2.mp3',
     peace_music3: 'assets/music/peace3.mp3',
-    peace_music4: 'assets/music/peace4.mp3',
     battle_music1: 'assets/music/battle1.mp3',
   }
 

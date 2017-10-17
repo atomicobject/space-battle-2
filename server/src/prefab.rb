@@ -217,7 +217,8 @@
   end
 
   def self.music_info(entity_manager:)
-    entity_manager.add_entity MusicInfo.new(mood: :peace, battle: :battle_music1, peace: :peace_music1, peace_timer: 99_999)
+    peace_music = [:peace_music1, :peace_music2, :peace_music3]
+    entity_manager.add_entity MusicInfo.new(mood: :peace, battle: :battle_music1, peace: peace_music.sample, peace_music: peace_music, peace_timer: 99_999)
   end
 
 end

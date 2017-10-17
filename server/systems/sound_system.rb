@@ -26,8 +26,12 @@ class SoundSystem
       if music_info.mood == :peace
         music = res[:music][music_info.peace]
         return unless music
-        music.volume = 0.2
-        music.play(true) unless music&.playing?
+        unless music&.playing?
+          music_info.peace = music_info.peace_music.sample
+          music = res[:music][music_info.peace]
+          music.volume = 0.2
+          music.play(true) 
+        end
 
         music = res[:music][music_info.battle]
         music.stop if music&.playing?
