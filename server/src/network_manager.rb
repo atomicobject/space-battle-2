@@ -6,7 +6,6 @@ class Connection
 
   def initialize(network_manager, host, port)
     @socket = TCPSocket.open host, port
-    # GameLogger.log("Connected to #{host}:#{port}")
     @alive = true
     @host = host
     @port = port
@@ -117,7 +116,8 @@ class NetworkManager
     @connections.keys
   end
 
-  def initialize
+  def initialize(logger:)
+    @logger = logger
     @connection_count = 0
     @connections = {}
     @mutex = Mutex.new
@@ -141,7 +141,7 @@ class NetworkManager
     puts "connecting..."
     conn = _connect(host, port)
     @connections[@connection_count] = conn
-    GameLogger.log_connection(@connection_count, host, port)
+    @logger.log_connection(@connection_count, host, port)
     @connection_count += 1
     conn.start
   end

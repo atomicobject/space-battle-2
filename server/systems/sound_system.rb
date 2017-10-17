@@ -25,6 +25,7 @@ class SoundSystem
       music_info = entity_manager.find(MusicInfo).first.get(MusicInfo)
       if music_info.mood == :peace
         music = res[:music][music_info.peace]
+        return unless music
         music.volume = 0.2
         music.play(true) unless music&.playing?
 
@@ -32,6 +33,7 @@ class SoundSystem
         music.stop if music&.playing?
       else
         music = res[:music][music_info.battle]
+        return unless music
         music.volume = 0.2
         music.play(true) unless music&.playing?
 

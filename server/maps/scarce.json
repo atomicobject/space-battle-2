@@ -24,7 +24,6 @@
         }, 
         {
          "draworder":"topdown",
-         "height":0,
          "name":"objects",
          "objects":[
                 {
@@ -186,7 +185,6 @@
          "opacity":1,
          "type":"objectgroup",
          "visible":true,
-         "width":0,
          "x":0,
          "y":0
         }, 
@@ -204,6 +202,7 @@
  "nextobjectid":82,
  "orientation":"orthogonal",
  "renderorder":"right-down",
+ "tiledversion":"1.0.3",
  "tileheight":64,
  "tilesets":[
         {
@@ -233,6 +232,7 @@
          "tilewidth":64
         }],
  "tilewidth":64,
+ "type":"map",
  "version":1,
  "width":32
 }

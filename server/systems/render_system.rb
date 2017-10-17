@@ -30,6 +30,7 @@ class RenderSystem
 
   def draw(target, entity_manager, res, game)
     map = res[:map]
+    map_info = entity_manager.first(MapInfo).get(MapInfo)
     images = res[:images]
     tile_size = RtsGame::TILE_SIZE
 
@@ -235,9 +236,11 @@ class RenderSystem
           u,p,unit_pos = urec.components
           if u.status != :dead
             if p.id == player.id
-              my_units[unit_pos.tile_x][unit_pos.tile_y] = true
+              my_units[unit_pos.tile_x][unit_pos.tile_y] ||= 0
+              my_units[unit_pos.tile_x][unit_pos.tile_y] += 1
             else
-              their_units[unit_pos.tile_x][unit_pos.tile_y] = true
+              their_units[unit_pos.tile_x][unit_pos.tile_y] ||= 0
+              their_units[unit_pos.tile_x][unit_pos.tile_y] += 1
             end
           end
         end
@@ -245,23 +248,26 @@ class RenderSystem
         target.scale mini_scale do
           map.width.times do |mx|
             map.height.times do |my|
+              bg_color = nil
               color = nil
               if TileInfoHelper.seen_tile?(tile_info, mx, my)
                 seen_count += 1
                 if TileInfoHelper.can_see_tile?(tile_info, mx, my)
-                  if MapInfoHelper.resource_at(map,mx,my)
+                  if MapInfoHelper.resource_at(map_info,mx,my)
                     color = Gosu::Color::GREEN
-                  elsif MapInfoHelper.blocked?(map,mx,my)
+                  elsif MapInfoHelper.blocked?(map_info,mx,my)
                     color = mini_blocked_color
                   elsif my_units[mx][my]
-                    color = player_color
+                    bg_color = Gosu::Color::WHITE
+                    color = Gosu::Color.rgba(player_color.red, player_color.green, player_color.blue, [80*my_units[mx][my], 255].min)
                   elsif their_units[mx][my]
-                    color = other_player_color
+                    bg_color = Gosu::Color::WHITE
+                    color = Gosu::Color.rgba(other_player_color.red, other_player_color.green, other_player_color.blue, [80*their_units[mx][my], 255].min)
                   else
                     color = mini_clear_color
                   end
                 else
-                  if MapInfoHelper.blocked?(map,mx,my)
+                  if MapInfoHelper.blocked?(map_info,mx,my)
                     color = mini_blocked_color
                   else
                     color ||= mini_fog_color
@@ -270,7 +276,8 @@ class RenderSystem
               else
                 color = mini_unknown_color
               end
-              draw_rect(target, mini_x + mx*mini_size, mini_y + my*mini_size, ZOrder::HUD, mini_size, mini_size, color)
+              draw_rect(target, mini_x + mx*mini_size, mini_y + my*mini_size, ZOrder::HUD, mini_size, mini_size, bg_color) if bg_color
+              draw_rect(target, mini_x + mx*mini_size, mini_y + my*mini_size, ZOrder::HUD+1, mini_size, mini_size, color)
             end
           end
         end
@@ -287,7 +294,7 @@ class RenderSystem
 
     # this is too intensive atm to leave on every frame and 
     # _really_ only needs to be updated once per turn
-    if @draw_count == 5
+    if @draw_count == 10
       @hud_img = nil 
       @draw_count = 0
     end
@@ -295,6 +302,8 @@ class RenderSystem
 
     if game.game_over?
       winner_id = game.winner
+      # require 'pry'
+      # binding.pry
       ent = entity_manager.query(
         Q.must(PlayerOwned).with(id: winner_id).
           must(Label).
@@ -337,7 +346,7 @@ private
     t.draw_line x+width, y, color, x+width, y+height, color, z
     t.draw_line x+width, y+height, color, x, y+height, color, z
     t.draw_line x, y+height, color, x, y, color, z
-	end
+  end
 
   def format_time_string(ms)
     return "00:00" if ms <= 0

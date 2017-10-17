@@ -240,21 +240,24 @@ __* Optional:__ may or may not be present depending on the unit type.
 * ruby src/app.rb
 
 ## Running the game
-
+<pre>
   $ruby src/app.rb --help
   usage: src/app.rb [options]
-    -p1,  --p1_host  player 1 host, default localhost
-    -p1p, --p1_port  player 1 port, default 9090
-    -p1n, --p1_name  player 1 name
-    -p2,  --p2_host  player 2 host
-    -p2p, --p2_port  player 2 port
-    -p2n, --p2_name  player 2 name
-    -m,   --map      map filename to play (json format, non-compressed)
-    -q,   --quiet    suppress output (quiet mode)
-    -f,   --fast     advance to the next turn as soon as all clients have sent a message
-    -nu,  --no_ui    No GUI; exit code is winning player
-    -t,   --time     length of game in ms
-    --help           print this help
+    -p1, --p1_host     player 1 host [localhost]
+    -p1p, --p1_port    player 1 port [9090]
+    -p2, --p2_host     player 2 host
+    -p2p, --p2_port    player 2 port [9090]
+    -m, --map          map filename to play (json format) [map.json]
+    -l, --log          log entire game to game-log.txt
+    -f, --fast         advance to the next turn as soon as all clients have sent a message
+    -fs, --fullscreen  Run in fullscreen mode
+    -nu, --no_ui       No GUI; exit code is winning player
+    -t, --time         length of game in ms [300000]
+    -drb, --drb_port   debugging port for tests
+    -p1n, --p1_name    player 1 name
+    -p2n, --p2_name    player 2 name
+    --help             print this help
+</pre>
 
 **Notes**
 
