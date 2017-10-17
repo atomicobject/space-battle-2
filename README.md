@@ -12,7 +12,7 @@ Write an AI to command your troops to gather the most resources in the time allo
 
 The server will connect to your client. You will start receiving messages in the format:
 
-```json
+```
 {
   player: 0,
   turn: 12,
@@ -64,7 +64,7 @@ This is the current turn of the game. Each turn is 200ms.
 ### Sending commands
 To command your units, send messages to the server using the format:
 
-```json
+```
 {
   commands: [
     {command: "MOVE", unit: 2, dir: "N"},
