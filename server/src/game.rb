@@ -73,7 +73,11 @@ class RtsGame
     'E' => vec(1,0),
   }
 
-  attr_accessor :entity_manager, :render_system, :resources
+  attr_accessor :entity_manager, :render_system, :resources, :show_instructions 
+
+  def show_instructions?
+    @show_instructions
+  end
 
   def start_sim_thread(initial_state, input_queue, output_queue)
     t = Thread.new do
@@ -177,7 +181,7 @@ class RtsGame
   def start!
     return if @start # DO NOT CALL THIS TWICE!
     @start = true
-    @entity_manager.remove_entity id: @instructions
+    @show_instructions = false
     Prefab.timer(entity_manager: @entity_manager, time: @time)
     @sim_thread = start_sim_thread(@entity_manager.deep_clone, @input_queue, @next_turn_queue)
     nil
@@ -413,7 +417,7 @@ class RtsGame
                player_names: clients.map{|c|c[:name]},
                entity_manager: @entity_manager,
                resources: @resources)
-    @instructions = Prefab.start_instructions(entity_manager: @entity_manager)
+    @show_instructions = true
 
     systems = [
         CommandSystem.new,

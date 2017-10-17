@@ -1,4 +1,19 @@
 class CommandSystem
+  MOVE_CMD = "MOVE"
+  IDENTIFY_CMD = "IDENTIFY"
+  CREATE_CMD = "CREATE"
+  MELEE_CMD = "MELEE"
+  SHOOT_CMD = "SHOOT"
+  GATHER_CMD = "GATHER"
+
+  COMMANDS = [
+    MOVE_CMD,
+    IDENTIFY_CMD,
+    CREATE_CMD,
+    MELEE_CMD,
+    SHOOT_CMD,
+    GATHER_CMD,
+  ]
   def update(entity_manager, dt, input, res)
     msgs = input[:messages]
     if msgs
@@ -18,7 +33,7 @@ class CommandSystem
             must(PlayerInfo)).first.components.last
           player_info.total_commands += 1
 
-          if c == 'MOVE'
+          if c == MOVE_CMD
             ent = entity_manager.find_by_id(uid, Unit, Position, PlayerOwned)
             player_info.invalid_commands += 1 if ent.nil?
             next unless ent
@@ -49,7 +64,7 @@ class CommandSystem
               end
             end
 
-          elsif c == 'CREATE'
+          elsif c == CREATE_CMD
             type = cmd['type']
             unless type && info = RtsGame::UNITS[type.to_sym]
               player_info.invalid_commands += 1
@@ -70,7 +85,7 @@ class CommandSystem
               end
             end
 
-          elsif c == 'IDENTIFY'
+          elsif c == IDENTIFY_CMD
             name, uid = cmd.values_at('name','unit')
             ent = nil
             if uid
@@ -89,7 +104,7 @@ class CommandSystem
             end
             ent.get(Label).text = name
 
-          elsif c == 'SHOOT'
+          elsif c == SHOOT_CMD
             dx, dy, uid = cmd.values_at('dx','dy','unit')
             ent = entity_manager.find_by_id(uid, Unit, Position, PlayerOwned, Attack)
             if ent.nil?
@@ -104,7 +119,7 @@ class CommandSystem
               player_info.invalid_commands += 1
             end
 
-          elsif c == 'MELEE'
+          elsif c == MELEE_CMD
             target, uid = cmd.values_at('target','unit')
             ent = entity_manager.find_by_id(uid, Unit, Position, PlayerOwned, Attack)
             if ent.nil?
@@ -119,7 +134,7 @@ class CommandSystem
               player_info.invalid_commands += 1
             end
 
-          elsif c == 'GATHER'
+          elsif c == GATHER_CMD
             ent = entity_manager.find_by_id(uid, Unit, Position, ResourceCarrier, PlayerOwned)
             if ent.nil?
               player_info.invalid_commands += 1

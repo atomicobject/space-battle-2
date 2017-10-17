@@ -67,10 +67,6 @@
     eid
   end
 
-  def self.start_instructions(entity_manager:)
-    entity_manager.add_entity Label.new(size: 128, text: "Press Any Key"), Position.new(x: 600, y: 600, z: 1000)
-  end
-
   def self.base(entity_manager:,x:,y:,player_id:,map_info:,name:)
     entity_manager.add_entity PlayerOwned.new(id: player_id), TileInfo.new
 

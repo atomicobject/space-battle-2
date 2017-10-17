@@ -14,6 +14,7 @@ class RenderSystem
   AO_GREEN = Gosu::Color.rgba(22, 203, 196, 255)
   AO_BLACK = Gosu::Color.rgba(76, 72, 69, 255)
   PLAYER_COLORS = [ AO_RED, AO_GREEN ]
+  GAME_OFFSET = (RtsWindow::FULL_DISPLAY_WIDTH - RtsWindow::GAME_WIDTH)/2
 
   def initialize
     @font_cache = {}
@@ -36,10 +37,10 @@ class RenderSystem
 
     draw_rect(target, 0, 0, 0, RtsWindow::FULL_DISPLAY_WIDTH, RtsWindow::FULL_DISPLAY_HEIGHT, AO_BLACK)
 
-    game_offset = (RtsWindow::FULL_DISPLAY_WIDTH - RtsWindow::GAME_WIDTH)/2
     map_scale = RtsWindow::GAME_WIDTH / (64*map.width.to_f)
 
-    target.translate(game_offset, 0) do img = images[:bg_space]
+    target.translate(GAME_OFFSET, 0) do 
+      img = images[:bg_space]
       img.draw 0, 0, ZOrder::Terrain
 
       target.scale map_scale do
@@ -172,14 +173,14 @@ class RenderSystem
 
         player_color = PLAYER_COLORS[player.id]
         other_player_color = PLAYER_COLORS[player.id-1]
-        draw_rect(target, score_x, 0, 1, game_offset, 50, player_color)
+        draw_rect(target, score_x, 0, 1, GAME_OFFSET, 50, player_color)
 
         score_text = base.resource.to_s
 
-        name_img = Gosu::Image.from_text(label.text, 30, align: :center, width: game_offset)
+        name_img = Gosu::Image.from_text(label.text, 30, align: :center, width: GAME_OFFSET)
         name_img.draw(score_x, score_y+10, ZOrder::HUD)
 
-        score_img = Gosu::Image.from_text(score_text, 64, align: :center, width: game_offset)
+        score_img = Gosu::Image.from_text(score_text, 64, align: :center, width: GAME_OFFSET)
         score_img.draw(score_x, score_y+60, ZOrder::HUD)
 
         player_info = entity_manager.query(Q.must(PlayerOwned).with(id: player.id).must(PlayerInfo)).first.components.last
@@ -286,7 +287,7 @@ class RenderSystem
         perc_map = (seen_count.to_f/(map.width*map.height)*100).floor
         med_font.draw("#{perc_map}%", score_x+87, stats_y+450, ZOrder::HUD)
 
-        score_x += game_offset + RtsWindow::GAME_WIDTH
+        score_x += GAME_OFFSET + RtsWindow::GAME_WIDTH
       end
     end
 
@@ -332,6 +333,12 @@ class RenderSystem
       winner_img.draw(x, y+top_margin, ZOrder::POPUP)
       name_img.draw(x,y+top_margin+85,ZOrder::POPUP)
       score_img.draw(x, y+top_margin+170, ZOrder::POPUP)
+
+    elsif game.show_instructions?
+      x = RtsWindow::FULL_DISPLAY_WIDTH
+      y = RtsWindow::FULL_DISPLAY_HEIGHT/2
+      instructions_img = Gosu::Image.from_text("Press any key", y/5, align: :center, width: x)
+      instructions_img.draw(0, y, ZOrder::POPUP)
     end
 
   end
