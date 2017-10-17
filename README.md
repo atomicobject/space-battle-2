@@ -10,44 +10,47 @@ Write an AI to command your troops to gather the most resources in the time allo
 
 ## API
 
-The server will connect to your client. You will start receiving messages in the format: 
-    {
-      player: 0,
-      turn: 12,
-      time: 300000, // time remaining in game
-      'unit_updates': [{ // your unit's updates
-        id:16,
-        player_id: 0,
-        x: 0, y: 0,
-        status:"moving",
-        type:"worker",
-        resource:0,
-        health:5,
-        can_attack:true // cooldown is ready
-      }],
-      'tile_updates': [{
-        // relative to your base
-        x: 7, y: -9,
-        visible: true,
-        blocked: false,
-        resources: {
-          id: 12,
-          type: "small",
-          total:200,
-      value:10
-        },
-        units: [{
-          id:60,
-          type:"tank",
-          status:"unknown", // tile update statuses can only be unknown or dead
-          player_id: 1,
-          health: 10
-        }]}
-      ],
-    }
+The server will connect to your client. You will start receiving messages in the format:
+
+```
+{
+  player: 0,
+  turn: 12,
+  time: 300000, // time remaining in game
+  'unit_updates': [{ // your unit's updates
+    id:16,
+    player_id: 0,
+    x: 0, y: 0,
+    status:"moving",
+    type:"worker",
+    resource:0,
+    health:5,
+    can_attack:true // cooldown is ready
+  }],
+  'tile_updates': [{
+    // relative to your base
+    x: 7, y: -9,
+    visible: true,
+    blocked: false,
+    resources: {
+      id: 12,
+      type: "small",
+      total:200,
+  value:10
+    },
+    units: [{
+      id:60,
+      type:"tank",
+      status:"unknown", // tile update statuses can only be unknown or dead
+      player_id: 1,
+      health: 10
+    }]}
+  ],
+}
+```
 
 ##### unit_updates
-Any time something one of your units changes, (position, status, etc), you will receive an update.
+Any time something about one of your units changes, (position, status, etc), you will receive an update.
 
 ##### tile_updates
 Any time something about a tile changes, (enemy units, visibility, etc), you will receive an update.
@@ -61,17 +64,18 @@ This is the current turn of the game. Each turn is 200ms.
 ### Sending commands
 To command your units, send messages to the server using the format:
 
-
-    {
-      commands: [
-        {command: "MOVE", unit: 2, dir: "N"},
-        {command: "MOVE", unit: 3, dir: "S"},
-        {command: "GATHER", unit: 7, dir: "S"},
-        {command: "CREATE", type: "worker"},
-        {command: "SHOOT", unit: 4, dx: 3, dy: 2},
-        {command: "MELEE", unit: 4, target: 2},
-      ]
-    }
+```
+{
+  commands: [
+    {command: "MOVE", unit: 2, dir: "N"},
+    {command: "MOVE", unit: 3, dir: "S"},
+    {command: "GATHER", unit: 7, dir: "S"},
+    {command: "CREATE", type: "worker"},
+    {command: "SHOOT", unit: 4, dx: 3, dy: 2},
+    {command: "MELEE", unit: 4, target: 2},
+  ]
+}
+```
 
 #### Warning!
 
@@ -234,30 +238,28 @@ __* Optional:__ may or may not be present depending on the unit type.
 * checkout repo
 * install ruby 2.3.x or newer
 * install [Gosu](https://www.libgosu.org/ruby.html) dependencies ([mac](https://github.com/gosu/gosu/wiki/Getting-Started-on-OS-X) | [linux](https://github.com/gosu/gosu/wiki/Getting-Started-on-Linux))
-* install bundler
-* cd server
-* bundle install
-* ruby src/app.rb
+* install bundler: `gem install bundler`
+* `cd server`
+* `bundle install`
+* `ruby src/app.rb`
 
 ## Running the game
-<pre>
-  $ruby src/app.rb --help
-  usage: src/app.rb [options]
-    -p1, --p1_host     player 1 host [localhost]
-    -p1p, --p1_port    player 1 port [9090]
-    -p2, --p2_host     player 2 host
-    -p2p, --p2_port    player 2 port [9090]
-    -m, --map          map filename to play (json format) [map.json]
-    -l, --log          log entire game to game-log.txt
-    -f, --fast         advance to the next turn as soon as all clients have sent a message
-    -fs, --fullscreen  Run in fullscreen mode
-    -nu, --no_ui       No GUI; exit code is winning player
-    -t, --time         length of game in ms [300000]
-    -drb, --drb_port   debugging port for tests
-    -p1n, --p1_name    player 1 name
-    -p2n, --p2_name    player 2 name
-    --help             print this help
-</pre>
+    $ruby src/app.rb --help
+    usage: src/app.rb [options]
+      -p1, --p1_host     player 1 host [localhost]
+      -p1p, --p1_port    player 1 port [9090]
+      -p2, --p2_host     player 2 host
+      -p2p, --p2_port    player 2 port [9090]
+      -m, --map          map filename to play (json format) [map.json]
+      -l, --log          log entire game to game-log.txt
+      -f, --fast         advance to the next turn as soon as all clients have sent a message
+      -fs, --fullscreen  Run in fullscreen mode
+      -nu, --no_ui       No GUI; exit code is winning player
+      -t, --time         length of game in ms [300000]
+      -drb, --drb_port   debugging port for tests
+      -p1n, --p1_name    player 1 name
+      -p2n, --p2_name    player 2 name
+      --help             print this help
 
 **Notes**
 
