@@ -71,8 +71,9 @@ class CommandSystem
               next
             end
 
-            base_ent = entity_manager.find(Base, Unit, PlayerOwned).
-              select{|ent| ent.get(PlayerOwned).id == msg.connection_id}.first
+            base_ent = entity_manager.query(
+              Q.must(PlayerOwned).with(id: msg.connection_id).
+                must(Base).must(Unit)).first
 
             if base_ent.nil? || base_ent.get(Unit).status != :idle
               player_info.invalid_commands += 1
@@ -178,13 +179,29 @@ class CommandSystem
                 resource.total -= resource.value
                 resource_ent.get(Label).text = "#{resource.total}"
 
-                res_car.resource = resource.value
                 u.dirty = true
                 u.status = :idle
-                
-                res_image = res_car.resource > 10 ? :large_res1 : :small_res1
-                entity_manager.add_component(id: uid, component: Decorated.new(image: res_image, scale: 0.3, offset: vec(10, -10)))
 
+                base_ent = entity_manager.query(
+                  Q.must(PlayerOwned).with(id: msg.connection_id).
+                    must(Base).
+                    must(Unit).
+                    must(Position)
+                  ).first
+                base_pos = base_ent.get(Position)
+                base = base_ent.get(Base)
+                if (pos.tile_x-base_pos.tile_x).abs <= 1 && (pos.tile_y-base_pos.tile_y).abs <= 1 
+
+                  base.resource += resource.value
+                  player_info = entity_manager.query(Q.must(PlayerOwned).
+                    with(id: owner.id).must(PlayerInfo)).first.components.last
+                  player_info.total_resources += resource.value
+                  base_ent.get(Unit).dirty = true
+                else
+                  res_car.resource = resource.value
+                  res_image = res_car.resource > 10 ? :large_res1 : :small_res1
+                  entity_manager.add_component(id: uid, component: Decorated.new(image: res_image, scale: 0.3, offset: vec(10, -10)))
+                end
                 sound = SoundEffectEvent.new(sound_to_play: [:harvest_sound1, :harvest_sound2].sample)
                 entity_manager.add_component(id: uid, component: sound)
 

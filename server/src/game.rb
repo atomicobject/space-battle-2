@@ -433,7 +433,6 @@ class RtsGame
     ]
 
     @world = World.new systems
-    @render_system = RenderSystem.new
   end
 
 end
