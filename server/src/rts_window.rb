@@ -5,16 +5,6 @@ class RtsWindow < Gosu::Window
   GAME_WIDTH = 1024
 
   ASSETS = {
-    dirt1: 'assets/PNG/Default size/Tile/scifiTile_41.png',
-    dirt2: 'assets/PNG/Default size/Tile/scifiTile_42.png',
-    tree1: 'assets/PNG/Default size/Tile/scifiTile_15.png',
-    tree2: 'assets/PNG/Default size/Tile/scifiTile_16.png',
-    tree3: 'assets/PNG/Default size/Tile/scifiTile_27.png',
-    tree4: 'assets/PNG/Default size/Tile/scifiTile_28.png',
-    tree5: 'assets/PNG/Default size/Tile/scifiTile_29.png',
-    tree6: 'assets/PNG/Default size/Tile/scifiTile_30.png',
-    rock1: 'assets/PNG/Default size/Environment/scifiEnvironment_12.png',
-
     base0: 'assets/PNG/Retina/Other/base_red.png',
     worker0: 'assets/PNG/Retina/Other/worker_red.png',
     scout0: 'assets/PNG/Retina/Other/scout_red.png',

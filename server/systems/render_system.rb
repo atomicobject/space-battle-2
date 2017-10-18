@@ -50,26 +50,14 @@ class RenderSystem
             t = map.at(x,y)
             base_x = x*tile_size
             base_y = y*tile_size
-            unless t.image == :dirt1 || t.image == :dirt2
-              img = images[t.image]
-              if t.image.to_s.start_with?('tree')
-                img = images[:space_block]
-              end
-              if img
-                # img.draw base_x, base_y, ZOrder::Terrain, 0.45, 0.45
-                # TODO RETRO MODE?
-                img.draw base_x, base_y, ZOrder::Terrain, 0.5, 0.5
-              else
-                puts "could not find tile image for: #{t.image}"
-              end
-            end
+
+            img = images[t.image]
+            img.draw base_x, base_y, ZOrder::Terrain, 0.5, 0.5 if img
 
             t.objects.each do |obj|
-              # images[obj.image].draw base_x, base_y, ZOrder::Env
               obj_img = images[obj.image]
-              if obj_img sorted_by_y_x[base_y][base_x] << [obj_img, false, ZOrder::Env, 1, 1]
-              else
-                puts "could not find object image for: #{obj.image}"
+              if obj_img 
+                sorted_by_y_x[base_y][base_x] << [obj_img, false, ZOrder::Env, 1, 1]
               end
             end
           end

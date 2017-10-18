@@ -206,7 +206,7 @@ class Tile
   end
 
   def image
-    @image ||= (@type.nil? || @type == :dirt) ? [:dirt1, :dirt2].sample : @type
+    @image ||= @type
   end
 
   def walkable?
