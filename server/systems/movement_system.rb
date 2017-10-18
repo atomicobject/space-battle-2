@@ -21,7 +21,7 @@ class MovementSystem
       u.status = :moving
       u.dirty = true
 
-      speed = base_speed * s.speed
+      speed = tile_size.to_f/(RtsGame::TURN_DURATION * s.speed - RtsGame::SIMULATION_STEP)
 
       displacement = movement.target_vec - pos.to_vec
       dist = displacement.magnitude

@@ -126,9 +126,9 @@ __TANK__: Tanks have average vision, slower speed, higher health, and a ranged a
 
 | type   | cost | range (+/-) | speed (tpt<sup>*</sup>) | health | attack cooldown (turns) | attack damage | build time (turns) |
 |--------|------|-------|-------|--------|-----------------|---|---|
-| worker | 100  | 2     | 1     | 10     | 3 | 2 | 5  |
-| scout  | 130  | 5     | 2     | 5      | 3 | 1 | 10 |
-| tank   | 150  | 2     | 0.5   | 20     | 7 | 4 | 15 |
+| worker | 100  | 2     | 5     | 10     | 3 | 2 | 5  |
+| scout  | 130  | 5     | 3     | 5      | 3 | 1 | 10 |
+| tank   | 150  | 2     | 10    | 20     | 7 | 4 | 15 |
 
 <sup>*</sup>__turns per tile (tpt):__ Number of turns required to move from one grid location to the next. Smaller is faster.
 
@@ -219,7 +219,7 @@ __* Optional:__ may or may not be present depending on the unit type.
 | `range` | `int` | Number of tiles in any direction the unit can see |
 | `cost` | `int` | Resource cost to create (optional) |
 | `create_time` | `int` | the number of turns it takes to create (optional) |
-| `speed` | `float` | Speed multiplier of unit (a value of 1 represents 5 turns/tile, 0.5 is 10 turns/tile) (optional) |
+| `speed` | `float` | Movement speed of unit in turns per tile of movement (optional) |
 | `attack_type` | `string` | melee or ranged (optional) |
 | `attack_damage` | `int` | Damage dealt by this unit (optional) |
 | `attack_cooldown_duration` | `int` | number of turns the unit must wait between attacks (optional) |
