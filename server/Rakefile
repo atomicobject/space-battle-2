@@ -118,11 +118,11 @@ STATS_DIRECTORIES = [
 ].collect { |name, dir| [ name, "#{dir}" ] }.select { |name, dir| File.directory?(dir) }
 
 task :exe, [:ip] do |t, args|
-				sh "ocra --output game.exe --windows --chdir-first src/app.rb assets/**/* maps/* -- -p1 #{args[:ip]} "
+	sh "ocra --icon AtomicRTS.ico --output game.exe --chdir-first src/app.rb assets/**/* maps/* -- -p1 #{args[:ip]} "
 end
 
 task :installer, [:ip] do |t, args|
-				sh "ocra --output game.exe --innosetup inno.iss --windows --chdir-first --no-lzma src/app.rb assets/**/* maps/* -- -p1 #{args[:ip]} "
+	sh "ocra --icon AtomicRTS.ico --output game.exe --innosetup inno.iss --chdir-first --no-lzma src/app.rb assets/**/* maps/* -- -p1 #{args[:ip]} "
 end
 
 
