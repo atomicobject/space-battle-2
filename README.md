@@ -275,6 +275,6 @@ You may want to test out edge cases or set up situations for testing that are no
 * Copy an existing map
 * Update layers
    * blocked layer has cells filled in that are not walkable
-   * objects has resources and base starting locations _(copying existing resources/bases will maintain needed properties)_
-   * environment has decorative tiles _(note: not all tiles are known to the server)_
+   * objects has resources and base starting locations _(copying existing resources/bases will maintain needed type properties)_
+   * environment has decorative tiles
 * export the map as JSON with Map -> Properties -> Tile Layer Format set to CSV
