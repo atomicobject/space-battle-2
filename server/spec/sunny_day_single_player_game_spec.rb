@@ -61,14 +61,14 @@ describe 'sunny day' do
     expect(game_info['game_duration']).to eq(300_000)
     expect(game_info['unit_info']).to eq(
       'base' => {
-        'hp' => 50,
+        'hp' => 300,
         'range' => 2,
       },
       'worker' => {
         'cost' => 100,
         'hp' => 10,
         'range' => 2,
-        'speed' => 1,
+        'speed' => 5,
         'attack_damage' => 2,
         'attack_type' => 'melee',
         'attack_cooldown_duration' => 30,
@@ -79,7 +79,7 @@ describe 'sunny day' do
         'cost' => 130,
         'hp' => 5,
         'range' => 5,
-        'speed' => 2,
+        'speed' => 3,
         'attack_damage' => 1,
         'attack_type' => 'melee',
         'attack_cooldown_duration' => 30,
@@ -87,9 +87,9 @@ describe 'sunny day' do
       },
       'tank' => {
         'cost' => 150,
-        'hp' => 20,
+        'hp' => 30,
         'range' => 2,
-        'speed' => 0.5,
+        'speed' => 10,
         'attack_damage' => 4,
         'attack_type' => 'ranged',
         'attack_cooldown_duration' => 70,

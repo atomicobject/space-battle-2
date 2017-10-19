@@ -172,3 +172,4 @@ class RtsWindow < Gosu::Window
   end
 end
 
+require_relative '../systems/render_system'

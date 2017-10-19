@@ -75,15 +75,11 @@ class CommandSystem
               Q.must(PlayerOwned).with(id: msg.connection_id).
                 must(Base).must(Unit)).first
 
-            if base_ent.nil? || base_ent.get(Unit).status != :idle
+            if base_ent.nil? || base_ent.get(Unit).status != :idle || entity_manager.find_by_id(base_ent.id, CreateCommand)
               player_info.invalid_commands += 1
             else
-              if entity_manager.find_by_id(base_ent.id, CreateCommand)
-                player_info.invalid_commands += 1
-              else
-                entity_manager.add_component(id: base_ent.id, 
-                  component: CreateCommand.new(type: type.to_sym, build_time: info[:create_time]) )
-              end
+              entity_manager.add_component(id: base_ent.id, 
+                component: CreateCommand.new(type: type.to_sym, build_time: info[:create_time]) )
             end
 
           elsif c == IDENTIFY_CMD
@@ -114,7 +110,7 @@ class CommandSystem
             end
 
             u, pos, owner = ent.components
-            if owner.id == msg.connection_id && u.status == :idle
+            if owner.id == msg.connection_id && u.status == :idle && !entity_manager.find_by_id(uid, ShootCommand)
               entity_manager.add_component(id: uid, component: ShootCommand.new(id: uid, dx: dx, dy: dy))
             else
               player_info.invalid_commands += 1
@@ -129,7 +125,7 @@ class CommandSystem
             end
 
             u, pos, owner = ent.components
-            if owner.id == msg.connection_id && u.status == :idle
+            if owner.id == msg.connection_id && u.status == :idle && !entity_manager.find_by_id(uid, MeleeCommand)
               entity_manager.add_component(id: uid, component: MeleeCommand.new(id: uid, target: target))
             else
               player_info.invalid_commands += 1
@@ -200,10 +196,10 @@ class CommandSystem
                 else
                   res_car.resource = resource.value
                   res_image = res_car.resource > 10 ? :large_res1 : :small_res1
-                  entity_manager.add_component(id: uid, component: Decorated.new(image: res_image, scale: 0.3, offset: vec(10, -10)))
+                  entity_manager.add_component(id: uid, component: Decorated.new(image: res_image, scale: 0.3, offset: vec(10, -10))) if !entity_manager.find_by_id(uid, Decorated)
                 end
                 sound = SoundEffectEvent.new(sound_to_play: [:harvest_sound1, :harvest_sound2].sample)
-                entity_manager.add_component(id: uid, component: sound)
+                entity_manager.add_component(id: uid, component: sound) if !entity_manager.find_by_id(uid, SoundEffectEvent)
 
                 if resource.total <= 0
                   MapInfoHelper.remove_resource_at(map_info, target_tile_x, target_tile_y)
