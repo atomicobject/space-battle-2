@@ -98,37 +98,30 @@ end
 class Map
   attr_reader :width, :height, :tiles, :objects
 
-  RESOURCE_IDS = [78,112,94,113]
   TYPE_FOR_TILE_INDEX = {
-    0 => :dirt,
-    21 => :tree1,
-    22 => :tree2,
-    38 => :tree4,
-    39 => :tree5,
-    40 => :tree6,
-    95 => :rock1,
+    0 => :empty,
 
-    127 => :ff_cap_down,
-    128 => :ff_cap_left,
-    129 => :ff_cap_right,
-    130 => :ff_cap_up,
+    1 => :ff_cap_down,
+    2 => :ff_cap_left,
+    3 => :ff_cap_right,
+    4 => :ff_cap_up,
 
-    131 => :ff_corner_1,
-    132 => :ff_corner_2,
-    133 => :ff_corner_3,
-    134 => :ff_corner_4,
+    5 => :ff_corner_1,
+    6 => :ff_corner_2,
+    7 => :ff_corner_3,
+    8 => :ff_corner_4,
 
-    135 => :ff_cross,
-    136 => :ff_single_horizontal,
-    137 => :ff_single_vertical,
+    9 => :ff_cross,
+    10 => :ff_single_horizontal,
+    11 => :ff_single_vertical,
 
-    138 => :ff_horizontal,
-    139 => :ff_vertical,
+    12 => :ff_horizontal,
+    13 => :ff_vertical,
 
-    140 => :ff_t_down,
-    141 => :ff_t_left,
-    142 => :ff_t_right,
-    143 => :ff_t_up,
+    14 => :ff_t_down,
+    15 => :ff_t_left,
+    16 => :ff_t_right,
+    17 => :ff_t_up,
   }
 
   def initialize(w,h, objects)
@@ -176,9 +169,11 @@ class Map
 				y = i / environment.width
 
 				# tile = new_tile_for_index(tile_id, x,y)
-        type = TYPE_FOR_TILE_INDEX[tile_id]
-        puts "unknown tile id: #{tile_id}" unless type
-				m.at(x,y).type = type if type
+        if tile_id != 0
+          type = TYPE_FOR_TILE_INDEX[tile_id]
+          puts "unknown tile id: #{tile_id}" unless type
+          m.at(x,y).type = type if type
+        end
 			end
     end
   end
@@ -192,8 +187,6 @@ class Map
 end
 
 class Tile
-  TYPES = [:dirt]
-  WALKABLE_TYPES = [:dirt]
   attr_accessor :objects, :units, :type, :blocked, :resource
   def initialize(type = :dirt)
     @type = type
@@ -207,10 +200,6 @@ class Tile
 
   def image
     @image ||= @type
-  end
-
-  def walkable?
-    WALKABLE_TYPES.include? @type && @objects.empty? # assume all objects block for now
   end
 
   def to_json(*opts)
