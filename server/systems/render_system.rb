@@ -292,8 +292,8 @@ class RenderSystem
       end
     end
 
-    @hud_imgs[0].draw(0,0,ZOrder::HUD)
-    @hud_imgs[1].draw(GAME_OFFSET + RtsWindow::GAME_WIDTH,0,ZOrder::HUD)
+    @hud_imgs[0].draw(0,0,ZOrder::HUD) if @hud_imgs[0]
+    @hud_imgs[1].draw(GAME_OFFSET + RtsWindow::GAME_WIDTH,0,ZOrder::HUD) if @hud_imgs[1]
 
     # this is too intensive atm to leave on every frame and 
     # _really_ only needs to be updated once per turn
