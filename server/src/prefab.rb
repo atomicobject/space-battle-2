@@ -79,7 +79,7 @@
 
     player_name = name || "Player"
     entity_manager.add_entity(
-      Label.new(size: 24, text: "#{player_name} (#{player_id})"),
+      Label.new(size: 24, text: "#{player_name} (#{player_id+1})"),
       PlayerOwned.new(id: player_id),
       Named.new(name: 'player-name')
     )

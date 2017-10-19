@@ -57,15 +57,10 @@ class RenderSystem
       other_player_color = PLAYER_COLORS[player.id-1]
       draw_rect(target, score_x, 0, 1, GAME_OFFSET, 50, player_color)
 
-      score_text = base.resource.to_s
-
-      # WORKS
-      # med_font.draw(label.text, score_x+50, score_y+10, ZOrder::HUD)
-
-      # NO WORK
       name_img = Gosu::Image.from_text(label.text, 30, align: :center, width: GAME_OFFSET)
       name_img.draw(score_x, score_y+10, ZOrder::HUD)
 
+      score_text = base.resource.to_s
       score_img = Gosu::Image.from_text(score_text, 64, align: :center, width: GAME_OFFSET)
       score_img.draw(score_x, score_y+60, ZOrder::HUD)
 

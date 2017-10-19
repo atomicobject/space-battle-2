@@ -88,7 +88,7 @@ class CommandSystem
             if uid
               ent = entity_manager.find_by_id(uid, Unit, PlayerOwned, Label)
             else
-              name = "#{name} (#{msg.connection_id})"
+              name = "#{name} (#{msg.connection_id+1})"
               ent = entity_manager.query(
                 Q.must(PlayerOwned).with(id: msg.connection_id).
                   must(Label).
