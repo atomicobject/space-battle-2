@@ -1,12 +1,15 @@
 AO RTS
 ======
 
+![boxart](SB2RC_CoverArtSmall.png "boxart")
+
 
 ## Goal
 
 Write an AI to command your troops to gather the most resources in the time allotted. You gather resources by exploring the map, finding resources, executing a gather action, and then returning to your base with the gathered resources. The AI communicates over TCP via a JSON protocol.
 
-***
+
+![gameplay](SB2RC_GameplaySmall.png "gameplay")
 
 ## API
 
