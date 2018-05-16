@@ -139,7 +139,7 @@ class AttackSystem
   private
   def kill_unit!(entity_manager, id, target_unit, target_player_id, killer_id, killer_unit, killer_player_id)
     puts "Player #{killer_player_id} #{killer_unit.type}[#{killer_id}] killed  player #{target_player_id} #{target_unit.type}[#{id}]"
-    target_unit.status = :dead
+    UnitHelper.update_status target_unit, :dead
     target_player_info = entity_manager.query(Q.must(PlayerOwned).with(id: target_player_id).must(PlayerInfo)).first.components.last
 
     getter = "#{target_unit.type}_count"
@@ -154,6 +154,7 @@ class AttackSystem
       base = entity_manager.find_by_id(id, Base).get(Base)
       base.resource = 0
     end
+    target_unit.dirty = true
 
     # TODO drop their resources?
     # TODO possibly change sprite to splat on death?

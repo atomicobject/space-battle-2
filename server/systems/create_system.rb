@@ -24,13 +24,10 @@ class CreateSystem
           puts "#{owner.id} tried to create #{cmd.type} without enough resources #{cost} required, but only has #{base.resource}"
         end
 
-        u.status = :idle
+        UnitHelper.update_status u, :idle
         entity_manager.remove_component(klass: CreateCommand, id: base_ent.id)
       else
-        if u.status != :building
-          u.dirty = true
-          u.status = :building
-        end
+        UnitHelper.update_status u, :building if u.status != :building
       end
     end
   end

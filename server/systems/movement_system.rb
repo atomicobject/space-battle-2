@@ -1,3 +1,5 @@
+require_relative '../src/helpers'
+
 class MovementSystem
 
   def update(entity_manager, dt, input, res)
@@ -18,8 +20,7 @@ class MovementSystem
         entity_manager.remove_component(klass: MovementCommand, id: ent_id)
         next
       end
-      u.status = :moving
-      u.dirty = true
+      UnitHelper.update_status u, :moving
 
       speed = tile_size.to_f/(RtsGame::TURN_DURATION * s.speed - RtsGame::SIMULATION_STEP)
 
@@ -59,8 +60,7 @@ class MovementSystem
         pos.tile_x = tile_x
         pos.tile_y = tile_y
         MapInfoHelper.add_unit_at(map_info,tile_x,tile_y,ent_id)
-        u.dirty = true
-        u.status = :idle
+        UnitHelper.update_status u, :idle
 
         base_ent = entity_manager.find(Base, Unit, PlayerOwned, Position).select{|ent| ent.get(PlayerOwned).id == pwn.id}.first
         base_pos = base_ent.get(Position)

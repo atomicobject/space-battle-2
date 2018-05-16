@@ -7,15 +7,16 @@ require 'drb/drb'
 
 require_relative '../lib/core_ext'
 require_relative '../lib/vec'
+require_relative 'helpers'
 require_relative '../components/components'
 require_relative '../systems/systems'
 require_relative '../lib/world'
 require_relative '../lib/map'
 require_relative '../lib/entity_manager'
 require_relative '../lib/input_cacher'
-require_relative '../src/network_manager'
-require_relative '../src/prefab'
-require_relative '../src/game_logger'
+require_relative 'network_manager'
+require_relative 'prefab'
+require_relative 'game_logger'
 
 class RtsGame
   MAX_UPDATE_SIZE_IN_MILLIS = 500

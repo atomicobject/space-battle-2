@@ -44,8 +44,7 @@ class CommandSystem
             if owner.id == msg.connection_id
               dir = RtsGame::DIR_VECS[cmd['dir']]
               if dir.nil?
-                u.status = :idle
-                u.dirty = true
+                UnitHelper.update_status u, :idle
                 puts "Invalid MOVE DIR #{dir} for unit #{uid} from player #{msg.connection_id}"
                 player_info.invalid_commands += 1
                 next
@@ -147,8 +146,7 @@ class CommandSystem
 
               dir = RtsGame::DIR_VECS[cmd['dir']]
               if dir.nil?
-                u.status = :idle
-                u.dirty = true
+                UnitHelper.update_status u, :idle
                 puts "Invalid HARVEST DIR #{dir} for unit #{uid} from player #{msg.connection_id}"
                 player_info.invalid_commands += 1
                 next
@@ -175,8 +173,7 @@ class CommandSystem
                 resource.total -= resource.value
                 resource_ent.get(Label).text = "#{resource.total}"
 
-                u.dirty = true
-                u.status = :idle
+                UnitHelper.update_status u, :idle
 
                 base_ent = entity_manager.query(
                   Q.must(PlayerOwned).with(id: msg.connection_id).
