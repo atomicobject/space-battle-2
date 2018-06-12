@@ -13,6 +13,8 @@ module ECS
       if _iterating?
         raise "AHH! EM is still iterating!!" 
       else
+        _apply_updates
+        clear_cache!
         em = Marshal.load( Marshal.dump(self) )
         em
       end
