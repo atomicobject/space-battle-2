@@ -147,6 +147,21 @@
     id
   end
 
+  def self.dropped_resource(entity_manager:,x:,y:,map_info:,value:)
+    # always small
+    type = 'small'
+    res = Resource.new(total: value, value: 10)
+    id = entity_manager.add_entity res, Label.new(size:16,text:res.total.to_s), Position.new(x:x, y:y), Sprited.new(image: "#{type}_res1".to_sym, offset: vec)
+
+    tile_size = RtsGame::TILE_SIZE
+    tile_x = (x/tile_size).floor
+    tile_y = (y/tile_size).floor
+
+    MapInfoHelper.add_resource_at(map_info,tile_x,tile_y,
+                                  id: id, type: :small, total:res.total, value:res.value)
+    id
+  end
+
   def self.resource(entity_manager:,x:,y:,map_info:,type:)
     if type == 'small'
       res = Resource.new(total: 200, value:10)

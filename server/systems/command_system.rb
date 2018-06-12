@@ -5,6 +5,7 @@ class CommandSystem
   MELEE_CMD = "MELEE"
   SHOOT_CMD = "SHOOT"
   GATHER_CMD = "GATHER"
+  DROP_CMD = "DROP"
 
   COMMANDS = [
     MOVE_CMD,
@@ -13,6 +14,7 @@ class CommandSystem
     MELEE_CMD,
     SHOOT_CMD,
     GATHER_CMD,
+    DROP_CMD,
   ]
   def update(entity_manager, dt, input, res)
     msgs = input[:messages]
@@ -131,85 +133,23 @@ class CommandSystem
             end
 
           elsif c == GATHER_CMD
-            ent = entity_manager.find_by_id(uid, Unit, Position, ResourceCarrier, PlayerOwned)
-            if ent.nil?
+            component = GatherSystem.build_command(msg.connection_id, entity_manager, cmd)
+            if component
+              entity_manager.add_component(id: cmd['unit'], component: component)
+            else
               player_info.invalid_commands += 1
-              next
             end
-
-            u, pos, res_car, owner = ent.components
-            if owner.id == msg.connection_id && u.status == :idle
-              unless res_car.resource == 0
-                player_info.invalid_commands += 1
-                next
-              end
-
-              dir = RtsGame::DIR_VECS[cmd['dir']]
-              if dir.nil?
-                UnitHelper.update_status u, :idle
-                puts "Invalid HARVEST DIR #{dir} for unit #{uid} from player #{msg.connection_id}"
-                player_info.invalid_commands += 1
-                next
-              end
-              target_tile_x = pos.tile_x + dir.x
-              target_tile_y = pos.tile_y + dir.y
-
-              res_info = MapInfoHelper.resource_at(map_info, target_tile_x, target_tile_y)
-              if res_info.nil?
-                player_info.invalid_commands += 1
-              else
-                tile_infos =  {} 
-                entity_manager.each_entity(PlayerOwned, TileInfo) do |ent|
-                  player, tile_info = ent.components
-                  tile_infos[player.id] = tile_info
-                end
-                tile_infos.values.each do |tile_info|
-                  TileInfoHelper.dirty_tile(tile_info, target_tile_x, target_tile_y)
-                end
-
-                resource_ent = entity_manager.find_by_id(res_info[:id], Resource, Label)
-                resource = resource_ent.get(Resource)
-
-                resource.total -= resource.value
-                resource_ent.get(Label).text = "#{resource.total}"
-
-                UnitHelper.update_status u, :idle
-
-                base_ent = entity_manager.query(
-                  Q.must(PlayerOwned).with(id: msg.connection_id).
-                    must(Base).
-                    must(Unit).
-                    must(Position)
-                  ).first
-                base_pos = base_ent.get(Position)
-                base = base_ent.get(Base)
-                if (pos.tile_x-base_pos.tile_x).abs <= 1 && (pos.tile_y-base_pos.tile_y).abs <= 1 
-
-                  base.resource += resource.value
-                  player_info = entity_manager.query(Q.must(PlayerOwned).
-                    with(id: owner.id).must(PlayerInfo)).first.components.last
-                  player_info.total_resources += resource.value
-                  base_ent.get(Unit).dirty = true
-                else
-                  res_car.resource = resource.value
-                  res_image = res_car.resource > 10 ? :large_res1 : :small_res1
-                  entity_manager.add_component(id: uid, component: Decorated.new(image: res_image, scale: 0.3, offset: vec(10, -10))) if !entity_manager.find_by_id(uid, Decorated)
-                end
-                sound = SoundEffectEvent.new(sound_to_play: [:harvest_sound1, :harvest_sound2].sample)
-                entity_manager.add_component(id: uid, component: sound) if !entity_manager.find_by_id(uid, SoundEffectEvent)
-
-                if resource.total <= 0
-                  MapInfoHelper.remove_resource_at(map_info, target_tile_x, target_tile_y)
-                  entity_manager.remove_entity(id: res_info[:id])
-                end
-              end
-
+          elsif c == DROP_CMD
+            component = DropSystem.build_command(msg.connection_id, entity_manager, cmd)
+            if component
+              entity_manager.add_component(id: cmd['unit'], component: component)
+            else
+              player_info.invalid_commands += 1
             end
-
           end
+
         end
       end
     end
-
   end
 end

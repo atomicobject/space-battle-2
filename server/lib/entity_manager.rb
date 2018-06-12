@@ -305,7 +305,7 @@ module ECS
         end
       end
       extend Forwardable
-      def_delegators :@records, :first, :any?, :size, :select, :find, :empty?, :first, :map
+      def_delegators :@records, :first, :any?, :size, :select, :find, :empty?, :first, :map, :[]
 
     end
 

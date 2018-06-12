@@ -51,6 +51,8 @@ Melee = define_component
 MeleeEffect = define_component
 
 MovementCommand = define_component(attrs: [:target_vec])
+GatherCommand = define_component(attrs: [:dir])
+DropCommand = define_component(attrs: [:dir, :value])
 CreateCommand = define_component(attrs: [:type, :build_time])
 SoundEffectEvent = define_component(attrs: [:sound_to_play])
 

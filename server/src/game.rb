@@ -19,13 +19,15 @@ require_relative 'prefab'
 require_relative 'game_logger'
 
 class RtsGame
+  include DRb::DRbUndumped
+
   MAX_UPDATE_SIZE_IN_MILLIS = 500
   TURN_DURATION = 200
   TURNS_PER_SECOND = 1000/TURN_DURATION
   TILE_SIZE = 64
   SIMULATION_STEP = 20
   STEPS_PER_TURN = TURN_DURATION / SIMULATION_STEP
-  STARTING_WORKERS = 6
+  STARTING_WORKERS = 2
   GAME_LENGTH_IN_MS = 300_000
   UNITS = {
     base: {
@@ -73,7 +75,21 @@ class RtsGame
     'E' => vec(1,0),
   }
 
-  attr_accessor :entity_manager, :render_system, :resources, :show_instructions 
+  attr_accessor :entity_manager, :render_system, :resources, :show_instructions, :network_manager 
+  attr_reader :input_queue, :next_turn_queue, :render_mutex, :world
+  def initialize(map:,clients:,fast:false,time:,drb_port:nil,logger:)
+    @logger = logger
+    @fast_mode = fast
+    @time = time
+    @input_queue = Queue.new
+    @next_turn_queue = Queue.new
+    @render_mutex = Mutex.new
+    if drb_port
+      @drb = DRb.start_service("druby://localhost:#{drb_port}", self)
+      puts 'DRB STARTED!!!'
+    end
+    build_world clients, map
+  end
 
   def show_instructions?
     @show_instructions
@@ -160,22 +176,6 @@ class RtsGame
       player_scores[owner.id] = {resources: b.resource, status: u.status}
     end
     player_scores
-  end
-
-  include DRb::DRbUndumped
-  attr_reader :input_queue, :next_turn_queue, :render_mutex
-  def initialize(map:,clients:,fast:false,time:,drb_port:nil,logger:)
-    @logger = logger
-    @fast_mode = fast
-    @time = time
-    @input_queue = Queue.new
-    @next_turn_queue = Queue.new
-    @render_mutex = Mutex.new
-    if drb_port
-      @drb = DRb.start_service("druby://localhost:#{drb_port}", self)
-      puts 'DRB STARTED!!!'
-    end
-    build_world clients, map
   end
 
   def start!
@@ -412,17 +412,19 @@ class RtsGame
     clients.each do |c|
       @network_manager.connect(c[:host], c[:port])
     end
-
     Prefab.map(player_count: clients.size,
                player_names: clients.map{|c|c[:name]},
                entity_manager: @entity_manager,
                resources: @resources)
+
     @show_instructions = true
 
     systems = [
         CommandSystem.new,
         AttackSystem.new,
         MovementSystem.new,
+        GatherSystem.new,
+        DropSystem.new,
         CreateSystem.new,
         TimerSystem.new,
         TimedSystem.new,

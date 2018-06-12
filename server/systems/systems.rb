@@ -1,3 +1,5 @@
+require_relative 'gather_system'
+require_relative 'drop_system'
 require_relative 'command_system'
 require_relative 'movement_system'
 require_relative 'create_system'

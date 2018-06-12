@@ -73,6 +73,7 @@ To command your units, send messages to the server using the format:
     {command: "MOVE", unit: 2, dir: "N"},
     {command: "MOVE", unit: 3, dir: "S"},
     {command: "GATHER", unit: 7, dir: "S"},
+    {command: "DROP", unit: 9, dir: "E", value: 10},
     {command: "CREATE", type: "worker"},
     {command: "SHOOT", unit: 4, dx: 3, dy: 2},
     {command: "MELEE", unit: 4, target: 2},
@@ -95,6 +96,8 @@ Commands are your AI's way of telling the server what you want your units to do.
 __MOVE__: `unit`,`dir` Move a unit by id in a given direction `N,S,E,W`. Command will be ignored if the unit cannot move in the specified direction or is currently executing a previous `MOVE` command. Units _**can**_ occupy the same location.
 
 __GATHER__: `unit`,`dir` Tell a unit to collect from a resource in the specified direction `N,S,E,W`. Command will be ignored if the unit cannot gather in the specified direction. Resources are automatically deposited by walking over the players base.
+
+__DROP__: `unit`,`dir`, `value` Tell a unit to drop `value` resources in the specified direction `N,S,E,W`. Command will be ignored if the unit cannot drop in the specified direction (unit in the way). 
 
 __CREATE__: `type` Create a new unit by type: `worker,scout,tank`. Command is ignored if the player's base does not have enough resources.
 
