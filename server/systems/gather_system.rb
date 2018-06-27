@@ -42,10 +42,10 @@ class GatherSystem
 
       map_info = entity_manager.first(MapInfo).get(MapInfo)
       res_info = MapInfoHelper.resource_at(map_info, target_tile_x, target_tile_y)
-      res_id = res_info[:id]
       if res_info.nil?
         puts "OH NOES! resources ran out?"
       else
+        res_id = res_info[:id]
         tile_infos =  {} 
         entity_manager.each_entity(PlayerOwned, TileInfo) do |ent|
           player, tile_info = ent.components

@@ -1,6 +1,7 @@
 class SoundSystem
   DEBOUNCE_UPDATES = 30
   def update(entity_manager, dt, input, res)
+    return
     @debounce_map ||= Hash.new{|h,k|h[k] = 0}
 
     entity_manager.each_entity SoundEffectEvent do |rec|

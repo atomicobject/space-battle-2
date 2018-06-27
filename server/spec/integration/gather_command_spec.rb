@@ -45,16 +45,21 @@ end
 describe "GATHER command" do
   let(:game) do
     logger = GameLogger::NOOP.new
-    g= TestGame.new map: 'maps/tiny.json', clients: [{name: "Test Player"}], fast: false, time: 20_000, drb_port: nil, logger: logger
+    g = TestGame.new map: 'maps/tiny.json', clients: [ {name: "Test Player 1"} ], fast: false, time: 20_000, drb_port: nil, logger: logger
     g.start!
     g
   end
 
   it 'gathers / drops a resource' do
-    workers = game.entity_manager.query(Q.must(Unit).with(type: :worker))
+    player_id = 0
+    workers = game.entity_manager.query(
+      Q.must(Unit).
+        with(type: :worker).
+        must(PlayerOwned).
+        with(id: player_id)
+    )
     first_unit_ent = workers[0]
     second_unit_ent = workers[1]
-    player_id = 0
 
     add_command move(player_id, first_unit_ent.id, 'W')
     5.times { run_turn }

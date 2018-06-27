@@ -156,10 +156,8 @@ class AttackSystem
     end
     target_unit.dirty = true
 
-    # TODO drop their resources?
     # TODO possibly change sprite to splat on death?
     entity_manager.remove_component(klass: Sprited, id: id)
-    entity_manager.remove_component(klass: ResourceCarrier, id: id)
     entity_manager.remove_component(klass: Label, id: id) unless target_unit.type == :base
     entity_manager.remove_component(klass: Decorated, id: id)
 
