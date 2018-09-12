@@ -129,3 +129,10 @@ end
 task :stats do
   CodeStatistics.new(*STATS_DIRECTORIES).to_s
 end
+
+desc 'run single player game with p1 on 9090'
+task :run do
+  ruby 'src/app.rb -f'
+end
+
+task default: :run

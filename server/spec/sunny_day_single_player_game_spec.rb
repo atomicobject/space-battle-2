@@ -41,7 +41,7 @@ describe 'sunny day' do
     # msg = client.messages_from_server.pop
   end
 
-  it 'progresses a single turn' do
+  xit 'progresses a single turn' do
     client = start_client
     sleep 1
     start_remote_game(client)
@@ -159,3 +159,4 @@ def start_remote_game(client)
   @process.start
   @process
 end
+

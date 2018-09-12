@@ -1,0 +1,12 @@
+begin
+  require 'rspec/core/rake_task'
+  RSpec::Core::RakeTask.new(:spec)
+rescue LoadError
+end
+
+desc 'Run the client on 9090'
+task :run do
+  ruby 'rts.rb 9090'
+end
+
+task default: %w[spec]
