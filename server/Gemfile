@@ -7,7 +7,7 @@ gem 'awesome_print'
 gem "easy_diff"
 gem 'tmx'
 gem 'rspec'
-gem 'slop', '4.4.3'
+gem 'slop'
 gem 'oj'
 gem 'pry'
 gem 'childprocess'
