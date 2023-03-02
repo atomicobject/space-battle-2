@@ -1,3 +1,9 @@
+# gosu throws an unhelpful warning that we can't do anything about. This suppresses it.
+require 'warning'
+Gem.path.each do |path|
+  Warning.ignore(/.*undefining the allocator of T_DATA class swig_runtime_data.*/, path)
+end
+
 require 'gosu'
 class RtsWindow < Gosu::Window
   FULL_DISPLAY_WIDTH = 1820

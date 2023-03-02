@@ -2,6 +2,13 @@ require 'rspec'
 require 'thread'
 require 'drb/drb'
 require 'childprocess'
+
+# gosu throws an unhelpful warning that we can't do anything about. This suppresses it.
+require 'warning'
+Gem.path.each do |path|
+  Warning.ignore(/.*undefining the allocator of T_DATA class swig_runtime_data.*/, path)
+end
+
 require 'gosu'
 
 require_relative "../src/game"
