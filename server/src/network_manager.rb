@@ -5,7 +5,14 @@ class Connection
   end
 
   def initialize(network_manager, host, port)
-    @socket = TCPSocket.open host, port
+    begin
+      @socket = TCPSocket.open host, port
+    rescue Errno::ECONNREFUSED
+      puts "Could not connect to a player at #{host}:#{port}. Is it running?"
+      exit
+    else
+      raise
+    end
     @alive = true
     @host = host
     @port = port
