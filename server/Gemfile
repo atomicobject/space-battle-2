@@ -1,6 +1,6 @@
 source "https://rubygems.org"
 
-ruby ">= 2.3.0"
+ruby ">= 3.2"
 
 gem 'gosu'
 gem 'awesome_print'
