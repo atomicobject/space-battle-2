@@ -3,7 +3,7 @@ require 'pry'
 
 log_name = ARGV[0]
 
-if log_name.nil? || !File.exists?(log_name)
+if log_name.nil? || !File.exist?(log_name)
   puts "Missing log file!"
   exit 1
 end

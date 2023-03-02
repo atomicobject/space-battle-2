@@ -146,7 +146,7 @@ class Map
   end
 
   def self.load_from_file(file_name)
-    raise "Cannot load map from #{file_name}. File not found" unless File.exists? file_name
+    raise "Cannot load map from #{file_name}. File not found" unless File.exist? file_name
     tmx = Tmx.load(file_name)
 
     tileset_image = tmx.tilesets.first.image
