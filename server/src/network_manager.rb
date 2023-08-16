@@ -10,8 +10,6 @@ class Connection
     rescue Errno::ECONNREFUSED
       puts "Could not connect to a player at #{host}:#{port}. Is it running?"
       exit
-    else
-      raise
     end
     @alive = true
     @host = host
