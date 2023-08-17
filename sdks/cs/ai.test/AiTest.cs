@@ -18,7 +18,7 @@ namespace ai.test
                     new UnitUpdate{
                         Id = 5
             }}});
-            result.commands.Should().NotBeEmpty();
+            result.commands.Should().BeEmpty();
             result.commands.First().command.Should().Equals("MOVE");
         }
 

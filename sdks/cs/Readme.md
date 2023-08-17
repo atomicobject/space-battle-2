@@ -8,7 +8,7 @@ This is a starter kit for the 2017 AO RTS, built with C# and .NET Core. It inclu
 
 ## Get Started
 
-- Install [.net core](https://www.microsoft.com/net/core) _(global.json specifies dotnet v2.0.0, which was the latest stable at the time of this writing.)_
+- Install [.net core](https://www.microsoft.com/net/core) _(global.json specifies dotnet v7.0.0, which was the latest stable at the time of this writing.)_
 - Check out this repo, then `dotnet restore` to install dependencies.
 - To run the app, `dotnet run` from the _ai_ directory. (it defaults to port 9090; specify another with e.g. `dotnet run 9091`)
 - To run unit tests, `dotnet test` from the _ai.test_ directory.
