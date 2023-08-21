@@ -1,6 +1,6 @@
 # AORTS C# Starter Kit
 
-This is a starter kit for the 2017 AO RTS, built with C# and .NET Core. It includes:
+This is a starter kit for the Atomic Games RTS, built with C# and .NET Core. It includes:
 
  - simple AI that randomly walks units around
  - unit test project with a couple examples
