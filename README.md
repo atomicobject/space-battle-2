@@ -39,7 +39,7 @@ The server will connect to your client. You will start receiving messages in the
       id: 12,
       type: "small",
       total:200,
-  value:10
+      value:10
     },
     units: [{
       id:60,
@@ -47,8 +47,8 @@ The server will connect to your client. You will start receiving messages in the
       status:"unknown", // tile update statuses can only be unknown or dead
       player_id: 1,
       health: 10
-    }]}
-  ],
+    }]
+  }],
 }
 ```
 

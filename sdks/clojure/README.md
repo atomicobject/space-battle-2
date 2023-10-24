@@ -2,7 +2,7 @@ AO RTS - Clojure Starter Kit
 ============================
 
 This project provides an easy environment for getting started developing your
-very own AI for the 2017 Atomic Games.
+very own AI for the Atomic Games.
 
 ## Requirements
 
