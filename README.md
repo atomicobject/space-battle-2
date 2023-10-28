@@ -284,3 +284,12 @@ You may want to test out edge cases or set up situations for testing that are no
    * objects has resources and base starting locations _(copying existing resources/bases will maintain needed type properties)_
    * environment has decorative tiles
 * export the map as JSON with Map -> Properties -> Tile Layer Format set to CSV
+
+## Preparing for the tournament
+
+1. Test your AI against every map in `./server/maps`. Each round will take place one of those maps. You won’t know ahead of time which one it will be. Remember that your base will be positioned randomly each time.
+2. Commit early, commit often. Save your progress frequently. Don’t worry about a tidy commit history.
+3. Save interesting commits (e.g. “This one works!”, “This one is faster”) using [tags](https://git-scm.com/book/en/v2/Git-Basics-Tagging) or [named branches](https://git-scm.com/book/en/v2/Git-Branching-Branches-in-a-Nutshell) so you can quickly find them later.
+4. Test your AI using a server that is not on your laptop at least a couple of times (your coach can help with this).
+5. Test your AI using a server running in fast mode.
+6. Test your AI as player 1 and as player 2.
