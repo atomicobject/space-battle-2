@@ -16,3 +16,20 @@ node run.js [IP] [PORT]
 ```
 
 This SDK separates the recieving of data from the sending of commands. If you take too long on a turn, data updates will pile up, but fear not, the processing of these backed up updates will be processed before your commands are asked for. This does allow you the assurance that you always have updated data, but feel free to change this flow as you wish.
+
+## Running with Docker
+
+The included Dockerfile will copy and run with `node`
+
+To build:
+
+```sh
+docker buildx build -f Dockerfile ./ -t client-node
+```
+
+To run:
+
+```sh
+docker run -p 9090:9090 client-node
+```
+
