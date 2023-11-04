@@ -242,10 +242,10 @@ __* Optional:__ may or may not be present depending on the unit type.
 ## Setting Up the game
 
 * checkout repo
+* `cd server`
 * install ruby 2.3.x or newer
 * install [Gosu](https://www.libgosu.org/ruby.html) dependencies ([mac](https://github.com/gosu/gosu/wiki/Getting-Started-on-OS-X) | [linux](https://github.com/gosu/gosu/wiki/Getting-Started-on-Linux))
 * install bundler: `gem install bundler`
-* `cd server`
 * `bundle install`
 * `ruby src/app.rb`
 
