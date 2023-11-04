@@ -22,3 +22,20 @@ Configuration is included for [Visual Studio Code](https://code.visualstudio.com
 - Parse more game information
 - Accumulate it into data structures
 - Make decisions, emit commands, and win the game!
+
+## Running with Docker
+
+The included Dockerfile will restore, build, and run with `dotnet run`
+
+To build:
+
+```sh
+docker buildx build -f Dockerfile ./ -t client-cs
+```
+
+To run:
+
+```sh
+docker run -p 9090:9090 client-cs
+```
+

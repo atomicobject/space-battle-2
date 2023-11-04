@@ -1,0 +1,16 @@
+version: '3.8'
+services:
+  p1:
+    build:
+      context: sdks/java
+      dockerfile: Dockerfile
+    ports:
+      - "9091:9090"
+
+  p2:
+    build:
+      context: sdks/ruby
+      dockerfile: Dockerfile
+    ports:
+      - "9092:9090"
+

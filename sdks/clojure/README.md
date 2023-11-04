@@ -60,3 +60,20 @@ Clojure 1.9 alpha and Clojure Spec alpha are included.
 The namespace `rts.server.messages` includes some sketches for Spec-ing the
 messages sent to and received from the server, but they happen to already be
 out of date.
+
+## Running with Docker
+
+The included Dockerfile will pull dependencies and run with `lein run`
+
+To build:
+
+```sh
+docker buildx build -f Dockerfile ./ -t client-clojure
+```
+
+To run:
+
+```sh
+docker run -p 9090:9090 client-clojure
+```
+
