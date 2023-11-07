@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "ai", "ai\ai.fsproj", "{7C2CAE26-00EB-4CA0-A55D-812708484451}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "ai.test", "ai.test\ai.test.fsproj", "{9FDF0D51-29C0-4045-9DEF-392F6B739002}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7C2CAE26-00EB-4CA0-A55D-812708484451}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7C2CAE26-00EB-4CA0-A55D-812708484451}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7C2CAE26-00EB-4CA0-A55D-812708484451}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7C2CAE26-00EB-4CA0-A55D-812708484451}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9FDF0D51-29C0-4045-9DEF-392F6B739002}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9FDF0D51-29C0-4045-9DEF-392F6B739002}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9FDF0D51-29C0-4045-9DEF-392F6B739002}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9FDF0D51-29C0-4045-9DEF-392F6B739002}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
