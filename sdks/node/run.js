@@ -1,6 +1,6 @@
 const NodeClient = require('./node-client');
 
-let ip = process.argv.length > 2 ? process.argv[2] : '127.0.0.1';
+let ip = process.argv.length > 2 ? process.argv[2] : '0.0.0.0';
 let port = process.argv.length > 3 ? process.argv[3] : '9090';
 
 let map;

@@ -4,6 +4,7 @@ module.exports = class NodeClient {
   constructor(ip, port, dataCallback, commandsCallback) {
     this.server = net.createServer();
     this.server.listen(port, ip);
+    console.log(`listening on ${ip}:${port}`)
 
     this.updateBacklog = [];
 

@@ -16,4 +16,5 @@ vendor
 game-log.txt
 test-log.txt
 sdks/clojure/target
+sdks/java/rts-client/**/*.class
 .vscode

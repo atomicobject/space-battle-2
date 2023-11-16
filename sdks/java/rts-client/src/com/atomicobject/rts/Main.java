@@ -10,6 +10,7 @@ public class Main {
 		int port = args.length > 0 ? parsePort(args[0]) : 9090;
 		try {
 			ServerSocket serverSocket = new ServerSocket(port);
+			System.out.println("Listening on 0.0.0.0:" + port);
 			while (true) {
 				Socket clientSocket = serverSocket.accept();
 				new Client(clientSocket).start();	
