@@ -43,7 +43,7 @@ class Game:
 
 if __name__ == "__main__":
     port = int(sys.argv[1]) if (len(sys.argv) > 1 and sys.argv[1]) else 9090
-    host = '127.0.0.1'
+    host = '0.0.0.0'
 
     server = ss.TCPServer((host, port), NetworkHandler)
     print("listening on {}:{}".format(host, port))
