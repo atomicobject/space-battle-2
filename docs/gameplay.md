@@ -48,7 +48,7 @@ Attacks deal damage to an enemy unit. The amount of damage an attack does varies
 
 Attacks have a cooldown period that also varies per unit to prevent attack spamming. Commands for additional attacks within the cooldown period will be ignored.
 
-Attacks will damage any unit at the target location--including your own.
+Attacks will damage any unit at the target location (including your own).
 
 **Melee attacks** are only effective if the target is within 1 tile of the attacker. Commands for a melee attack out of range will be ignored.
 

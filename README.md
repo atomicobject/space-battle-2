@@ -10,7 +10,7 @@ Write an AI to command your troops to gather the most resources in the time allo
 
 ## Details
 
-Spaces Battles 2: Resource Collectors is a real-time strategy (RTS) game. This means both players are performing actions simulateously within the same map. Click here for more [gamplay details](./docs/gameplay.md).
+Spaces Battles 2: Resource Collectors is a real-time strategy (RTS) game. This means both players are performing actions simulateously within the same map. Read more about [gameplay here](./docs/gameplay.md).
 
 The AI you will write is responsible for observing the state of the map, deciding how to react, and sending commands to your troops without any human input.
 
@@ -20,7 +20,7 @@ Starter Kit SDKs are provided in several languages to get you started.
 
 These SDKs handle server connection logic, parameter parsing, and a naive implementation of a client that makes random moves.
 
-Each SDK has a README that describes how to start the client.
+Each SDK has a README that describes how to use the client.
 
 - [Node.js](./sdks/node/README.md)
 - [Java](./sdks/java/README.md)
@@ -32,8 +32,8 @@ Each SDK has a README that describes how to start the client.
 ## Documentation
 
 - [Gameplay](./docs/gameplay.md): defines the objectives, rules, and mechanics of the game
-- [Game Loop](./docs/game_loop.md): describes how the proceeds and provides insight into your objectives as a developer
-- [Protocol Spec](./docs/protocol_spec.md): reference for how the server will talk to your client and how your client is expected to talk to the server
+- [Game Loop](./docs/game_loop.md): describes how the game proceeds and provides insight into your objectives as a developer
+- [Protocol Spec](./docs/protocol_spec.md): reference for how the server will talk to your client and how your client is expected to talk to respond
 - [Tiny Example](./docs/tiny_example.md): a small scale example of some game concepts and a few turns of the game loop
 - [Running your own server](./server/README.md): setting up a server on your own machine (if you're on Windows you may want to ask a coach for assistance)
 - [Custom Maps](./docs/custom_maps.md): for testing weird edge cases or to make a custom matchup with a friend

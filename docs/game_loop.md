@@ -12,7 +12,7 @@ The starter kit SDKs are all implemented to handle connection logic for you.
 
 At the start of each turn, the server will send your client a message that defines the updates that happened on the previous turn. This message will be in the format defined in [the spec](./protocol_spec.md#message-from-server).
 
-On the very first turn, the servers message will include additional info about the configuration of the game. This includes details like the size of the map, duration of the game, and time allowed per turn. The shape of this info is defined in [game info](./protocol_spec.md#game-info).
+On the very first turn, the server's message will include additional info about the configuration of the game. This includes details like the size of the map, duration of the game, and time allowed per turn. The shape of this info is defined in [game info](./protocol_spec.md#game-info).
 
 When the game finishes, a final message will be sent from the server that includes the results of the game. The format of results can also be found in [the spec](./protocol_spec.md#results).
 
@@ -30,10 +30,10 @@ You should reimplement this algorithm to do something smarter.
 
 Some ideas:
 
-- Efficiently explore the map (how else will you find resources or enemies -- _and_ % of map explored is a tie breaker).
-- Tell a unit that's carrying resources what the quickest way back to base is.
-- Evaluate your current resource balance (can you afford more workers)?
-- Engage in a fight (but be prepared to win)!
+- Efficiently explore the map (how else will you find resources or enemies? -- _and_ % of map explored is a tie breaker)
+- Tell a unit that's carrying resources what the quickest way back to base is
+- Evaluate your current resource balance (can you afford more workers?)
+- Engage in a fight (but be prepared to win!)
 
 You only have a short time to make these decisions and the game will move on without you if you miss your turn. Prioritize your decision making options.
 
