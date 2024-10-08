@@ -82,7 +82,6 @@
 | attack_type              | string | melee or ranged (optional)                                      |
 | attack_damage            | int    | Damage dealt by this unit (optional)                            |
 | attack_cooldown_duration | int    | number of turns the unit must wait between attacks (optional)   |
-| attack_cooldown          | int    | number of turns the unit must wait to attack again (optional)   |
 | can_carry                | bool   | true if the unit can HARVEST and carry resources (optional)     |
 
 #### Results
