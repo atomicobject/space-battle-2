@@ -99,7 +99,8 @@ class AttackSystem
       tile_infos.values.each do |tile_info|
         # Ensure clients get all of the necessary updates, mark all potentially
         # affected tiles as dirty
-        TileInfoHelper.dirty_tile(tile_info, t_pos.tile_x, t_pos.tile_y)
+        # TODO: the melee loop accounts for moving targets. can that be done here?
+        # TileInfoHelper.dirty_tile(tile_info, t_pos.tile_x, t_pos.tile_y)
         TileInfoHelper.dirty_tile(tile_info, tx, ty)
       end
       tile_units = MapInfoHelper.units_at(map_info, tx, ty)
