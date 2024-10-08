@@ -59,6 +59,9 @@ class AttackSystem
       target_unit.dirty = true
 
       tile_infos.values.each do |tile_info|
+        # Ensure clients get all of the necessary updates, mark all potentially
+        # affected tiles as dirty
+        TileInfoHelper.dirty_tile(tile_info, t_pos.tile_x, t_pos.tile_y)
         TileInfoHelper.dirty_tile(tile_info, tx, ty)
       end
 
@@ -94,6 +97,9 @@ class AttackSystem
       ty = pos.tile_y+dy
 
       tile_infos.values.each do |tile_info|
+        # Ensure clients get all of the necessary updates, mark all potentially
+        # affected tiles as dirty
+        TileInfoHelper.dirty_tile(tile_info, t_pos.tile_x, t_pos.tile_y)
         TileInfoHelper.dirty_tile(tile_info, tx, ty)
       end
       tile_units = MapInfoHelper.units_at(map_info, tx, ty)
@@ -139,7 +145,9 @@ class AttackSystem
   private
   def kill_unit!(entity_manager, id, target_unit, target_player_id, killer_id, killer_unit, killer_player_id)
     puts "Player #{killer_player_id} #{killer_unit.type}[#{killer_id}] killed  player #{target_player_id} #{target_unit.type}[#{id}]"
-    UnitHelper.update_status target_unit, :dead
+    target_unit.status = :dead
+    target_unit.dirty = true
+
     target_player_info = entity_manager.query(Q.must(PlayerOwned).with(id: target_player_id).must(PlayerInfo)).first.components.last
 
     getter = "#{target_unit.type}_count"
@@ -154,7 +162,6 @@ class AttackSystem
       base = entity_manager.find_by_id(id, Base).get(Base)
       base.resource = 0
     end
-    target_unit.dirty = true
 
     # TODO possibly change sprite to splat on death?
     entity_manager.remove_component(klass: Sprited, id: id)
