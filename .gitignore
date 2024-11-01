@@ -17,3 +17,5 @@ game-log.txt
 test-log.txt
 sdks/clojure/target
 .vscode
+
+.fake
