@@ -42,6 +42,12 @@ class TestMessage
   end
 end
 
+module Prefab
+  def self.shuffle_bases(array)
+    array
+  end
+end
+
 describe "GATHER command" do
   let(:game) do
     logger = GameLogger::NOOP.new
@@ -71,7 +77,7 @@ describe "GATHER command" do
     end
     see_unit_location(first_unit_ent.id, 1, 2)
     see_unit_location(second_unit_ent.id, 2, 2)
-    
+
     add_command gather(player_id, first_unit_ent.id, 'N')
     run_turn
     see_unit_resources(first_unit_ent.id, 10)
@@ -92,10 +98,15 @@ describe "GATHER command" do
   end
 
   it 'handles race condition with movement' do
-    workers = game.entity_manager.query(Q.must(Unit).with(type: :worker))
+    player_id = 0
+    workers = game.entity_manager.query(
+      Q.must(Unit).
+        with(type: :worker).
+        must(PlayerOwned).
+        with(id: player_id)
+    )
     first_unit_ent = workers[0]
     second_unit_ent = workers[1]
-    player_id = 0
 
     add_command move(player_id, second_unit_ent.id, 'W')
 
@@ -106,7 +117,7 @@ describe "GATHER command" do
     end
     see_unit_location(first_unit_ent.id, 1, 2)
     see_unit_location(second_unit_ent.id, 3, 2)
-    
+
     add_command gather(player_id, first_unit_ent.id, 'N')
     run_turn
     see_unit_resources(first_unit_ent.id, 10)
@@ -123,11 +134,16 @@ describe "GATHER command" do
   end
 
   it 'safely empties a resource' do
-    workers = game.entity_manager.query(Q.must(Unit).with(type: :worker))
+    player_id = 0
+    workers = game.entity_manager.query(
+      Q.must(Unit).
+        with(type: :worker).
+        must(PlayerOwned).
+        with(id: player_id)
+    )
     expect(workers.size).to eq(6)
     first_unit_ent = workers[0]
     second_unit_ent = workers[1]
-    player_id = 0
 
     # 200 / 20 = 10
     3.times do
@@ -189,6 +205,81 @@ describe "GATHER command" do
     see_no_resource(1, 1)
   end
 
+  describe 'two player game' do
+    let(:game) do
+      logger = GameLogger::NOOP.new
+      g = TestGame.new map: 'maps/tiny.json', clients: [ {name: "Test Player 1"}, { name: "Test Player 2"} ], fast: false, time: 20_000, drb_port: nil, logger: logger
+      g.start!
+      g
+    end
+
+    it 'picks up and immediately collects resources when gathering from base' do
+      base = game.entity_manager.query(Q.must(Unit).with(type: :base).must(Position).with(tile_x: 4, tile_y: 2))[0]
+      player_id = 0
+
+      workers = game.entity_manager.query(
+        Q.must(Unit).
+          with(type: :worker).
+          must(PlayerOwned).
+          with(id: player_id)
+      )
+      first_unit_ent = workers[0]
+
+      base_unit_ent = game.entity_manager.query(
+        Q.must(Unit).
+          with(type: :base).
+          must(PlayerOwned).
+          with(id: player_id)
+      )[0]
+
+      # sanity checks
+      see_unit_location(first_unit_ent.id, 4, 2)  # base location
+      see_base_resources(base_unit_ent.id, 750) # initial base resources
+
+      3.times do
+        add_command move(player_id, first_unit_ent.id, 'W')
+        5.times { run_turn }
+      end
+      see_unit_location(first_unit_ent.id, 1, 2)
+
+      add_command gather(player_id, first_unit_ent.id, 'N')
+      run_turn
+      see_unit_resources(first_unit_ent.id, 10)
+
+      add_command move(player_id, first_unit_ent.id, 'E')
+      5.times { run_turn }
+      see_unit_location(first_unit_ent.id, 2, 2)
+
+      add_command drop(player_id, first_unit_ent.id, 'E', 10)
+      run_turn
+      see_resource(3, 2, 10, 10)
+
+      # Move back to the base, but have to go around the resource
+      add_command move(player_id, first_unit_ent.id, 'S')
+      5.times { run_turn }
+
+      2.times do
+        add_command move(player_id, first_unit_ent.id, 'E')
+        5.times { run_turn }
+      end
+
+      add_command move(player_id, first_unit_ent.id, 'N')
+      5.times { run_turn }
+
+      # Back at the base
+      see_unit_location(first_unit_ent.id, 4, 2)
+
+      # Gather the dropped resource
+      add_command gather(player_id, first_unit_ent.id, 'W')
+      run_turn
+
+      # The base should have the resource, not the unit
+      see_unit_resources(first_unit_ent.id, 0)
+      see_no_resource(3, 2)
+      see_base_resources(base_unit_ent.id, 760)
+    end
+  end
+
 
   # HELPERS
   def see_unit_location(id, x, y)
@@ -199,6 +290,11 @@ describe "GATHER command" do
   def see_unit_resources(id, amount)
     res_car = game.entity_manager.find_by_id(id).get(ResourceCarrier)
     expect(res_car.resource).to eq(amount)
+  end
+
+  def see_base_resources(id, amount)
+    base = game.entity_manager.find_by_id(id).get(Base)
+    expect(base.resource).to eq(amount)
   end
 
   def see_no_resource(x, y)
@@ -234,17 +330,17 @@ describe "GATHER command" do
   end
 
   def move(pid, uid, dir)
-    TestMessage.new pid, {'commands' => [{'command' => 'MOVE', 
+    TestMessage.new pid, {'commands' => [{'command' => 'MOVE',
       'unit' => uid,
       'dir' => dir.to_s}]}
   end
   def gather(pid, uid, dir)
-    TestMessage.new pid, {'commands' => [{'command' => 'GATHER', 
+    TestMessage.new pid, {'commands' => [{'command' => 'GATHER',
       'unit' => uid,
       'dir' => dir.to_s}]}
   end
   def drop(pid, uid, dir, value)
-    TestMessage.new pid, {'commands' => [{'command' => 'DROP', 
+    TestMessage.new pid, {'commands' => [{'command' => 'DROP',
       'unit' => uid,
       'value' => value,
       'dir' => dir.to_s}]}
