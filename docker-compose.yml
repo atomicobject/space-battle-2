@@ -2,10 +2,12 @@ version: '3.8'
 services:
   p1:
     build:
-      context: sdks/java
+      context: sdks/ruby
       dockerfile: Dockerfile
     ports:
       - "9091:9090"
+    networks:
+      - app-network
 
   p2:
     build:
@@ -13,4 +15,23 @@ services:
       dockerfile: Dockerfile
     ports:
       - "9092:9090"
+    depends_on:
+      - p1
+    networks:
+      - app-network
+
+  server:
+    build:
+      context: server
+      dockerfile: Dockerfile
+    ports:
+      - "9090:9090"
+    depends_on:
+      - p2
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
 
