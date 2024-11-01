@@ -263,6 +263,7 @@ class RtsGame
           invalid_commands: info.invalid_commands
         }
       end
+      puts results
       return Oj.dump({player: player_id, turn: turn_count, time: time_remaining, results: results}, mode: :compat)
     end
 
