@@ -86,9 +86,17 @@
 
 #### Results
 
-| property | type | notes                    |
-| -------- | ---- | ------------------------ |
-| score    | int  | Total score for the game |
+| property         | type | notes                           |
+| ---------------- | ---- | ------------------------------- |
+| score            | int  | Total score for the game        |
+| workers          | int  | Number of workers owned         |
+| scouts           | int  | Number of scouts owned          |
+| tanks            | int  | Number of tanks owned           |
+| kills            | int  | Number of units killed          |
+| deaths           | int  | Number of units killed          |
+| total_resources  | int  | Total resources collected       |
+| total_commands   | int  | Total commands sent             |
+| invalid_commands | int  | Number of invalid commands sent |
 
 ### Commands to Server
 
