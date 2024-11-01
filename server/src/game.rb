@@ -247,7 +247,7 @@ class RtsGame
     units = []
 
     time_remaining = entity_manager.first(Timer).get(Timer).ttl
-    if time_remaining <= 0
+    if time_remaining <= 0 || @game_over
       results = {}
       base_ents = entity_manager.each_entity(Base, Unit, Health, PlayerOwned, Position) do |rec|
         results[rec.get(PlayerOwned).id] = { score: rec.get(Base).resource }
