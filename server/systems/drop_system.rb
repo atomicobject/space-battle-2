@@ -34,7 +34,7 @@ class DropSystem
         target_tile_y = pos.tile_y + dir.y
         map_info = entity_manager.first(MapInfo).get(MapInfo)
 
-        return nil unless MapInfoHelper.droppable_at?(map_info, target_tile_x, target_tile_y)
+        return nil unless MapInfoHelper.droppable_at?(entity_manager, map_info, target_tile_x, target_tile_y)
         return DropCommand.new(id: cmd['unit'], dir: cmd['dir'], value: cmd['value'])
       end
     end
@@ -55,7 +55,7 @@ class DropSystem
       target_tile_x = pos.tile_x + dir.x
       target_tile_y = pos.tile_y + dir.y
 
-      next unless MapInfoHelper.droppable_at?(map_info, target_tile_x, target_tile_y)
+      next unless MapInfoHelper.droppable_at?(entity_manager, map_info, target_tile_x, target_tile_y)
 
       amount_to_drop = [cmd.value, res_car.resource].min
 
@@ -65,7 +65,7 @@ class DropSystem
         res_info = MapInfoHelper.resource_at(map_info, target_tile_x, target_tile_y)
       end
 
-      tile_infos =  {} 
+      tile_infos = {}
       entity_manager.each_entity(PlayerOwned, TileInfo) do |ent|
         player, tile_info = ent.components
         tile_infos[player.id] = tile_info
@@ -114,7 +114,7 @@ class DropSystem
           res_info = MapInfoHelper.resource_at(map_info, target_tile_x, target_tile_y)
         end
 
-        tile_infos =  {} 
+        tile_infos = {}
         entity_manager.each_entity(PlayerOwned, TileInfo) do |ent|
           player, tile_info = ent.components
           tile_infos[player.id] = tile_info

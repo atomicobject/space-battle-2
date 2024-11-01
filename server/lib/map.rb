@@ -92,9 +92,15 @@ class MapInfoHelper
       tile&.resource
     end
 
-    def droppable_at?(info,x,y)
+    def droppable_at?(entity_manager,info,x,y)
       tile = at(info, x, y)
-      tile && (tile.resource || !tile.blocked?) && tile.units.empty?
+
+      has_units = tile.units.filter do |tu|
+        ent = entity_manager.find_by_id(tu, Unit)
+        ent.get(Unit).status != :dead
+      end.any?
+
+      tile && (tile.resource || !tile.blocked?) && !has_units
     end
 
   end

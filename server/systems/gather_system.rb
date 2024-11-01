@@ -46,10 +46,10 @@ class GatherSystem
         puts "OH NOES! resources ran out?"
       else
         res_id = res_info[:id]
-        tile_infos =  {} 
+        tile_infos =  {}
         entity_manager.each_entity(PlayerOwned, TileInfo) do |ent|
-          player, tile_info = ent.components
-          tile_infos[player.id] = tile_info
+          p, tile_info = ent.components
+          tile_infos[p.id] = tile_info
         end
         tile_infos.values.each do |tile_info|
           TileInfoHelper.dirty_tile(tile_info, target_tile_x, target_tile_y)
@@ -72,7 +72,7 @@ class GatherSystem
           ).first
         base_pos = base_ent.get(Position)
         base = base_ent.get(Base)
-        if (pos.tile_x-base_pos.tile_x).abs <= 1 && (pos.tile_y-base_pos.tile_y).abs <= 1 
+        if (pos.tile_x-base_pos.tile_x).abs <= 1 && (pos.tile_y-base_pos.tile_y).abs <= 1
           base.resource += amount_gathered
           player_info = entity_manager.query(Q.must(PlayerOwned).
             with(id: player.id).must(PlayerInfo)).first.components.last

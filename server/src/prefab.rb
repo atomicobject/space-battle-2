@@ -11,10 +11,10 @@
     off = RtsGame::TILE_SIZE/2
     eid = entity_manager.add_entity(
       Position.new(x:x+dx/2, y:y+dy/2, z:90),
-      Textured.new(image: "laser#{pid}".to_sym, 
-        x1: off+x-w, y1: off+y-w, 
+      Textured.new(image: "laser#{pid}".to_sym,
+        x1: off+x-w, y1: off+y-w,
         x2: off+x+w, y2: off+y+w,
-        x3: off+x2-w, y3: off+y2-w, 
+        x3: off+x2-w, y3: off+y2-w,
         x4: off+x2+w, y4: off+y2+w)
     )
     timer_name = "death-laser-#{eid}"
@@ -89,9 +89,9 @@
       b,
       Position.new(x:x, y:y, tile_x: (x/tile_size).floor, tile_y: (y/tile_size).floor, z:1),
       PlayerOwned.new(id: player_id),
-      PlayerInfo.new(id: player_id, 
+      PlayerInfo.new(id: player_id,
         base_count: 1,
-        worker_count: RtsGame::STARTING_WORKERS, 
+        worker_count: RtsGame::STARTING_WORKERS,
         tank_count: 0, scout_count: 0,
         kill_count: 0, total_units: RtsGame::STARTING_WORKERS+1,
         death_count: 0, total_resources: RtsGame::PLAYER_START_RESOURCE,
@@ -127,8 +127,8 @@
                 ),
       Speed.new(speed: unit_def[:speed]),
       PlayerOwned.new(id: player_id),
-      Sprited.new(image: "#{type}#{player_id}".to_sym, 
-        flipped: false, 
+      Sprited.new(image: "#{type}#{player_id}".to_sym,
+        flipped: false,
         scale: scale,
         offset: vec(rand(-8..8),rand(-8..8))),
       Label.new(size: 14),
@@ -206,9 +206,13 @@
     resources(entity_manager: entity_manager, static_map: resources[:map], map_info: info)
   end
 
+  def self.shuffle_bases(array)
+    array.shuffle
+  end
+
   def self.bases(player_count:, entity_manager:, static_map:, map_info:, player_names:)
-    bases = static_map.objects.select{|o|o['type'] == "base"}.shuffle
-    player_count.times do |i|
+    bases = shuffle_bases static_map.objects.select{|o|o['type'] == "base"}
+    bases.size.times do |i|
       start_point = vec(bases[i].x, bases[i].y-RtsGame::TILE_SIZE)
       base(entity_manager: entity_manager, x: start_point.x, y: start_point.y,
            player_id: i, map_info: map_info, name: player_names[i])
