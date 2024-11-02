@@ -5,4 +5,4 @@ WORKDIR /usr/src/app
 COPY . .
 
 EXPOSE 9090
-CMD ["node", "run.js", "127.0.0.1", "9090"]
+CMD ["node", "run.js", "0.0.0.0", "9090"]
