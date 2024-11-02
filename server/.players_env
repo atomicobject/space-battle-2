@@ -1,9 +1,0 @@
-# Copy this file to .players_env
-# Add players IPs and designated ports to that file
-# Example for teams "RED" and "BLUE" below
-# Be sure to include the "_IP" and "_PORT" suffix
-# Then start a match with `rake "head_to_head[RED,BLUE]"`
-RED_IP="127.0.0.1"
-RED_PORT="9090"
-BLUE_IP="127.0.0.1"
-BLUE_PORT="9091"
