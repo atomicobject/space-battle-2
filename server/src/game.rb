@@ -247,11 +247,23 @@ class RtsGame
     units = []
 
     time_remaining = entity_manager.first(Timer).get(Timer).ttl
-    if time_remaining <= 0
+    if time_remaining <= 0 || @game_over
       results = {}
-      base_ents = entity_manager.each_entity(Base, Unit, Health, PlayerOwned, Position) do |rec|
-        results[rec.get(PlayerOwned).id] = { score: rec.get(Base).resource }
+      base_ents = entity_manager.each_entity(Base, Unit, Health, PlayerOwned, Position, PlayerInfo) do |rec|
+        info = rec.get(PlayerInfo)
+        results[rec.get(PlayerOwned).id] = {
+          score: rec.get(Base).resource,
+          workers: info.worker_count,
+          scouts: info.scout_count,
+          tanks: info.tank_count,
+          kills: info.kill_count,
+          deaths: info.death_count,
+          total_resources: info.total_resources,
+          total_commands: info.total_commands,
+          invalid_commands: info.invalid_commands
+        }
       end
+      puts results
       return Oj.dump({player: player_id, turn: turn_count, time: time_remaining, results: results}, mode: :compat)
     end
 

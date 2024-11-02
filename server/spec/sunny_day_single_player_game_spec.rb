@@ -42,7 +42,15 @@ describe 'sunny day' do
     expect(msg['time']).to eq(0)
     expect(msg['results']).to eq({
       '0' => {
-        'score' => 750 #starting amount
+        'score' => 750, #starting amount
+        "deaths"=>0,
+        "invalid_commands"=>0,
+        "kills"=>0,
+        "scouts"=>0,
+        "tanks"=>0,
+        "total_commands"=>0,
+        "total_resources"=>750, # starting amount
+        "workers"=>6 # starting amount
       }
     })
     # msg = client.messages_from_server.pop
