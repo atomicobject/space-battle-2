@@ -152,7 +152,7 @@ task :run do
   ruby 'src/app.rb -f'
 end
 
-task :head_to_head, [:first, :second] => :players_env do |t, args|
+task :head_to_head, [:first, :second, :other_args] => :players_env do |t, args|
 	puts "Head to Head: #{args[:first]} vs #{args[:second]}"
 	p1_ip = "#{args[:first]}_IP"
 	p1_port = "#{args[:first]}_PORT"
@@ -160,7 +160,7 @@ task :head_to_head, [:first, :second] => :players_env do |t, args|
 	p2_port = "#{args[:second]}_PORT"
 	puts "#{args[:first]}: #{ENV[p1_ip]}:#{ENV[p1_port]}"
 	puts "#{args[:second]}: #{ENV[p2_ip]}:#{ENV[p2_port]}"
-	ruby "src/app.rb -f -p1 #{ENV[p1_ip]} -p1p #{ENV[p1_port]} -p2 #{ENV[p2_ip]} -p2p #{ENV[p2_port]}"
+	ruby "src/app.rb -f -p1 #{ENV[p1_ip]} -p1p #{ENV[p1_port]} -p2 #{ENV[p2_ip]} -p2p #{ENV[p2_port]} #{args[:other_args]}"
 end
 
 task default: :run
