@@ -46,7 +46,6 @@ describe 'sunny day' do
         "deaths"=>0,
         "invalid_commands"=>0,
         "kills"=>0,
-        "score"=>750,
         "scouts"=>0,
         "tanks"=>0,
         "total_commands"=>0,
