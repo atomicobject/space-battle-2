@@ -212,7 +212,7 @@
 
   def self.bases(player_count:, entity_manager:, static_map:, map_info:, player_names:)
     bases = shuffle_bases static_map.objects.select{|o|o['type'] == "base"}
-    bases.size.times do |i|
+    [bases.size, player_count].min.times do |i|
       start_point = vec(bases[i].x, bases[i].y-RtsGame::TILE_SIZE)
       base(entity_manager: entity_manager, x: start_point.x, y: start_point.y,
            player_id: i, map_info: map_info, name: player_names[i])

@@ -43,9 +43,6 @@ describe 'sunny day' do
     expect(msg['results']).to eq({
       '0' => {
         'score' => 750 #starting amount
-      },
-      '1' => {
-        'score' => 750 #starting amount
       }
     })
     # msg = client.messages_from_server.pop
