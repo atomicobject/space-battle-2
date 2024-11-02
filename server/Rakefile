@@ -108,12 +108,12 @@ end
 
 def load_env_file(file = '.env')
 	return unless File.exist?(file)
-	
+
 	File.readlines(file).each do |line|
 		# Remove comments and empty lines
 		line.strip!
 		next if line.empty? || line.start_with?('#')
-		
+
 		# Split by the first "=" and add to ENV
 		key, value = line.split('=', 2)
 		ENV[key] = value
