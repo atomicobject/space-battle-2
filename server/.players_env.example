@@ -1,0 +1,7 @@
+# Add players IPs and designated ports here
+# Then start a match with `rake "head_to_head[RED,BLUE]"`
+# Example for teams "RED" and "BLUE"
+RED_IP="127.0.0.1"
+RED_PORT="9090"
+BLUE_IP="127.0.0.1"
+BLUE_PORT="9091"
