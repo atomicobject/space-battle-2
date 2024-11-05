@@ -47,13 +47,7 @@ jobs:
         run: docker compose build
 
       - name: Run Docker Compose
-        run: docker compose up server
-
-      - name: Collect Test Results
-        uses: actions/upload-artifact@v3
-        with:
-          name: game-results
-          path: ./server/results/
+        run: docker compose up battle-server --profile battle
 
       - name: Tear Down Docker Compose
         if: always()

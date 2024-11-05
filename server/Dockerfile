@@ -11,4 +11,4 @@ COPY Gemfile Gemfile
 RUN bundle install
 
 COPY . .
-CMD ["ruby", "src/app.rb", "-nu", "-f", "-p1p", "9090", "-p1", "p1", "-p2p", "9090", "-p2", "p2" ]
+CMD ["ruby", "src/app.rb", "-nu", "-f", "-p1p", "9091", "-p1", "localhost", "-p2p", "9092", "-p2", "localhost" ]
