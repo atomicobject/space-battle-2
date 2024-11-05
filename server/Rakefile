@@ -121,11 +121,6 @@ task :exe, [:ip] do |t, args|
 	sh "ocra --icon AtomicRTS.ico --output game.exe --chdir-first src/app.rb assets/**/* maps/* -- -p1 #{args[:ip]} "
 end
 
-task :installer, [:ip] do |t, args|
-	sh "ocra --icon AtomicRTS.ico --output game.exe --innosetup inno.iss --chdir-first --no-lzma src/app.rb assets/**/* maps/* -- -p1 #{args[:ip]} "
-end
-
-
 task :stats do
   CodeStatistics.new(*STATS_DIRECTORIES).to_s
 end
