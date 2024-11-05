@@ -43,6 +43,13 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
+      - name: Find and Replace host network
+        uses: jacobtomlinson/gha-find-replace@v3
+        with:
+          find: "host"
+          replace: "bridge"
+          include: "docker-compose.yml"
+
       - name: Build Docker Compose Services
         run: docker compose build
 
