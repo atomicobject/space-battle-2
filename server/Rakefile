@@ -118,7 +118,7 @@ STATS_DIRECTORIES = [
 ].collect { |name, dir| [ name, "#{dir}" ] }.select { |name, dir| File.directory?(dir) }
 
 task :exe, [:ip] do |t, args|
-	sh "ocra --icon AtomicRTS.ico --output game.exe --chdir-first src/app.rb assets/**/* maps/* -- -p1 #{args[:ip]} "
+	sh "ocran --icon AtomicRTS.ico --output game.exe --chdir-first src/app.rb assets/**/* maps/* -- -p1 #{args[:ip]} "
 end
 
 task :stats do
