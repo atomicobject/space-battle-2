@@ -2,10 +2,12 @@ version: '3.8'
 services:
   p1:
     build:
-      context: sdks/java
+      context: sdks/ruby
       dockerfile: Dockerfile
     ports:
       - "9091:9090"
+    networks:
+      - app-network
 
   p2:
     build:
@@ -13,4 +15,36 @@ services:
       dockerfile: Dockerfile
     ports:
       - "9092:9090"
+    depends_on:
+      - p1
+    networks:
+      - app-network
+
+  server:
+    build:
+      context: server
+      dockerfile: Dockerfile
+    command: ["ruby", "src/app.rb", "-nu", "-f", "-p1p", "9090", "-p1", "p1"]
+    depends_on:
+      - p1
+    networks:
+      - app-network
+    profiles:
+      - single-player
+
+  battle-server:
+    build:
+      context: server
+      dockerfile: Dockerfile
+    command: ["ruby", "src/app.rb", "-nu", "-f", "-p1p", "9090", "-p1", "p1", "-p2p", "9090", "-p2", "p2" ]
+    depends_on:
+      - p2
+    networks:
+      - app-network
+    profiles:
+      - battle
+
+networks:
+  app-network:
+    driver: host
 
