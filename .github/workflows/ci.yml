@@ -47,7 +47,7 @@ jobs:
         run: docker compose build
 
       - name: Run Docker Compose
-        run: docker compose up battle-server --profile battle
+        run: docker compose --profile battle up battle-server
 
       - name: Tear Down Docker Compose
         if: always()
