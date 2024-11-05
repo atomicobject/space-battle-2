@@ -36,3 +36,23 @@ usage: src/app.rb [options]
   -p2n, --p2_name    player 2 name
   --help             print this help
 ```
+
+### Server as .exe
+
+> [!Note]
+> This mode is not recommended unless absolutely necessary.
+> Consider using this to provide server access for students that cannot install ruby on their machine.
+> Students that can install ruby on their own machine already have everything they need to run the server with the instructions above.
+
+- Ensure Ruby 3.3.5 is installed: `ruby -v`
+- Install ocran: `gem install ocran`
+- Navigate to the server directory: `cd server`
+- Locate the public IP of the client
+- Generate exe: `rake "exe[<IP>]"` (replace `<IP>` with the IP from above)
+
+Note that this exe will only execute in one player mode on port 9090 for the given IP with all other default settings (default map, no fast mode, etc).
+
+If you want an exe with custom settings:
+
+- copy the orcan command from the exe rake task in `server/Rakefile`
+- append additional flags to the end of the command
