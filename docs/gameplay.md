@@ -52,7 +52,7 @@ Attacks will damage any unit at the target location (including your own).
 
 **Melee attacks** are only effective if the target is within 1 tile of the attacker. Commands for a melee attack out of range will be ignored.
 
-**Ranged attacks** can taget enemies further away. A unit with a ranged attack can shoot an enemy unit anywhere within its vision range.
+**Ranged attacks** can target enemies further away. A unit with a ranged attack can shoot an enemy unit anywhere within its vision range.
 
 | type   | cost | vision range (+/-) | speed (tpt<sup>\*</sup>) | health | attack cooldown (turns) | attack damage | build time (turns) |
 | ------ | ---- | ------------------ | ------------------------ | ------ | ----------------------- | ------------- | ------------------ |

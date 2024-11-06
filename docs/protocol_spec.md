@@ -1,4 +1,4 @@
-# Protocal Specification
+# Protocol Specification
 
 ## JSON Schema
 
