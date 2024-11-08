@@ -97,6 +97,7 @@
 | total_resources  | int  | Total resources collected       |
 | total_commands   | int  | Total commands sent             |
 | invalid_commands | int  | Number of invalid commands sent |
+| exploration_pct  | int  | Percentage of the map explored  |
 
 ### Commands to Server
 

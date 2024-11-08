@@ -249,8 +249,25 @@ class RtsGame
     time_remaining = entity_manager.first(Timer).get(Timer).ttl
     if time_remaining <= 0 || @game_over
       results = {}
-      base_ents = entity_manager.each_entity(Base, Unit, Health, PlayerOwned, Position, PlayerInfo) do |rec|
+      base_ents = entity_manager.each_entity(PlayerOwned, Position, PlayerInfo) do |rec|
         info = rec.get(PlayerInfo)
+        map_info = entity_manager.first(MapInfo).get(MapInfo)
+        total_tiles = map_info.width * map_info.height
+
+        query_result = entity_manager.query(
+          Q.must(PlayerOwned).with(id: rec.get(PlayerOwned).id).must(TileInfo)
+        ).first
+        tile_info = query_result.get(TileInfo)
+
+        num_seen_tiles = 0
+        map_info.width.times do |mx|
+          map_info.height.times do |my|
+            if TileInfoHelper.seen_tile?(tile_info, mx, my)
+              num_seen_tiles += 1
+            end
+          end
+        end
+
         results[rec.get(PlayerOwned).id] = {
           score: rec.get(Base).resource,
           workers: info.worker_count,
@@ -260,9 +277,11 @@ class RtsGame
           deaths: info.death_count,
           total_resources: info.total_resources,
           total_commands: info.total_commands,
-          invalid_commands: info.invalid_commands
+          invalid_commands: info.invalid_commands,
+          exploration_pct: (num_seen_tiles.to_f / total_tiles * 100).floor
         }
       end
+
       puts results
       return Oj.dump({player: player_id, turn: turn_count, time: time_remaining, results: results}, mode: :compat)
     end
