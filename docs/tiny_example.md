@@ -1,7 +1,7 @@
 # Tiny Example
 
 > [!Note]  
-> This is an example intended to demonstrate mechanics like the game loop, communitcation protocol, and partial updates.
+> This is an example intended to demonstrate mechanics like the game loop, communication protocol, and partial updates.
 > Specific interactions in this example should not be considered as source of truth for actual game behavior.
 
 ### Tweaks made for brevity

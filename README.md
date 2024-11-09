@@ -10,7 +10,7 @@ Write an AI to command your troops to gather the most resources in the time allo
 
 ## Details
 
-Spaces Battles 2: Resource Collectors is a real-time strategy (RTS) game. This means both players are performing actions simulateously within the same map. Read more about [gameplay here](./docs/gameplay.md).
+Spaces Battles 2: Resource Collectors is a real-time strategy (RTS) game. This means both players are performing actions simultaneously within the same map. Read more about [gameplay here](./docs/gameplay.md).
 
 The AI you will write is responsible for observing the state of the map, deciding how to react, and sending commands to your troops without any human input.
 
@@ -48,6 +48,6 @@ Each SDK has a README that describes how to use the client.
 - Save your work using Git!
   - When your client works and does something interesting make a commit/tag/branch.
   - Need a git refresher? Try [commits](https://git-scm.com/book/en/v2/Git-Basics-Recording-Changes-to-the-Repository#:~:text=Committing%20Your%20Changes), [using tags](https://git-scm.com/book/en/v2/Git-Basics-Tagging), or [named branches](https://git-scm.com/book/en/v2/Git-Branching-Branches-in-a-Nutshell)
-- Get a client running aginst a server ASAP! Regularly make sure your client can still connect and run.
+- Get a client running against a server ASAP! Regularly make sure your client can still connect and run.
 - Don't spend all of your resources early.
   - Hypothetical: you immediately buy a new unit, your opponent does nothing all game, you fail to collect any more resources...your opponent wins.
