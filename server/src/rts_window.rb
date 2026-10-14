@@ -98,6 +98,7 @@ class RtsWindow < Gosu::Window
   end
 
   def update
+    refit_if_display_changed
     begin
       # self.caption = "FPS: #{Gosu.fps} ENTS: #{@game.entity_manager.num_entities}"
       delta = relative_delta
@@ -137,6 +138,31 @@ class RtsWindow < Gosu::Window
     @input_cacher.button_up id
   end
   private
+
+  DISPLAY_CHECK_INTERVAL_MILLIS = 500
+
+  # Gosu only sizes its GL viewport and fit-to-screen scale when the window is
+  # created/resized, so dragging it to a display with a different resolution or
+  # Retina scale leaves the drawing mis-scaled. Re-apply our size when the
+  # window's current display changes so Gosu recomputes both.
+  def refit_if_display_changed
+    now = Gosu.milliseconds
+    return if @last_display_check && now - @last_display_check < DISPLAY_CHECK_INTERVAL_MILLIS
+    @last_display_check = now
+
+    display = [Gosu.available_width(self), Gosu.available_height(self),
+               Gosu.screen_width(self), Gosu.screen_height(self)]
+    trigger_gosu_screen_resize if @last_display && display != @last_display
+    @last_display = display
+  end
+
+  # Re-assigning the same virtual size is intentional: the setters call Gosu's
+  # internal resize, which re-reads the current display's pixel density and
+  # fit-to-screen scale. FULL_DISPLAY_* is the virtual canvas and never changes.
+  def trigger_gosu_screen_resize
+    self.width = FULL_DISPLAY_WIDTH
+    self.height = FULL_DISPLAY_HEIGHT
+  end
 
   def preload_assets!(res)
     images = {}
